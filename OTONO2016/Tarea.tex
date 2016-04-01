@@ -1,0 +1,281 @@
+\documentclass [proof]{article}
+
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage[latin1]{inputenc} % acentos sin codigo
+\usepackage{verbatim} % comentarios
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{[{#1}]}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\env}{{\Gamma \vdash}}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\begin{document}
+
+\setlength{\oddsidemargin}{-5mm}
+\setlength{\evensidemargin}{-5mm}
+\setlength{\topmargin}{-5mm}
+%\setlength{\textwidth}{125mm}
+%\setlength{\textheight}{195mm}
+
+
+\begin{comment}
+$0^0$ es una expresión indefinida.
+Si $a>0$ entonces $a^0=1$ pero $0^a=0.$
+Sin embargo, convenir en que $0^0=1$ es adecuado para que
+algunas fórmulas se puedan expresar de manera sencilla,
+sin recurrir a casos especiales, por ejemplo
+$$e^x=\sum _{n=0}^{\infty }\frac{x^n}{n!}$$
+$$(x+a)^n=\sum_{k=0}^n \binom{n}{k}x^k a^{n-k}$$
+$\nvector[b]{m}$
+$\nvector{n}$
+$\vect$
+
+$\infer{B} {A \& (A \rightarrow B)}$
+
+
+$\infer[\mathrm{MP}]
+{B}{A & \quad (A \rightarrow B)}$
+
+$\infer[\rulename{TApp}] 
+{\Gamma \vdash e_1 \: e_2 : \tau_2 }
+{\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2 \quad 
+\Gamma \vdash e_2: \tau_1}$
+
+
+\[
+\begin{tabular}{l l}
+\infer[\rulename{CRefl}] 
+{\tau \sim \tau}{} &
+\infer[\rulename{CFun}] 
+{\tau_1 \rightarrow \tau_2 \sim \tau'_1 \rightarrow \tau'_2}
+{\tau_1 \rightarrow \tau'_1 \quad \tau_2 \rightarrow \tau'_2} \\
+\\
+\infer[\rulename{CUnR}] 
+{\tau \sim  \: ?}{} &
+\infer[\rulename{CUnL}] 
+{ ? \sim \tau}{} 
+\end{tabular}
+\]
+\end{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%reglas  separadas
+\begin{comment}
+$\infer[\rulename{EApp_1}]
+{t_1 t_2 \tto t'_1 t_2}{(t_1 \tto t'_1)}$
+
+$\infer[\rulename{EApp_2}]
+{v_1 t_2  \tto v_1 t'_2} {t_2 t'_2}$
+
+$\infer[\rulename{EAppAbs}]
+{(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12} }{}
+$
+
+$\infer [\rulename {EProj}]
+{t_1.l \tto t'_1.l}{t_1 \tto t'_1}$
+
+$\infer [\rulename {ERcd}]
+{ \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\ 
+\tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} }{t_j \tto t'_j}$
+
+$\infer [\rulename{ELetV}]
+{let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}{} 
+$
+
+$\infer [\rulename{ELet}]
+{let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}{t_1 \tto t'_1}
+$
+
+$\infer [\rulename {EFixBeta}]
+{fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}{}
+$
+
+$\infer[\rulename {EFix}]
+{fix \ t_1 \tto fix \ t'_1}{t_1 \tto t'_1}
+$
+
+$\infer [\rulename{TVar}]
+{\env \ x:T}{x:T \in \Gamma}
+$
+
+$\infer [\rulename{TAbs}]
+{\env \lambda x : T_1.t_2:T_1 \to T_2}{\Gamma , x:T_1 \vdash t_2:T_2}
+$
+
+$\infer [\rulename{TApp}]
+{\env t_1 t_2 : T_{12}}{\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}
+$
+
+$\infer [\rulename{TRcd}]
+{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}{for \ each \ i \ \ \env t_i:T_i}
+$
+
+$\infer [\rulename {TProj}]
+{\env t_1.l_j:T_j}{\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}
+$
+
+$ \infer [\rulename {TLet}]
+{\env \ let \ x = t_1 \ in \ t_2 : T_2}{\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}
+$
+
+$\infer [\rulename {TFix}]
+{\env fix \ t_1:T_1}{\env t_1:T_1 \to T_1}
+$
+
+$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$
+\end{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%reglas  separadas
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Sintaxis
+\begin{comment}
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l c l r}
+$Syntax$ &&& \\ 
+$t$ & $::=$ & &$terms:$\\ 
+&&$x$&$variable$\\ 
+&&$\lambda x:T.t$&$abstraction$\\
+&&$t \ t$&$application$\\
+&&$let \ x = t \ in \ t$&$let \ binding$\\
+&&${l_i=t_i^{i \in 1 \cdots n}}$&$record$\\
+&&$t.l$&$projection$\\
+&&$fix \ t$&$fixed \ point\ of \ t$\\
+&&&\\
+$v$ & $::=$ & &$values:$\\
+&&$\lambda x:T.t$&$abstraction \ value$\\
+&&$\{l_i=v_i^{i \in 1 \cdots n}\}$&$record \ value$\\
+&&&\\
+$T$&$::=$&&$types:$\\
+&&$T \to T$&$type \ of \ functions$\\
+&&$\{l_i=T_i^{i \in 1 \cdots n}\}$&$type \ of \ record$\\
+&&&\\
+$\Gamma$&$::=$&&$contexts:$\\
+&&$\varnothing$&$empty \ context:$\\
+&&$\Gamma , x:T$&$term \ variable \ binding$\\
+\end{tabular}
+\label{tabla:sencilla}
+\end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Sintaxis
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Typing
+\renewcommand{\arraystretch}{2}% 
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l c r}
+\multicolumn{2}{l}{$Typing$}&$\env t:T$\\
+&$\infer []{\env \ x:T}{x:T \in \Gamma}$&$\rulename{TVar}$\\
+&$\infer []{\env \lambda x : T_1.t_2:T_1 \to T_2}{\Gamma , x:T_1 \vdash t_2:T_2}$&$\rulename{TAbs}$\\
+&$\infer []{\env t_1 t_2 : T_{12}}{\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}$&$\rulename{TApp}$\\
+&$\infer []{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}{for \ each \ i \ \ \env t_i:T_i}$&$\rulename{TRcd}$\\
+&$\infer []{\env t_1.l_j:T_j}{\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}
+$&$\rulename {TProj}$\\
+&$ \infer []{\env \ let \ x = t_1 \ in \ t_2 : T_2}{\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}$&$\rulename {TLet}$\\
+&$\infer []{\env fix \ t_1:T_1}{\env t_1:T_1 \to T_1}$&$\rulename {TFix}$\\
+\end{tabular}
+\end{center}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Typing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Evaluation
+\renewcommand{\arraystretch}{2}% 
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l c r}
+\multicolumn{2}{l}{$Evaluation$}&$t \tto t'$\\
+&$\infer[]{t_1 t_2 \tto t'_1 t_2}{(t_1 \tto t'_1)}$&$\rulename{EApp_1}$\\
+&$\infer[]{v_1 t_2  \tto v_1 t'_2} {t_2 t'_2}$&$\rulename{EApp_2}$\\
+&$\infer[]{(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12}}{}
+$&$\rulename{EAppAbs}$\\
+&$\infer []{t_1.l \tto t'_1.l}{t_1 \tto t'_1}$&$\rulename {EProj}$\\
+&$\infer []
+{ \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} }{t_j \tto t'_j}$&$\rulename {ERcd}$\\
+&$\infer []{let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}{}$&$\rulename{ELetV}$\\
+&$\infer [] {let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}{t_1 \tto t'_1}$&$\rulename{ELet}$\\
+&$\infer []{fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}{}$&$\rulename {EFixBeta}$\\
+&$\infer[]{fix \ t_1 \tto fix \ t'_1}{t_1 \tto t'_1}$&$\rulename {EFix}$\\
+&$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$&\\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{equation*} 
+\begin{split} 
+x &= 2 + 2\\ 
+&= 2 + 2 + 3 - 3\\ 
+&= 4. 
+\end{split} 
+\end{equation*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Evaluation
+\end{comment}
+
+\renewcommand{\arraystretch}{2}% 
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\begin{tabular}{l c r}
+\multicolumn{2}{l}{$Evaluation$}&$t \tto t'$\\
+&$\infer[]{t_1 t_2 \tto t'_1 t_2}{(t_1 \tto t'_1)}$&$\rulename{EApp_1}$\\
+&$\infer[]{v_1 t_2  \tto v_1 t'_2} {t_2 t'_2}$&$\rulename{EApp_2}$\\
+&$\infer[]{(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12}}{}
+$&$\rulename{EAppAbs}$\\
+&$\infer []{t_1.l \tto t'_1.l}{t_1 \tto t'_1}$&$\rulename {EProj}$\\
+&$\infer []
+{\{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\}} {t_j \tto t'_j}$&$\rulename {ERcd}$\\
+&$\infer []{let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}{}$&$\rulename{ELetV}$\\
+&$\infer [] {let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}{t_1 \tto t'_1}$&$\rulename{ELet}$\\
+&$\infer []{fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}{}$&$\rulename {EFixBeta}$\\
+&$\infer[]{fix \ t_1 \tto fix \ t'_1}{t_1 \tto t'_1}$&$\rulename {EFix}$\\
+&$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$&\\
+\end{tabular}
+ &
+\begin{tabular}{l c r}
+\multicolumn{2}{l}{$Typing$}&$\env t:T$\\
+&$\infer []{\env \ x:T}{x:T \in \Gamma}$&$\rulename{TVar}$\\
+&$\infer []{\env \lambda x : T_1.t_2:T_1 \to T_2}{\Gamma , x:T_1 \vdash t_2:T_2}$&$\rulename{TAbs}$\\
+&$\infer []{\env t_1 t_2 : T_{12}}{\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}$&$\rulename{TApp}$\\
+&$\infer []{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}{for \ each \ i \ \ \env t_i:T_i}$&$\rulename{TRcd}$\\
+&$\infer []{\env t_1.l_j:T_j}{\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}
+$&$\rulename {TProj}$\\
+&$ \infer []{\env \ let \ x = t_1 \ in \ t_2 : T_2}{\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}$&$\rulename {TLet}$\\
+&$\infer []{\env fix \ t_1:T_1}{\env t_1:T_1 \to T_1}$&$\rulename {TFix}$\\
+\end{tabular}
+
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{equation} 
+\begin{split} 
+&\{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\
+&\tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\}
+\end{split} 
+\end{equation}
+
+$\infer [\rulename {ERcd}]{ \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} }{t_j \tto t'_j}$ 
+
+$ \inference {A\&B \quad B \quad D}{C}[[ ERcd] ]$
+
+$$
+\inference{\neg \phi \vee \neg \psi&
+\inference{\inference{\inference{}{\phi \wedge \psi}[2]}{\phi} & \inference{}{\neg \phi}[1]}{\perp} &
+\inference{\inference{\inference{}{\phi \wedge \psi}[2]}{\psi} & \inference{}{\neg \psi}[1]}{\perp}
+}{\inference{\perp}{\neg (\phi \wedge \psi)}}[2]
+$$
+
+\end{document}

@@ -1,0 +1,479 @@
+%%% Doctype
+\documentclass{article}
+
+%%%% Packages
+\usepackage{hyperref} %package for generating bookmarks
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{amssymb}
+\usepackage{stackengine}
+
+\usepackage[spanish]{babel}
+\usepackage[ansinew]{inputenc}
+
+%Multiline comment
+\usepackage{verbatim}
+\usepackage{proof}
+\usepackage{pdflscape}
+% Package that contains captionof
+\usepackage{caption}
+% Package for code listings
+\usepackage{listings}
+\usepackage{color}
+\usepackage{versions}
+
+\includeversion{dynamic}
+
+%Custom commands
+%% emb:: creates a term embedding
+\newcommand{\emb}[3]{\texttt{[}#1\texttt{]}_{#2}^{#3}}
+%% typefirm:: creates the type firm for type rule
+\newcommand{\typefirm}{
+\begin{tabular}{ |c| } 
+ \hline
+ $\Gamma \vdash e : T$ \\  
+ \hline
+\end{tabular}}
+%% lam
+\newcommand{\tlam}[3]{\lambda #1 : \textcolor[rgb]{0,0,1}{#2}. \: #3}
+\newcommand{\lam}[2]{\lambda #1 . \: #2}
+%% cast
+\newcommand{\cast}[1]{\left\langle #1 \right\rangle}
+%% quotes
+\newcommand{\quotes}[1]{``#1''}
+\newcommand{\cifelse}[3]{\textcolor[rgb]{0,0,1}{if}(#1)\: #2 \: \textcolor[rgb]{0,0,1}{else} \: #3}
+%End Custom commands
+
+\title{\bf On the Way ...} % Título de la Noticia
+\author{Raimil Cruz, Eric Tanter}
+
+\begin{document}
+	\maketitle
+	\section{Introduction}	
+
+	\section{Syntactic Type Abstraction}		
+	\subsection{Syntax}
+	%Table centrada. el hecho que esté dentro de [] es lo que hace que sea centrada
+	%a
+	%check why the content below is float
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{ l c l}
+		$\tau$ & $::=$ &  $\texttt{t} $  | $\texttt{b}$ | $\tau \rightarrow \tau'$ \\	
+			& & \\
+		$ C $ & $::=$ & $ x_{c} $ | $ b_{c} $ | $ \lambda x_{c}{:}\tau.\: C $ | $ C \: C'$ | $\emb{H}{h}{\tau}$ \\
+		$ \hat{C} $ & $::=$ & $ b_{c} $ | $ \lambda x_{c}{:}\tau.\: C $ | $\emb{\hat{H}}{h}{\tau}$  \\ 
+		& & \\		
+		$ H $ & $::=$ & $ x_{h} $ | $ b_{h} $ | $ \lambda x_{h}{:}\tau.\: H $ | $ H \: H'$ | $\emb{C}{c}{\tau}$\\
+		$ \hat{H} $ & $::=$ & $ b_{h} $ | $ \lambda x_{h}{:}\tau.\: H $ \\
+		& &\\
+		$ e $ & $::=$ & $ C $ | $ H $ \\
+		$ \hat{e} $ & $::=$ & $ \hat{C} $ | $ \hat{H} $ \\
+	\end{tabular}
+	\]
+		\caption{Syntax}
+		\label{fig:syntax}
+	\end{figure}
+	
+\subsection{Static semantics}
+\typefirm
+
+\begin{figure}[!htbp]
+\centering 
+Polychromatic Rules \\ \hfill 
+
+\begin{tabular}{c c c}
+%%%% A primitive way for creating type rules
+%\setlength{\tabcolsep}{1pt}
+%\begin{tabular}{c}
+%$ABC$ \\ 
+%\hline
+%$BCA$
+%\end{tabular} 
+
+%%% Another way to create type rules
+%var rule
+\infer[\mathrm{[var]}] 
+{\Gamma \vdash x : \Gamma(x) }{} & 
+%const rule
+\infer[\mathrm{[const]}] 
+{\Gamma \vdash b : \texttt{b} }{} & 
+%app rule
+\infer[\mathrm{[app]}] 
+{\Gamma \vdash e \: e' : \tau }{\Gamma \vdash e : \tau' \rightarrow \tau \quad \Gamma \vdash e': \tau'}
+\end{tabular}
+\\ \hfill
+
+Client Rules \\ \hfill
+\[
+\begin{tabular}{c c}
+%Client function/abstraction
+\infer[\mathrm{[Cfn]}] 
+{\Gamma \vdash \tlam{x_c}{\tau'}{C} : \tau' \rightarrow \tau}
+{\Gamma [x_c : \tau'] \vdash C : \tau} &
+%Host term embedding in client
+\infer[\mathrm{[HinC]}] 
+{\Gamma \vdash \emb{H}{h}{\tau} : \tau}
+{\Gamma \vdash H: \left\{ \tau_h / \texttt{t} \right\}\tau}
+
+\end{tabular}
+\]
+
+Host Rules \\ \hfill
+\[
+\begin{tabular}{c c}
+%host function/abstraction
+\infer[a \notin b  \quad \mathrm{[Hfn]}] 
+{\Gamma \vdash \tlam{x_h}{\tau'}{H} : \tau' \rightarrow \tau}
+{\Gamma [x_h : \tau'] \vdash H : \tau} &
+%client term embedding in host
+\infer[\mathrm{[CinF]}] 
+{\Gamma \vdash \emb{C}{c}{\tau} : \left\{ \tau_h / \texttt{t} \right\}}
+{\Gamma \vdash C : \tau}
+
+\end{tabular}
+\]
+
+\caption{Two-agents static semantics}
+		\label{fig:static_semantic}
+\end{figure}
+
+	\subsection{Dynamic Semantic}
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{ r c r c l}
+		Polychromatic Steps & [P1] & $e \: e'$ & $\longmapsto$ &  $e'' \: e'$  if $e \longmapsto e''$ \\
+												& [P2] & $\hat{e} \: e'$ & $\longmapsto$ &  $\hat{e} \: e''$  if $e' \longmapsto e''$ \\
+												& [P3] & $(\lambda x_{h}{:}\tau.\: e)\: \hat{e} $ & $\longmapsto$ &  $\left\{\hat{e} \: / x \right\} e$ \\
+					Client Steps 	& [C1] & $\emb{H}{h}{\tau}$ & $\longmapsto$ &  $\emb{H'}{h}{\tau} $ if $H \longmapsto H'$ \\
+												& [C2] & $\emb{b_h}{h}{\texttt{b}} $ & $\longmapsto$ &  $b_c$ \\
+												& [C3] & $\emb{\lambda x_{h}{:}\tau.\: H}{h}{\tau' \rightarrow \tau''}$ & $\longmapsto$ &  
+												$ \lambda x_{c}{:}\tau'.\: \emb{\left\{ \emb{x_c}{c}{\tau}/x_h \right\} H}{h}{\tau''}$ \\
+					  Host Steps 	& [H1] & $\emb{C}{c}{\tau}$ & $\longmapsto$ &  $\emb{C'}{c}{\tau}$ if $C \longmapsto$ C'\\
+												& [H2] & $\emb{b_c}{c}{\texttt{b}}$ & $\longmapsto$ &  $b_h$ \\
+												& [H3] & $\emb{\lambda x_{c}{:}\tau.\: C}{c}{\tau' \rightarrow \tau''}$ & $\longmapsto$ &  
+												$\lambda x_{h}{:}\left\{\tau_h/ \texttt{t}\right\}\tau'.\: \emb{\left\{ \emb{x_h}{h}{\tau}/x_c \right\} C}{c}{\tau''}$ \\
+												& [H4] & $\emb{\emb{\hat{H}}{h}{\texttt{t}}}{c}{\tau_h}$ & $\longmapsto$ &  $\hat{H}$ \\
+	\end{tabular}
+	\]
+		\caption{Dynamic semantic}
+		\label{fig:dynamic_semantic}
+	\end{figure}
+	
+	\subsection{Static semantics rewritten}
+	\begin{figure}[!htbp]
+\centering 
+Polychromatic Rules \\ \hfill 
+
+\begin{tabular}{c c c}
+%%% Another way to create type rules
+%var rule
+\infer[\mathrm{[var]}] 
+{\Gamma \vdash x_p : \Gamma(x_p) }{} & 
+%const rule
+\infer[\mathrm{[const]}] 
+{\Gamma \vdash b_p : \mathtt{b_{p}} }{} & 
+%app rule
+\infer[\tau_{11} = \tau_{12}, p_1 = p_2 \quad  \mathrm{[app]}] 
+{\Gamma \vdash e_{p_1} \: e'_{p_2} : \tau }{\Gamma \vdash e_{p_1} : \tau'_{11} \rightarrow \tau \quad \Gamma \vdash e'_{p_2}: \tau'_{12}}
+\end{tabular}
+\\ \hfill
+
+Client Rules \\ \hfill
+\[
+\begin{tabular}{c c}
+%Client function/abstraction
+\infer[\mathrm{[Cfn]}] 
+{\Gamma \vdash \tlam{x_c}{\tau'}{C} : \tau' \rightarrow \tau}
+{\Gamma [x_c : \tau'] \vdash C : \tau} &
+%Host term embedding in client
+\infer[\mathrm{[HinC]}] 
+{\Gamma \vdash \emb{H}{h}{\tau} : \tau}
+{\Gamma \vdash H: \left\{ \tau_h / \texttt{t} \right\}\tau}
+
+\end{tabular}
+\]
+
+Host Rules \\ \hfill
+\[
+\begin{tabular}{c c}
+%host function/abstraction
+\infer[t \notin \tau  \quad \mathrm{[Hfn]}] 
+{\Gamma \vdash \tlam{x_h}{\tau'}{H} : \tau' \rightarrow \tau}
+{\Gamma [x_h : \tau'] \vdash H : \tau} &
+%client term embedding in host
+\infer[\mathrm{[CinF]}] 
+{\Gamma \vdash \emb{C}{c}{\tau} : \left\{ \tau_h / \texttt{t} \right\}}
+{\Gamma \vdash C : \tau}
+
+\end{tabular}
+\]
+
+\caption{Two-agents static semantics}
+		\label{fig:static_semantic}
+\end{figure}
+	
+	\section{Examples}
+	\section{Ideas}
+	\subsection{Fails}
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c l}
+	1 & $(\tlam{open_c}{string \rightarrow fh}{add_1 (open_c \: ``file"_c)}) 
+	\emb{\tlam{s_h}{string}{ho \: s_h} }{h}{string\rightarrow \texttt{fh}} $ \\
+	2 & $(\tlam{open_c}{string \rightarrow fh}{add_1 (open_ c \: ``file"_c)}) 
+	(\tlam{s_c}{string}{\emb{ho \emb{s_c}{c}{string}}{h}{\texttt{fh}}})  $ \\
+	3 & $ add_1 ((\tlam{s_c}{string}{\emb{ho \emb{s_c}{c}{string}}{h}{\texttt{fh}}})  ``file"_c) $ \\
+	4 & $ add_1 \emb{ho \emb{``file"_c}{c}{string}}{h}{\texttt{fh}}  $
+	\end{tabular}
+	\]
+	\caption{Fail example}
+	\label{fig:fail_example}
+	\end{figure}	
+	
+	\section{Dynamic syntactic type abstraction}
+	
+	\paragraph{}
+	Let be: $f_? \equiv (\tlam{open_?}{str \rightarrow int}{add_1 (open_? \: ``file"_?)})$.
+	\subparagraph{}
+	$f_? \: ho_h $
+	
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c l}
+	1 & $(\tlam{open_?}{str \rightarrow int}{add_1 (open_? \: ``file"_?)}) ho_h $ \\
+	2 & $add_1 (ho_? ``file''_?)$ \\
+	3 & $add_1 (\cast{int} 3) $ \\
+	
+	
+	\end{tabular}
+	\]
+	\caption{Execution in host}
+	\label{fig:dynamic_in_host}
+	\end{figure}	
+	
+	\subparagraph{}
+	$f_? \: \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c l}
+	1 & $(\tlam{open_?}{str \rightarrow int}{add_1 (open_? \: ``file"_?)}) \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $ \\
+	2 & $add_1 (\emb{ho_h}{h}{str \rightarrow \texttt{fh}} ``file"_?)$ \\
+	3 & $add_1 \underbrace{(\cast{int} \emb{3_h}{h}{\texttt{fh}})}_{cast error} $ \\
+	
+	
+	\end{tabular}
+	\]
+	\caption{Execution in client}
+	\label{fig:dynamic_in_client}
+	\end{figure}	
+	
+	Let be: $f1_? \equiv (\tlam{open_?}{str \rightarrow int}{\cifelse{true}{1}{add_1 (open_? \: ``file"_?)}})$.
+	\subparagraph{}
+	$f1_? \: \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c l}
+	1 & $(\tlam{open_?}{str \rightarrow int}{\cifelse{true}{1}{add_1 (open_? \: ``file"_?)}}) \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $ \\
+	2 & $\cifelse{true}{1}{add_1 (\emb{ho_h}{h}{str \rightarrow \texttt{fh}} \: ``file"_?)}$ \\
+	3 & $1$ \\
+	
+	
+	\end{tabular}
+	\]
+	\caption{$f1_?$ Execution in client}
+	\label{fig:f1_dynamic_in_client}
+	\end{figure}	
+	
+	\subparagraph{}
+	Codes \ref{fig:dynamic_in_client} and \ref{fig:f1_dynamic_in_client} produce values, but code \ref{fig:dynamic_in_client} raises cast error. All of them
+	should be accepted by the type system. We need to capture (with some syntax) what principal (h,c or ?) is executing the ? principal code.
+	
+	\subsection{Model}
+	The model is shown in \ref{fig:dynamic_syntax} \\
+		\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{ l c l}
+		$\tau$ & $::=$ &  $\texttt{t} $  | $\texttt{b}$ | $\tau \rightarrow \tau'$ \\	
+			& & \\
+		$ C $ & $::=$ & $ x_{c} $ | $ b_{c} $ | $ \lambda x_{c}{:}\tau.\: C $ | $ C \: C'$ | $\emb{H}{h,c}{\tau}$ | $\textcolor{red}{\emb{D}{?,c}{\tau}}$ \\
+		$ \hat{C} $ & $::=$ & $ b_{c} $ | $ \lambda x_{c}{:}\tau.\: C $ | $\emb{\hat{H}}{h}{\tau}$  \\ 
+		& & \\		
+		$ H $ & $::=$ & $ x_{h} $ | $ b_{h} $ | $ \lambda x_{h}{:}\tau.\: H $ | $ H \: H'$ | $\emb{C}{c,h}{\tau}$ | $\textcolor{red}{\emb{D}{?,h}{\tau}}$ \\
+		$ \hat{H} $ & $::=$ & $ b_{h} $ | $ \lambda x_{h}{:}\tau.\: H $ \\
+		& &\\
+				\hline
+		$ D $ & $::=$ & $ x_{?} $ | $ b_{?} $ | $ \lambda x_{?}{:}\tau.\: D $ | $ D \: D'$ | $\emb{H}{h,?}{\tau}$ | $\emb{C}{c,?}{\tau}$ | $\textcolor{red}{\emb{D}{?,h}{\tau}}$ \\
+		$ \hat{D} $ & $::=$ & $ b_{?} $ | $ \lambda x_{?}{:}\tau.\: D $ \\
+		\hline
+		& &\\
+		$ e $ & $::=$ & $ C $ | $ H $ \\
+		$ \hat{e} $ & $::=$ & $ \hat{C} $ | $ \hat{H} $ \\
+	\end{tabular}
+	\]
+		\caption{Dynamic syntatic type abstraction model}
+		\label{fig:dynamic_syntax}
+	\end{figure}
+	
+	
+	\paragraph{}
+	Now a term can have two colors (the case of embeddings) and based on those colors the type system should accept or reject programs. Let define the notion of  effective color \\
+	\begin{tabular}{ l c l }
+		$ecolor(x_p) $ & $=$ & $p$ \\
+		$ecolor(b_p) $ & $=$ & $p$ \\
+		$ecolor(\lam{x_p}{\tau}{E}) $ & $=$ & $p$ \\
+		$ecolor(\emb{E}{c_1,c_2}{\tau}) $ & $=$ & $c_1$ \\
+	\end{tabular}
+	\\
+	Effective color will be used for type checks and the color to introduce cast \\
+	\[
+	\begin{tabular}{ c }
+	\infer[\tau_{11} \stackrel{p_1',p_2'}{\sim} \tau_{12}, p_1'= ecolor(e), p_2' = ecolor(e'), p_1 = p_2 \quad  \mathrm{[app]}] 
+{\Gamma \vdash e_{p_1} \: e'_{p_2} : \tau }{\Gamma \vdash e_{p_1} : \tau'_{11} \rightarrow \tau \quad \Gamma \vdash e'_{p_2}: \tau'_{12}}
+	\end{tabular} 
+	\]
+	\\
+	$\tau_{11} \stackrel{p_1',p_2'}{\sim} \tau_{12}$ if $lift(\tau_{11},p_1') = \tau_{12}$ \\
+	
+	
+	
+	\[ lift(\tau,p) =
+  \begin{cases}
+    \tau' \quad \text{where} \quad \tau = \left\{ \tau_h/\texttt{t} \right\} \tau'     & \quad \text{if } p \in \left\{ ? \right\}\\
+    \tau  & \quad \text{e.o.c} \\
+  \end{cases}
+\]
+
+\\
+maybe:
+\[
+	\begin{tabular}{ c }
+	\infer[\tau_{11} \stackrel{p_1',p_2'}{\sim} \tau_{12}, p_1'= ecolor(e), p_2' = ecolor(e'), p_1 = p_2 \quad  \mathrm{[app]}] 
+{\Gamma \vdash e_{p_1} \: e'_{p_2} : \tau }{\Gamma \vdash e_{p_1} : \tau'_{11} \rightarrow \tau \quad \Gamma \vdash e'_{p_2}: \tau'_{12}}
+	\end{tabular} 
+	\]
+	\\	
+	\begin{tabular}{ |c| } 
+ \hline
+ $\tau \stackrel{p_1,p_2}{\sim} \tau'$ \\  
+ \hline
+\end{tabular}
+\[
+	\begin{tabular}{ l }
+	$\tau \stackrel{p_1,p_2}{\sim} \tau$ \\ 
+	$\tau_h \stackrel{p_1,p_2}{\sim} \texttt{t} \quad \text{if} \quad ? \in \left\{p_1, p_2 \right\}$\\ 
+	$\texttt{t} \stackrel{p_1,p_2}{\sim} \tau_h \quad \text{if} \quad ? \in \left\{p_1, p_2 \right\}$\\ 
+	\infer[\mathrm{[Cfun]}] 
+{\sigma_1 \rightarrow \sigma_2 \stackrel{p_1,p_2}{\sim} \tau_1 \rightarrow \tau_2}
+{\sigma_1 \stackrel{p_1,p_2}{\sim} \tau_1 \quad \sigma_2 \stackrel{p_1,p_2}{\sim} \tau_2}\\ 
+\end{tabular}
+\]
+\\maybe we need to define a consistent sub-typing relation $\stackrel{<}{\sim} $ 
+
+\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{ l c l l}
+		(agents) & $i,j$ & $::=$ &  $\left\{ f,c,?\right\}$ \\	
+		(types) & $\tau$ & $::=$ &  $\texttt{t} $  | $\texttt{b}$ | $\tau \rightarrow \tau'$ \\
+		(i-terms)	&	$ e $ & $::=$ & $ x_{i} $ | $ b_{i} $ | $ \tlam{x_i}{\tau}{e_i} $ | $ e_i \:  e_i'$ | $\emb{e_j}{l,i}{\tau}$ $ | 
+		$ \lam{P}{\tlam{x_P}{\tau}{e_P}} $ | $\emb{e [j]}{j,i}{\tau}$\\
+	 (i-primval) & 	$ \hat{v_i} $ & $::=$ & $ b_{i} $ | $ \tlam{x_i}{\tau}{e_i} $ \\ 
+		(i-vals) & 	$ v_i $ & $::=$ & $ \hat{v_i} $ | $\emb{\hat{v_j}}{l}{t} \quad (t \notin Dom(\delta_i))$  \\ 
+	
+	\end{tabular}
+	\]
+		\caption{Dynamic syntatic type abstraction model}
+		\label{fig:dynamic_semi_syntax}
+	\end{figure}
+	\\
+
+	\subsection{Ideas}
+	$(\texttt{load} ``undefined\_principal") \emb{H}{h}{\tau} $ \\
+	
+	If we are restrictive, we could specify that no matter what principal is loaded the term is a client term. \\ \\
+	$(\texttt{load} ``undefined\_principal")_c \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $ \\ \\
+	On the other hand, if we assume that is a host term we could get a stuck configuration or violate the encapsulation  \\ \\
+	$ \emb{(\texttt{load} ``undefined\_principal" )}{h}{\tau'} \emb{H}{h}{\tau} $ \\
+	The examples above aren't the desired ones. Let see other examples: \\
+	Imagine we have two principals and a repository of helper functions. We can't treat the repository of helper functions as another principal. \\ \\
+	\begin{tabular}{c l}
+	host function & $(\tlam{open_?}{?}{add_1 (open_? \: ``file"_?)}) \emb{ho_h}{h}{str \rightarrow \texttt{fh}} $ \\
+	help function & $add_1 (\emb{ho_h}{h}{str \rightarrow \texttt{fh}} ``file"_?)$ \\
+	\end{tabular}
+	\\ \\ 
+	Cosas que hay flexibilizar:
+	
+	\begin{itemize}
+		\item Los tipos. Cuando se tenga un fh se deberia se permisivo y dejar que fuese visto como int. En este caso el sistema de tipo lo dejaria pasar,
+		 pero dinamicamente si insertaria un cast para verificarlo. El cast solo seria exitoso en el caso de que se realice dentro del un codigo del servidor. Si se realiza en el client fallaria. 
+		\item Los colores. Permitir que el concepto de \quotes{color desconocido} o \quotes{color no specificado}
+\end{itemize}
+	Working on .. (it should be accepted): \\
+	\lstset{language=Java,keywordstyle=\color{blue}, }
+	$ (bool , int \rightarrow char , int) \rightarrow char$
+	\begin{lstlisting}	
+	cond_open aBool open handle 
+	  if(aBool)
+			open a Value 
+		else
+			open (aValue + 1)
+
+\end{lstlisting}	
+\paragraph{}
+Should be the following code accepted?
+	\[
+	\begin{tabular}{c l}
+	1 & $\emb{\tlam{fun_h}{int \rightarrow int}{fun_h 1}}{h,c}{Celsius \rightarrow Celsius} \emb{\tlam{x_?}{int}{x_? + 20}}{?,c}{int \rightarrow int} $ \\	
+	\end{tabular}
+	\]
+\subsection{Ideas 21.05.2015}
+\begin{itemize}
+	\item What if the unknown color represent the simple typed lambda calculus. I don't want to provide colors. I want that no-color terms been allowed in any context of other color because ? color is compatible con any color
+	\item $f_h$ is the main subject here. What about if $f_h$ is just $int_A$ (abstract int) or $int_{fh}$
+	\item syntactic type abstraction can be seen as an effect system/privileges. Where host function that consume an abstract value and refine it has the privileges refine($f_h$ to $int$). Any other other function in the client has these privileges 
+	\item Investigate more on the notion of consistency in Gradual Ownership Types, because the define consistency for types and for owners
+	\item There are some interesting ideas in the paper gradual annotated type system, because they claim to have a framework where is possible to gradualizate any lambda calculus system where type are annotated/augmented ... maybe syntactic type abstraction can be seen as a particular case where $f_h$ is a way to annotate int with a flag that only the server manage
+	\item  In the multi-agent calculus to express the knowledge that a principal has about a type a map function is used. The type system is initialized with a specific mapping
+\end{itemize}
+\subsection{Ideas 24.05.2015}
+\begin{itemize}
+	\item To define base-language where term has color and define a language for linking the principals
+\end{itemize}}
+\subsubsection{Color-Polymorphism}
+Let be: $f \equiv \lam{P}{}{(\tlam{open_P}{str \rightarrow int}{add_1 (open_P \: ``file"_P)})}$. \\
+$f [h] \: \emb{ho_h}{h}{str \rightarrow int} $
+	
+	
+	\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c l}
+	1 & $ \lam{P}{(\tlam{open_P}{str \rightarrow int}{add_1 (open_P \: ``file"_P)})}[h] \emb{ho_h}{h}{str \rightarrow int} $ \\
+	2 & $(\tlam{open_h}{str \rightarrow int}{add_1 (open_h \: ``file"_h)}) \emb{ho_h}{h}{str \rightarrow int} $ \\
+	3 & $ add_1 (\emb{ho_h}{h}{str \rightarrow int} \: ``file"_h) $ \\
+	4 & $add_1 3_h $ \\
+	
+	
+	\end{tabular}
+	\]
+	\caption{Execution in client}
+	\label{fig:color_polyporphism_host}
+	\end{figure}	
+
+\section{Questions}
+\begin{itemize}
+	\item How do I validate model, type rules and semantics? Paper proof? Redex ? Coq??
+	\item Survey. What is the survey about? gradual typing? type abstraction approaches?
+\end{itemize}
+	
+\end{document}
+
+

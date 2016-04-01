@@ -1,0 +1,1003 @@
+
+%%% Doctype
+\documentclass{article}
+
+%%%% Packages
+\usepackage{hyperref} %package for generating bookmarks
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+%\usepackage[margin=2.5cm]{geometry}
+\usepackage{amssymb}
+\usepackage{stackengine}
+%for theorems
+\usepackage{amsthm}
+
+%Multiline comment
+\usepackage{verbatim}
+%for logic proofs
+\usepackage{proof}
+\usepackage{pdflscape}
+% Package that contains captionof
+\usepackage{caption}
+% Package for code listings
+\usepackage{listings}
+\lstset{language=ML} 
+
+\usepackage{color}
+%\usepackage{versions}
+
+
+%% BEGIN{CUSTOM COMMAND}
+%% emb:: creates a term embedding
+\newcommand{\emb}[3]{\texttt{[}#1\texttt{]}_{#2}^{#3}}
+%% typefirm:: creates the type firm for type rule
+\newcommand{\typefirm}{
+\begin{tabular}{ |c| } 
+ \hline
+ $\Gamma \vdash e : T$ \\  
+ \hline
+\end{tabular}}
+%% lam
+\newcommand{\tlam}[3]{\lambda #1 : \textcolor[rgb]{0,0,1}{#2}. \: #3}
+\newcommand{\tslam}[3]{\lambda #1 : #2. \: #3}
+\newcommand{\glam}[3]{\lambda^? #1 : \textcolor[rgb]{0,0,1}{#2}. \: #3}
+\newcommand{\lam}[2]{\lambda #1 . \: #2}
+\newcommand{\pcast}[2]{\left\langle #1\right\rangle_{#2}}
+%% let
+\newcommand{\plet}[5]{\textcolor[rgb]{0,0,1}{let}_{#1} \: {#2}:{#3} = \: #4 \: \textcolor[rgb]{0,0,1}{in} \: #5}
+%ptlet
+\newcommand{\ptlet}[5]{\textcolor[rgb]{0,0,1}{let}_{#1} \: {#2}:{#3} = \: #4 \: \textcolor[rgb]{0,0,1}{in} \: #5}
+%% eval 
+\newcommand{\eval}[2]{\left\langle {#1},{#2} \right\rangle}
+%% cast
+\newcommand{\cast}[2]{\left\langle #1 \Leftarrow #2 \right\rangle}
+%% knows
+\newcommand{\knows}[2]{\left\langle #1 \Leftarrow #2 \right\rangle}
+%%
+\newcommand\upbox[1]{\left\lfloor  #1 \right\rfloor_?}
+\newcommand{\pabstract}[0]{$abtract_p$}
+
+%% predicte abstract_p
+
+%% quotes
+\newcommand{\quotes}[1]{``#1''}
+\newcommand{\cifelse}[3]{\textcolor[rgb]{0,0,1}{if}(#1)\: #2 \: \textcolor[rgb]{0,0,1}{else} \: #3}
+%% remarkable text indicating complete or improve something
+\definecolor{grayDeleted}{gray}{0.6}
+\newcommand\myworries[1]{\textcolor{red}{$\rhd$ #1 $\lhd$}}
+\newcommand\redtext[1]{\textcolor{red}{#1}}
+\newcommand\newtext[1]{\textcolor{blue}{#1}}
+\definecolor{yellowWarning}{RGB}{250,162,26}
+\newcommand\warning[1]{\textcolor{yellowWarning}{#1}}
+
+\newcommand\todelete[1]{\textcolor{grayDeleted}{$\rhd$ #1 $\lhd$}}
+\newcommand\icode[1]{\texttt{#1}}
+
+%command used for rule names in the \infer enviroment
+\newcommand\rulename[1]{\mathrm{\text{[#1]}}}
+\newcommand\irname[1]{[#1]}
+
+%
+\newcommand\pfont[1]{{\sf #1}}
+\newcommand\str[0]{{\tt string}}
+
+%command for naming the new calculus
+\newcommand\newcalculus[0]{$\lambda^p_{\left[.\right]}$}
+\newcommand\gcalculus[0]{$\lambda^?_{\left[.\right]}$}
+
+%% set of static types
+\newcommand\setarc[1]{\overset{\frown}{#1}}
+%% power set
+\newcommand\powerset[1]{\mathcal P(#1)}
+%type tuple
+\newcommand\tuple[1]{ \left\langle #1 \right\rangle}
+%shortcut to \widetilde
+\newcommand\wt[1]{\widetilde{#1}}
+%C0MMAND FOR GRADUAL SYSTEM
+\newcommand\liftedDeltaBar[2]{\wt{\bar{\Delta}}_{#1}(#2)}
+%COMMANDS for type judgements
+%basic cast insertion type judgement (gamma and principal do not change)
+\newcommand\cij[3]{\Gamma, \wt{p} \vdash #1 \Rightarrow #2 : #3 }
+%basic cast insertion type judgement (gamma is extended and principal may change)
+\newcommand\cixj[5]{\Gamma #1, #2 \vdash #3 \Rightarrow #4 : #5 }
+
+
+%macros for specific examples
+\newcommand\gexample[0]{\emb{\tslam{x}{\icode{int}}{toStr \: x}}{h}{\texttt{fh} \rightarrow \icode{str}}}
+
+\definecolor{classcolor}{RGB}{43,145,175}
+\definecolor{commentcolor}{RGB}{0,128,0}
+\definecolor{stringcolor}{RGB}{163,21,21}
+
+\newcommand\incode[1]{\texttt{#1}}
+%Defintion of lambda code listing style
+\lstdefinelanguage{Lambda}{%
+  morekeywords={%
+    let,in,if,then,else,fix,type % keywords go here
+  },%
+  morekeywords={[2]int,string, bool},   % types go here
+	morekeywords={[3]fh,celsius},
+  otherkeywords={:}, % operators go here
+  literate={% replace strings with symbols
+		{<=}{{$\Leftarrow$}}{2}
+    {->}{{$\to$}}{2}
+    {lambda}{{$\lambda$}}{1}		
+  },
+  basicstyle={\sffamily},
+  keywordstyle={\color{blue}},
+  keywordstyle={[2]\color{blue}}, % style for types
+	keywordstyle={[3]\color{classcolor}}, % style for types
+	morecomment=[l]{//},
+	commentstyle=\color{commentcolor}, % white comments		
+	showstringspaces=false,
+	morestring=[b]",
+	morestring=[d]',
+	stringstyle=\color{stringcolor}\ttfamily, % typewriter type for strings
+  keepspaces,
+  mathescape % optional
+}[keywords,comments,strings]%
+
+%% END{CUSTOM COMMAND}
+
+
+
+%ENVIROMENTS FOR THEOREMS, COROLLARY AND LEMMAS
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}{Lemma}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\usepackage{authblk}
+
+\title{\bf From Type Aliases to Abstract Types: A Gradual Approach}
+\author{Raimil Cruz
+\thanks{Funded by grant CONICYT, CONICYT-PCHA/Doctorado Nacional/2014-63140148}}
+\author{{\'E}ric Tanter}
+\affil{Computer Science Department (DCC), University of Chile, Chile}
+\date{}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\begin{document}
+	\maketitle
+	\renewcommand{\abstractname}{Abstract}	
+	\begin{abstract}
+	Type aliases allow the creation of synonyms between types, which is useful in creating an implicit documentation in programs, but they do not enforce abstraction since the alias and the base type are treated without any distinction in the whole system. Abstract types allow the building of applications in a modular way providing only the type interface to create an abstraction barrier. We study the multi-agent calculus presented by Grossman et al.~\cite{grossmanAl:toplas2000}, which proves type abstraction properties using syntactic techniques. The calculus presented by Grossman et al. relies on the concept of principals. Examples of principals are modules of a system, such as a host or a client. In their calculus it is possible to express the knowledge that each principal has about abstract types.
+	
+	In this paper we present a gradual approach to relax the static principals of the multi-agent calculus to support interaction with a calculus that has type aliases. Before developing the gradual approach, we reformulate the multi-agent calculus such that it better separates the notion of principals from program expressions. While Grossman et al. introduce separate syntactic categories for expressions (one per principal), our calculus relies on a unique syntactic category for expressions, and principals are part of the typing and evaluation contexts. This separation is closer to an actual implementation and simplifies the gradual checking approach. 
+	\end{abstract}	
+	\section{Introduction}
+	In the construction of software systems, developers often separate their applications in modules. Modules can serve as a mechanism to publish abstract types. Abstract types are a way of providing data abstraction~\cite{cook:onward2009}. The abstract type interface is exposed, but its implementation details are hidden. Using this abstraction, clients of a module base their implementation on the abstract type interfaces that the module provides. 
+	
+	In a simple scenario, outside the module, the implementation details of abstract types are unknown. However, in a richer scenario we would define that more than one module knows the implementation details of an abstract data type. In both cases the desired property is that type abstraction is not violated. Grossman et al.~\cite{grossmanAl:toplas2000} present a calculus where it is possible to express the knowledge that principals have about abstract types in the system, via a global type mapping. In their work the concept of modules is associated to the notion of principals used in security.
+	
+	In a language with no explicit constructions for creating modules and abstract types, type aliases can be used to express the intention of the programmer of separating a concept from its implementation. We are interested in studying the interaction of a calculus with type aliases (without a notion of type abstraction) and a calculus with type abstraction. We relax the notion of static principals of Grossman et al. to provide a flexible way to convert type aliases to abstract types while ensuring type abstraction properties. We appeal to the ideas of gradual typing~\cite{siekTaha:sfp2006, siekTaha:ecoop2007} and its applications to other typing disciplines~\cite{disneyFlanagan:stop2011, fennellThiemann:csf2013, wolffAl:ecoop2011, thiemannFennell:esop2014, banadosAl:icfp2014} to get a gradual calculus for type abstraction.
+		
+	Our contributions in this paper are the following:
+	\begin{itemize}
+		\item We reformulate of the multi-agent calculus of Grossman et al.~\cite{grossmanAl:toplas2000} without having multiple copies of the same language for different principals, removing principal annotations from the language terms. We recover principal information in the typing and evaluation contexts. This calculus is presented in Section~\ref{section:unified_calculus}. 
+		\item We provide an implementation of the calculus in Redex~\cite{redex} (\url{https://bitbucket.org/raimilcruz/sta}). 
+		\item We present a gradual principal calculus to enforce type abstraction in the presence of type aliases. We follow the framework of Abstracting Gradual Typing (AGT)~\cite{garciaAl:popl2016} to develop the gradual type system in Section~\ref{sec:gradual_language}. We use the ideas of Siek and Taha~\cite{siekTaha:sfp2006} to develop the dynamic semantics of our gradual principal calculus through a translation to an intermediate language with cast (Section~\ref{sec:intermediate_language})
+	\end{itemize}	
+	\section{Background}
+	In this section we explain the concepts of type aliases and abstract typees and why they are useful. We introduce the approach of Grossman et al. to ensure type abstraction over a variation of the simply typed lambda calculus with a notion of principals~\cite{grossmanAl:toplas2000}. We only present the most important concepts that are necessary to understand the reformulation we present in Section \ref{section:unified_calculus}.	
+\subsection{Type alias}
+A type alias is a type synonyms for an existing type in the system. For example, it is possible to create a type alias in Haskell using the \icode{newtype} expression.
+\[
+\begin{tabular}{c}
+\icode{newtype Id = String}
+\\
+\end{tabular}
+\]
+
+A type alias expresses the programmer intention of making a distinction between the alias type (here, \icode{Id}) and the base type (here, \icode{String}) in the system. The distinction is useful for documentation purposes. It allows the use of the type synonym in any context where the original type is expected and the other way around. For example, in the code below, the \icode{concactHello} function receives an argument of type \icode{Id}, but we can apply this function indistinctly with \icode{Id} or \icode{String} because they are technically the same type.
+\[
+\begin{tabular}{l}
+\icode{concatHello :: Id $\rightarrow$ Id} \\
+\icode{concatHello s = "hello " ++ s}
+\\
+\end{tabular}
+\]
+The \icode{concatHello} function uses Haskell's concatantetion function (\icode{++}) over strings. The \icode{++} function has type \icode{String} $\rightarrow$ \icode{String} $\rightarrow$ \icode{String}, so the argument \icode{s} is treated as what it really is: a \icode{String}. 
+
+	\subsection{Abstract types}
+	An abstract type is a type whose exact identity (i.e realization) is unknown to its clients. For example, suppose we have a file handler interface like the one in the Figure \ref{fig:abstract_file_handler}. The file handle abstract type \icode{fh} provides an interface with two functions: \icode{open} and \icode{read}. The only way for a client to get a file handler instance is to use the \texttt{open} method.	However, the one that provides the implementation, let us say a {\sf host} principal, knows what the realization of \icode{fh} is. For the rest of this section we assume that {\sf host} implements \icode{fh} with an \icode{int}.  
+	\begin{figure}[!htbp]
+\[
+	\begin{tabular}{l}	
+	$\texttt{abstype} \quad \texttt{fh}$ \\
+	$\texttt{open} : \texttt{string} \rightarrow \texttt{fh} $\\
+	$\texttt{read} : \texttt{fh} \rightarrow \texttt{char} $\\
+	\end{tabular}
+\]
+\caption{Abstract interface for file handlers}
+		\label{fig:abstract_file_handler}
+\end{figure}
+
+A type system that supports abstract types must ensure \emph{type abstraction}. For the file handler example, this means to prevent a client from using the fact that \texttt{fh} is implemented as \texttt{int}. The common way of achieving type abstraction with abstract types is to use \emph{existential types}~\cite{mitchellPlotkin:toplas1988}. However, we are interested in exploring the syntactic approach of Grossman et al.~\cite{grossmanAl:toplas2000}, which appeals to the notion of principals (e.g., {\sf client} and {\sf host}) to ensure type abstraction properties. 
+	
+	\subsection{Syntactic Type Abstraction}\label{section:sta}
+	Grossman et al. present an approach to ensure type abstraction properties in a calculus with the notion of principals~\cite{grossmanAl:toplas2000}. The calculus establishes a syntactic distinction between code of different principals annotating each term with the principal to which it belongs. For example the \icode{open} function in the host is encoded as follows: $\lambda s_h:{\tt string} \rightarrow {\tt int}.hopen \: s_h$. The subscript $h$ indicates that the function belongs to the host and the \icode{hopen} (for host open) function is the internal system implementation for opening a file given a path. 
+	
+	The abstraction barrier is created in the calculus with a syntactic embedding for the abstracted term. For example the host could export the \icode{open} function as follows: $\emb{\lambda s_h:\icode{string} \rightarrow \icode{int}.hopen \: s_h}{h}{\texttt{string} \rightarrow \texttt{fh}}$. The embedding superscript indicates the abstract type \texttt{fh} and the embedding subscript the principal that creates the abstraction, in this case the {\sf host}.  The embedding is propagated during the function application to keep the abstraction barrier. For example the following function application $\emb{\lambda s_h:\icode{string} \rightarrow \icode{int}.hopen \: s_h}{h}{\texttt{string} \rightarrow \texttt{fh}} \: $\quotes{file}$_c$ in the client code evaluates to an embedding containing the internal \icode{int} file handle, $\emb{3}{h}{\texttt{fh}}$. 
+	
+	Attempts to violate the abstraction are detected by the type system. For example the client expression $1_c + \emb{3}{h}{\texttt{fh}}$ is not well-typed, because the client does not have permission to see what the internal term of the embedding is. However in the host code, the expression $1_h + \emb{3}{h}{\texttt{fh}}$ reduces to $1_h + 3_h$ (because the host knows \icode{fh = int}) and finally reduces to \icode{4}.
+	
+	These examples show that the result of an expression depends on which principal is executing the code. In those simple examples there is only an abstract type (\texttt{fh}), where the host knows \icode{fh=int} and for the client \icode{fh} is abstract. In a scenario with multiple principals and abstract types, the knowledge of each principal $p$ about each abstract type is defined using a partial mapping function $\delta_p$. For the file handle example we have only the mapping $\delta_h(\icode{fh})=\icode{int}$ because the client does not know the file handle implementation ($
+	\icode{fh} \notin dom(\delta_c$)). 
+
+Figure \ref{fig:client_server_interaction} resumes the interaction between a client function and a host function. The code is executed in the client context.  A client obtains a file handle using the \icode{open} function of the host. Step 1 shows how the host function is adapted to be used in client code, uncovering the function term but keeping the embedding inside its body to protect the file handle abstraction. After some evaluation steps the client obtains an embedding and it is not able to see what is inside.
+\begin{figure}[!htbp]
+\[
+\begin{tabular}{c}
+$\delta_h(\texttt{fh}) = \icode{int} $
+\end{tabular}
+\]
+\[
+	\begin{tabular}{c l}	
+	 & $(\tslam{open_c}{\str{} \rightarrow \icode{fh}}{(open_c \: ``file"_c)}) 
+  \emb{\tslam{s_h}{\str{}}{hopen \: s_h} }{h}{\str{}\rightarrow \texttt{fh}} $ \\
+  1 & $(\tslam{open_c}{\str{} \rightarrow \icode{fh}}(open_ c \: ``file"_c)) 
+  (\tslam{s_c}{\str{}}{\emb{hopen \emb{s_c}{c}{\str{}}}{h}{\texttt{fh}}})  $ \\
+  2 & $ (\tslam{s_c}{\str{}}{\emb{hopen \emb{s_c}{c}{\str{}}}{h}{\texttt{fh}}})  ``file"_c $ \\
+	& .\\
+  4 & $ \emb{3_h}{h}{\texttt{fh}} $	
+	\end{tabular}
+\]
+\caption{Client and server interaction}
+		\label{fig:client_server_interaction}
+\end{figure}
+	
+The calculus of Grossman et al. is presented as multiple copies of a simply typed lambda calculus. Each principal has an instance of the calculus. This approach is convenient to prove type abstraction properties syntactically, but it is not handy to implement in a real language. 
+
+	\section{Unified Principal Calculus}\label{section:unified_calculus}
+	In the this section we modify the syntax of the multi-agent calculus of Grossman et al. to provide a unique syntactic category for expressions. We remove principal annotations for terms, except for embeddings and a new let term. Instead, we include principals as part of the typing and evaluation contexts. These modifications make it easier both to implement the language and formulate a gradual type abstraction checking approach. 
+	
+\subsection{Model}
+	The syntax of the new calculus is mostly the same as that of the multi-agent calculus but removing principal annotations from terms. We call it the unified principal calculus (UPC) and we denote it \newcalculus{}. This is a simply typed lambda calculus augmented with term embedding and a new form of \icode{let} expression to introduce principals. Terms include variables $x$, constants $b$, functions $\tslam{x}{\tau}{e}$, function application $e \: e$ and embeddings. Types are base types \icode{B} (e.g {\tt int}, {\tt string}), abstract types \texttt{t} and function types. The new expression $\plet{p}{x}{\tau}{e_1}{e_2}$ allows principal $p$ to export term $e_1$ at type $\tau$ through the $x$ variable in the expression $e_2$. In other words, it is just a syntactic sugar for $(\tslam{x}{\tau}{e_2})\emb{e_1}{p}{\tau}$. Embeddings have the same role as in the multi-agent calculus. Each embedding is annotated with the list of agents that participate in the creation of the abstraction barrier. In the file handle example in Section \ref{section:sta} for simplicity we avoided using lists in embedding. We explain what the role of list of principals is in Section \ref{sec:uc_dyn_semantics}.	
+\begin{figure}[!htbp]
+	\[
+	\begin{tabular}{c}
+		$p \in \textsc{Principal} \quad \hat{v} \in \textsc{Value} \quad e \in \textsc{Term} 
+		\quad v \in \textsc{XValue}$ \\ 
+	  $\quad \tau \in \textsc{Type} \quad b \in \textsc{GroundType} \quad l \in \textsc{PrincipalList}
+		\quad \texttt{t} \in \textsc{AbstractType} $
+	\end{tabular}
+	\]
+	\[	
+	\begin{tabular}{ l c l l}	
+		(terms) & $e$ & $::=$ &  $x \:|$  $b \: |$  $\tslam{x}{\tau}{e} \:| $ $e \: e \: |$  $
+let_p \: x : \tau = e \: in \: e \: |$  $ \emb{e}{l}{\tau}$\\	
+		(values) & $\hat{v}$ & $::=$ & $b \: |$  $\tslam{x}{\tau}{e} $  \\
+		(xvalues) & $ v $ & $::=$& $\hat{v} \:|$  $ \emb{\hat{v}}{l}{\texttt{t}}$\\
+		(types) & $\tau$ & $::=$ &  $\texttt{B} \:|$  $\tau \rightarrow \tau \: |$  $ \texttt{t
+}$\\
+		& & & \\
+	 (principal lists) & 	$ l $ & $::=$ & $ p \: |$  $ pl $ \\ 		
+	
+	\end{tabular}
+	\]
+		\caption{Unified model for multi-agent calculus}
+		\label{fig:unified_model_multi-agent}
+	\end{figure}
+	
+	There are two kinds of values: primitive values $\hat{v}$ and extended values. Primitive values are ground values (e.g. \icode{1}, \quotes{foo}) and functions. Extended values include primitive values and embeddings. An embedding $\emb{\hat{v}}{l}{\tau}$ of a primitive value is also a value if the type $\tau$ is abstract for the principal in context. Principal contexts appear in static and dynamic semantics, so we cannot talk about embedding values at the syntax level. 
+	
+	Principals have different level of knowledge of each type, for example in the file handle example the {\sf host} knows \icode{fh} = \icode{int}. This knowledge is expressed with the partial mapping $\delta_{host}(\icode{fh}) = \icode{int}$. Grossman et al.~\cite{grossmanAl:toplas2000} define the notion of compatible mappings. We write this definition below because we appeal to it in the Section~\ref{sec:gradual_language}.
+	\begin{definition}{(Well-formed type mapping)}
+	\label{def:well-formed-mapping}
+	A set $\{\delta_1,..., \delta_n\}$ of finite partial maps from type variables to types is compatible if:
+	\begin{enumerate}
+	\item{$\forall i,j \in \{1,...,n\}$ if $t \in dom(\delta_i) \cap dom(\delta_j)$, then $\delta_i(t)=\delta_j(t)$.}
+	\item{The collection of type variables must be totally ordered such that for every agent $i$ and type variable $t$, all variables in $\delta_i(t)$ precede t.}
+	\end{enumerate}
+	\end{definition}
+Note that second condition denotes that type variables and types form a directed acyclic graph, which means that is not possible to have loops in a mappings.  
+The total version of $\delta_p$ is $\Delta_p$ and it defined as follows:
+	\[
+	\begin{tabular}{c c l}
+		$\Delta_p(\texttt{B})$ & $=$ & $\texttt{B}$ \\
+		$\Delta_p(\texttt{t})$ & = & $
+		\begin{cases} 
+      \texttt{t} & \texttt{t} \notin dom(\delta_p) \\      
+      \delta_p(\texttt{t}) &  \texttt{t} \in dom(\delta_p)
+   \end{cases} $\\
+		
+		$\Delta_p(\tau_1 \rightarrow \tau_2)$ & = & $\Delta_p(\tau_1) \rightarrow \Delta_p(\tau_2)$
+	\end{tabular}
+	\]
+
+The most concrete view that a principal $p$ has for a type $\tau$ is obtained with the function $\bar{\Delta}_p$. This function is the result of applying $\Delta_p$ iteratively until having $\Delta_p(\tau)= \tau$. For example, given the mapping $\delta_{h}(\icode{fh}_2) = \icode{fh}_1, \delta_{h}(\icode{fh}_1) = \icode{fh}$, the most concrete view that $h$ has for $fh_2$ is \icode{fh}, i.e. $\bar{\Delta}_h(fh_2)=\icode{fh}$.
+
+	
+\subsection{Static semantics}
+In this section we define the static semantics for the unified calculus (Figure \ref{fig:unified_type-rules_multi-agent}). The type judgment $\Gamma, p \vdash e : T$ makes explicit which principal is in context. It can be read as the expression $e$ has type $\tau$ for the principal $p$ in lexical context $\Gamma$.  Some typing rules use $\bar{\Delta}_p$ which is defined over the $\delta_p$ mapping as explained before. This mapping is specified globally and does not change during the type checking process. The type judgment in Figure \ref{fig:unified_type-rules_multi-agent} shows that all expressions are typed in a principal context. We should specify the principal for the top level program. We call that principal {\sf world}. The {\sf world} principal has its own $\delta$ mappings like any other principal.
+
+Before describing the typing rules, we present an example to show how type-checking is done. In the code, the {\sf world} principal uses the \icode{open} function of the \icode{host} principal.
+\[
+\begin{tabular}{c}
+$\delta_h(\icode{fh})=\icode{int}, \icode{fh} \notin dom(\delta_{{\sf world}})$ \\
+\end{tabular}
+\]
+\[
+\begin{tabular}{l l}
+$let_h~open~:~\icode{string} \rightarrow \icode{fh}$ & $= \tslam{s}{\icode{string}}{hopen~s}$ \\
+																									 & $in$ \\
+																									 & $(open~$\quotes{file}$) + 1$
+\end{tabular}
+\]
+
+This program is not well-typed because of the expression \icode{(open "file") + 1}. The expression \icode{(open "file")} has type \icode{fh}, but the {\sf world} principal does not know that \icode{fh} is an integer ($\icode{fh} \notin dom(\delta_{{\sf world}})$). However if we add the mapping $\delta_{{\sf world}}(\icode{fh})=\icode{int}$ the code type checks. 
+
+The Figure~\ref{fig:unified_dynamic-semantics_multi-agent} show that we add explicit constraints for each typing rule without using the same meta-variable. This follows the methodology proposed for the Abstracting Gradual Typing (AGT)~\cite{garciaAl:popl2016} to systematically derive the gradual version of the type system (Section \ref{sec:gradual_language}). The most important constraint is type equality. For \newcalculus{}, type equality involves the knowledge of the principal about both types. We define type equality as follows:
+\begin{defn}{(Type equality)}
+Two types $\tau_1$ and $\tau_2$ are equal for the principal $p$, notation $\tau_1 =_p \tau_2$, iff $\bar{\Delta}_p(\tau_1) = \bar{\Delta}_p(\tau_2)$
+\end{defn}
+
+\begin{figure}[!htbp]
+\begin{tabular}{ |c| } 
+ \hline
+ $\Gamma, p \vdash e : T$  \\
+ \hline
+\end{tabular}
+\[
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c c} 
+%var rule
+\infer[\rulename{T-Var}] 
+{\Gamma , p \vdash x : \bar{\Delta}_p(\Gamma(x))}{} & 
+%const rule
+\infer[\rulename{T-Cons}] 
+{\Gamma, p \vdash b : \texttt{B}}{} \\
+\end{tabular}
+\]
+%app rule
+\[
+\infer[\rulename{T-App}] 
+{\Gamma, p \vdash e_1 \: e_2 : \tau }{\Gamma, p \vdash e_1 : \tau_{11} \rightarrow \tau \quad \Gamma, p \vdash e_2: \tau_{12} \quad \tau_{11} =_p \tau_{12}}
+\]
+\[
+%function
+\infer[\rulename{T-Abs}] 
+{\Gamma, p \vdash \tslam{x}{\tau_1}{e} : \tau_1 \rightarrow \tau_2}
+{\Gamma [x : \tau_1], p \vdash e : \tau_2 } 
+\]
+\[
+%let
+\infer[\rulename{T-Let}] 
+{\Gamma, p \vdash \plet{p_1}{x}{\tau}{e_1}{e_2} : \tau_2}
+{\Gamma, p_1  \vdash e_1 : \tau_1 \quad \Gamma [x:\tau], p \vdash e_2: \tau_2 \quad \tau =_p \tau_1 }  
+\]
+\[
+%emb
+\infer[\rulename{T-Emb}] 
+{\Gamma, p \vdash \emb{e}{p'\overline{p}}{\tau} : \bar{\Delta}_{p}(\tau)}
+{\quad \Gamma, p'  \vdash e : \tau_1 \quad  \tau_1 \hookleftarrow_{p'\overline{p}}  \tau  } 
+\]
+\caption{Static semantics for unified calculus}
+		\label{fig:unified_type-rules_multi-agent}
+	\end{figure}	
+	
+\begin{figure}[!htbp]
+\begin{tabular}{ |c| } 
+ \hline
+ $ \tau \hookleftarrow_l \tau'$  \\
+ \hline
+\end{tabular} \\
+\[
+\begin{tabular}{c c} 
+%var rule
+\infer[\rulename{T-eq}] 
+{\tau \hookleftarrow_p \tau'}{\bar{\Delta}_p(\tau) = \bar{\Delta}_p(\tau')} & 
+%const rule
+\infer[\rulename{T-trans}] 
+{\tau \hookleftarrow_{lp} \tau'}
+{\tau \hookleftarrow_l \bar{\Delta}_p(\tau') } \\
+\end{tabular}
+\]
+\caption{Collaborative principals knowledge relation $\tau \hookleftarrow_l \tau'$}
+		\label{fig:unified_type-relation_transitive_equality}
+	\end{figure} 
+	
+	All rules except \irname{T-Let} and \irname{T-Emb} are standard. Rule \irname{T-Var} gives the most concrete type of a variable from the environment for the principal in context. Rule \irname{T-App} explicitly  indicates that the formal function argument and the actual argument must have the same type for the principal $p$. Rule \irname{T-Abs} in the original multi-agent calculus had a constraint in function parameters $\bar{\Delta}_p(\tau) = \tau$ that forces an agent to use the most concrete view for function parameters. We remove this restriction since we get the most concrete view for variables in rule [T-Var]. This change is relevant to encode type aliases in the gradual version of \newcalculus{} and support functions like \icode{concat} with type $\icode{Id} \rightarrow \icode{Id} \rightarrow \icode{Id}$.
+
+The new rule \irname{T-Let} expresses the decision of abstracting a type. There is a requirement that  the principal (that exports the type) has the knowledge that the type of the named expression is equal to the annotated type of the identifier ($\tau =_p \tau_1$). In this rule a change in the principal context takes place for type-checking expression $e_1$. This reflects that the expression $e_1$ belongs to principal $p_1$. The same happens in the \irname{T-Emb} rule for type-checking the expression inside the embedding. The \irname{T-Emb} rule uses the typing relation $\tau \hookleftarrow_l \tau'$ to check that the list of annotated principals can prove collaboratively that the annotated type can be reduced to the type of expression inside the embedding. We make a little change to the typing relation $\tau \hookleftarrow_l \tau'$ of the multi-agent calculus so that is deterministic. We show how embedding with multiple principals appears in the dynamic semantic (in Section \ref{sec:uc_dyn_semantics}).
+
+
+\subsection{Dynamic semantics}\label{sec:uc_dyn_semantics}
+In this section we present the dynamic semantics of the \newcalculus{}. Before that we define a predicate $value_p$ to characterize whether a term is a value or not for a principal $p$. This predicate is used in the evaluation rules	
+	\begin{definition}{(Value)} A term $e$ is a value for a principal $p$ if the predicate $value_p(e)$ holds:	
+	\[
+	\begin{tabular}{l l}
+	\infer[] 
+	{value_p(\hat{v})}
+	{}
+	& 
+	\infer[] 
+	{value_p(\emb{\hat{v}}{l}{\texttt{t}})}
+	{t \notin dom(\delta_p)}
+	\end{tabular}
+	\]	
+	\end{definition}
+	
+	
+We also define the predicate $reducible_p$ to know when a principal can reduce an abstract type and we define the predicate \pabstract{} to know when a principal $p$ does not know nothing about a type.
+	\begin{definition}{(Reducible)} A type $\tau$ is reducible for a principal $p$ if the predicate $reducible_p(\tau)$ holds:
+	\[
+	\begin{tabular}{c}	
+	$reducible_p(\tau)$ iff $\Delta_p(\tau) \neq \tau$	
+	\end{tabular}
+	\]
+	\end{definition}
+	
+	
+	\begin{definition}{(Abstract)} A type $\tau$ is fully abstract for a principal $p$ if the predicate $fully\text{-}abstract_p$ holds:
+	\[
+	\begin{tabular}{c}	
+	$abstract_p(\tau)$ iff $ \tau \notin dom(\delta_p)$
+	\end{tabular}
+	\]
+	\end{definition}
+	
+	
+
+Figure~\ref{fig:unified_dynamic-semantics_multi-agent} shows the small-step operational semantics of \newcalculus{}. In essence, the dynamic semantics are the same as that of the multi-agent calculus. The main difference is that we explicitly know which principal is executing each an expression. A program configuration is a pair of a principal and an expression. Reduction rules take a program configuration to the next. Rules \irname{EApp1} and \irname{EApp2} represent reductions for function application. First we reduce the function expression and then the argument expression. Once both expressions in an application are values for the current principal, the \irname{EApp} rules applies. This is a typical application reduction rule. Expression $\left[ x \rightarrow v \right] e$ substitutes $v$ for $x$ in $e$. 
+
+\begin{figure}[!htbp]
+\[
+\begin{tabular}{c c}
+\infer[\rulename{EApp1}] 
+{\eval{p}{e_1 e_2} \longmapsto  \eval{p}{e_1' e_2}}
+{\eval{p}{e_1} \longmapsto  \eval{p}{e_1'}} & 
+
+\infer[\rulename{EApp2}] 
+{\eval{p}{v_1 e_2} \longmapsto  \eval{p}{v_1 e_2'}}
+{\eval{p}{e_2} \longmapsto  \eval{p}{e_2'}  \quad value_p(v_1)} 
+\end{tabular}
+\]
+\[
+\infer[\rulename{EApp}] 
+{\eval{p}{(\tslam{x}{\tau}{e}) v} \longmapsto  \eval{p}{\left[ x \rightarrow v \right] e}}
+{value_p(v)}
+\]
+\[
+\renewcommand{\arraystretch}{3}
+\begin{tabular}{c}
+\infer[\rulename{ELet1}] 
+{\eval{p}{\plet{p_1}{x}{\tau}{e}{e'}} \longmapsto  \eval{p}{\plet{p_1}{x}{\tau}{e''}{e'}}}
+{\eval{p_1}{e} \longmapsto  \eval{p_1}{e''}} \\
+
+\infer[\rulename{ELet2}] 
+{\eval{p}{\plet{p_1}{x}{\tau}{v}{e'}} \longmapsto  \eval{p}{(\tslam{x}{\tau}{e'})\emb{v}{p_1}{\tau}}}
+{ value_{p_1}(v) } 
+\end{tabular}
+\]
+\[
+\begin{tabular}{c c}
+\infer[\rulename{EEmbr1}] 
+{\eval{p}{\emb{e}{p_1 \overline{p}}{\tau}} \longmapsto  \eval{p}{\emb{e'}{p_1 \overline{p}}{\tau}}}
+{\eval{p_1}{e} \longmapsto  \eval{p_1}{e'}} & 
+
+\infer[\rulename{EEmbr2}] 
+{\eval{p}{\emb{v}{k\overline{p}}{\tau}} \longmapsto  \eval{p}{\emb{v}{k\overline{p}}{\bar{\Delta}_p(\tau)}}}
+{reducible_p(\tau) \quad value_k(v) \quad}  
+\end{tabular}
+\]
+\[
+\renewcommand{\arraystretch}{3}
+\begin{tabular}{c c}
+\infer[\mathrm{[EEmbO]}] 
+{\eval{p}{\emb{b}{k\overline{p}}{\texttt{B}}} \longmapsto  \eval{p}{v}}
+{} &
+\infer[\mathrm{[EEmbC]}] 
+{\eval{p}{\emb{\emb{\hat{v}}{l_1}{\tau_1}}{kl}{\tau}} \longmapsto  \eval{p}{\emb{\hat{v}}{l_1 k l}{\tau}}}
+{!reducible_p(\tau)  \quad full\text{-}abstract_k(\tau_1)}
+\end{tabular}
+\] 
+
+\[
+\infer[\mathrm{[EEmbF]}] 
+{\eval{p}{\emb{\tslam{x}{\tau}{e}}{l_1}{\tau_1 \rightarrow \tau_2}} \longmapsto  
+ \eval{p}{\tslam{x'}{\tau_1}{\emb{\left\{\emb{x'}{p \texttt{rev}(l_1)}{\tau}/x  \right\} e}{l_1}{\tau_2}}}}
+{!reducible_p(\tau_1 \rightarrow \tau_2) \quad x' fresh}
+\] 
+
+\caption{Dynamic semantics for the unified calculus}
+		\label{fig:unified_dynamic-semantics_multi-agent}
+	\end{figure}
+
+The reduction rules for \icode{let} are interesting because they change the principal context. The \irname{ELetr1} rule reduces the expression $e_1$ but using the declared principal $p_1$ as the principal in context. \irname{ELet} rule evaluates the \icode{let} expression as a lambda application, embedding the argument. 
+
+Once we have an embedding, the current principal obtains the most concrete view that it knows for the annotated type through \irname{EEmbr2}. With the embedding annotated type reduced, one of the following rules would apply: \irname{EEmbO}, \irname{EEmbC} or \irname{EEmbF}. \irname{EEmbO} applies when the embedding annotated type is a base type and in this case it is safe to open the embedding. \irname{EEmbC} applies when the embedding annotated type remains abstract for the principal and the expression inside the embedding is another embedding. In this case embeddings are compacted and the list of principals of the external embedding is appended to the list of principals of the internal embedding. This is the place where an embedding list grows. 
+
+The \irname{EEmbF} rule exports a function from one principal to another. A new function is created for the principal in the evaluation context expecting an argument of type $\tau_1$, which is the one that the principal \icode{p} expects. The body of the function belongs to the first principal in the list of principals \icode{$l_1$} and for this reason the embedding for the body is created. The $x$ argument of the new function is also embedded in $\emb{x}{p\texttt{rev(l1)}}{\tau}$ to protect the possible abstract types of the principal $p$ in the other principal contexts. The helper function $rev$ inverts the agent list, because agents in list p\texttt{rev($l_1$)} should be able to prove that $\tau$ is related to the type of $x$, $\tau_1$. 
+
+Figure ~\ref{fig:dynamic_semantic_example} illustrates the runtime semantics with an example that consists of the interaction between three principals: $p_1$, $p_2$ and {\sf world}. The example  describes reduction step by step. Principal $p_1$ knows $\tau_1 = \tau_2$, $p_2$ knows $\tau_2 = \icode{int}$ and principal \icode{world} does not have any knowledge about $\tau_1$ or $\tau_2$. We have a function \icode{f} that uses a built-in function \icode{toStr} of type $\icode{int} \rightarrow \icode{str}$ to get the literal representation of an integer. Function \icode{f} has type $\icode{int} \rightarrow \icode{str}$. On the left we have annotated the name of the reduction rules used for each evaluation step. 
+
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+$\delta_{p1}(\tau_1) = \tau_2,\delta_{p2}(\tau_2) = \icode{int} $ \\
+$f \doteq \tslam{x}{\icode{int}}{toStr \: x}$ 
+\end{tabular}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{r l}
+  & $ \eval{w}{\plet{p_1}{f_1}{\tau_1 \rightarrow \texttt{str}}
+									{(\plet{p_2}{f_2}{\tau_2 \rightarrow \texttt{str}}
+									{f}{f_2})}{f_1}} $ \\
+	$\rulename{ELet}$ &$\eval{w}{\plet{p_1}{f_1}{\tau_1 \rightarrow \texttt{str}}
+									{((\tslam{f_2}{\tau_2 \rightarrow \texttt{str}}{f_2})
+									{\emb{f}{p_2}{\tau_2 \rightarrow \texttt{str}}})}
+									{f_1}} $  \\
+	$\rulename{EApp}$ &$\eval{w}{\plet{p_1}{f_1}{\tau_1 \rightarrow \texttt{str}}
+									{\emb{f}{p_2}{\tau_2 \rightarrow \texttt{str}}}
+									{f_1}} $  \\
+	$\rulename{ELet}$ &$\eval{w}{(\tslam{f_1}{\tau_1 \rightarrow \texttt{str}}{f_1})
+										\emb{\emb{f}{p_2}{\tau_2 \rightarrow \texttt{str}}}{p_1}{\tau_1 \rightarrow \texttt{str}}}
+										$  \\
+	$\rulename{EEmbC}$ &$\eval{w}{(\tslam{f_1}{\tau_1 \rightarrow \texttt{str}}{f_1})
+										\emb{f}{p_2 p_1}{\tau_1 \rightarrow \texttt{str}}}$  \\	
+	$\rulename{EApp}$ &$ \eval{w}{\emb{f}{p_2 p_1}{\tau_1 \rightarrow \texttt{str}}} $ \\		
+\end{tabular}
+\end{center}
+\caption{Reduction rules in action. Example 1}%
+\label{fig:dynamic_semantic_example}%
+\end{figure}
+
+The initial expression has two \icode{let} expressions. Principal $p_2$ uses the inner \icode{let} expression to export the function \icode{f} with abstract type $\tau_2 \rightarrow \icode{str}$. Principal $p_1$ uses the outer \icode{let} expression to abstract the resulting inner function from type $\tau_2 \rightarrow \icode{str}$ to type $\tau_1 \rightarrow \icode{str}$. The first evaluation uses the \irname{TLet} rule for converting the inner \icode{let} expression to a function application, with the embedding $\emb{f}{p_2}{\tau_2 \rightarrow \texttt{str}}$. The second evaluation step uses the \irname{EApp} to reduce the function application. Third step uses the \irname{TLet} rule for reducing the outer \icode{let} expression. This produces nesting of embeddings, so the \irname{EEmbC} is used for combining the two embeddings in a single embedding $\emb{f}{p_2 p_1}{\tau_1 \rightarrow \texttt{str}}$. Recall that the process of combining embeddings combines lists of principals for remembering which principals participate in creating the abstraction barrier. Finally, the last evaluation step uses the \irname{EApp} rule to apply the function and we get an embedding as result. The principal {\sf world} is not able to reduce the embedding ($\emb{f}{p_2 p_1}{\tau_1 \rightarrow \icode{str}}$), because it does not have knowledge about the type $\tau_1$ (so the embedding is a value for {\sf world})
+
+\section{Gradual Language}\label{sec:gradual_language}
+In this section we present a gradual calculus\footnote{see associated survey for a review of gradual typing and related approaches} \gcalculus{} that includes the notion of an unknown principal. We give an intuition of what is the meaning of the unknown principal before providing the formalization of the gradual calculus. This calculus is obtained from \newcalculus{} using the Abstracting Gradual Typing (AGT) approach of Garcia et al.~\cite{garciaAl:popl2016}. 
+
+\subsection{Dynamic principals}
+Suppose we have some legacy code that uses type aliases but does not have a notion of type abstraction. We may want to strengthen some type aliases to be abstract types. This implies that the programmers must be explicit about what parts of the code are on the implementation side and what parts are on the client side. Following the syntactic type abstraction approach we have to specify a static principal for all parts of the code that use a type alias. 
+
+In order to be flexible with this principal assignments, we present a system that allows to associate principals in a gradual way, detecting inconsistencies statically where possible or dynamically when there is no principal declarations. In particular our approach allows code without an associated principal to be used \quotes{on behalf of} multiples principals.
+
+Following the gradual typing approach we introduce the notion of an \emph{unknown principal} \icode{?} to deal with code that does not have a principal associated. The following example shows the unknown principal in action. We have a host function \icode{g} defined in a scope accessible by the \icode{let} expression. Function \icode{g} has type \icode{fh $\rightarrow$ str}. The \icode{let} expression introduces the identifier \icode{f} to denote a function with unknown principal. The body of the function applies the function \icode{g} to a \icode{string}. This invocation takes place in a code with an unknown principal associated. This could violate the type abstraction in \newcalculus{} because \icode{g} receives a \icode{fh}. However, we want to be flexible when some code belongs to the unknown principal. The intuition is that if there exists a principal that knows the abstract type implementation, then code with the unknown principal can statically use this knowledge. This gives the possibility that if the function \icode{f} is applied by a principal with the required knowledge, then there is no type abstraction violation. For this concrete example, the host principal knows that \icode{fh = int}, so the type checker accepts the program and the execution of \icode{f 1} goes well because the function \icode{f} is executed by the host.
+
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{l}
+$\delta_h(\icode{fh}) = \icode{int}$ \\
+$g \doteq \emb{\tslam{x}{\icode{int}}{toStr \: x}}{h}{\texttt{fh} \rightarrow \icode{str}}$ \\
+$\plet{?}{f}{\icode{int} \rightarrow \icode{str}}{\lambda x: \icode{int}.g~x}{f~1}$ 
+\end{tabular}
+\end{center}
+\vspace*{-5mm}
+\caption{Function of the unknown principal executed by the host}%
+\label{fig:gradual-motivation-1}%
+\end{figure}
+
+The next example is similar to the previous one, but the function \icode{f} is now executed by the client. The program is accepted by the type checker (because of $\delta_h(\icode{fh}) = \icode{int}$), but the evaluation fails at runtime because the client does not know the implementation of \icode{fh}.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{l}
+$\plet{?}{f}{\icode{int} \rightarrow \icode{str}}{\lambda x: \icode{int}.g~x}{f~1}$ 
+\end{tabular}
+\end{center}
+\vspace*{-5mm}
+\caption{Function of the unknown principal executed by the client}%
+\label{fig:gradual-motivation-2}%
+\end{figure}
+
+In the following program the unknown principal is exporting a function with type concrete \icode{int $\rightarrow$ int} with the abstract type \icode{int $\rightarrow$ fh}. This time, for all principal $p$ we have $dom(\delta_p)=\emptyset$, so no principal has the knowledge that \icode{fh = int}. In this case the type checker statically rejects the program.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{l}
+$\plet{?}{\textit{intToFh}}{\icode{int} \rightarrow \icode{fh}}{\lambda x: \icode{int}.x}{\textit{intToFh}~1}$
+\end{tabular}
+\end{center}
+\vspace*{-5mm}
+\caption{Unknown principal exports function with abstract type}%
+\label{fig:gradual-motivation-3}%
+\end{figure}
+
+\subsection{Syntax}
+To get the static semantics of the gradual calculus, we follow the AGT methodology~\cite{garciaAl:popl2016}. First, we define gradual principals to include the \emph{unknown principal} \icode{?}.
+\[
+\begin{tabular}{l c l}
+$\wt{p}$ & $\in$ &  \textsc{GPrincipal} \\
+$\wt{p}$ & $::=$ &  $p \: |$  $ ? $\\		
+\end{tabular}
+\]
+We also define gradual terms that are terms with gradual principals and gradual list of embeddings to include gradual principal in the list of principals of an embeddings.   
+\[	
+\begin{tabular}{l c l}		 
+		$\wt{e}$ & $\in$  & $\textsc{GTerm}$\\
+		 $\wt{e}$ & $::=$ &  ... $|$ $let_{\wt{p}} \: x : \tau = \wt{e} \: in \: \wt{e} \: |$  $ \emb{\wt{e}}{\wt{l}}{\tau}$\\
+			$\wt{l}$ & $\in$  & $\textsc{GPrincipalList}$\\
+			$ \wt{l} $ & $::=$ & $ \wt{p} \: |$  $ \wt{l}\wt{p} $ \\ 	
+\end{tabular}
+\]	
+A key aspect of using the AGT methodology is to define the meaning of the unknown type information through a concretization function $\gamma$. Our concretization function goes from gradual principals to sets of static principals (Definition~\ref{def:principal_concretization}). The concretization function $\gamma_p$ expresses that the unknown principal represents any principal. In particular in our gradual calculus the unknown principal represents the first known principal in a parent scope. This is explained in the Section~\ref{sec:dyn-cast-calculus}.
+\begin{definition}(Principal Concretization). Let $\gamma_p : \textsc{GPrincipal} \rightarrow \powerset{\textsc{Principal}}$ be defined as follow:
+\label{def:principal_concretization}
+\[
+	\begin{tabular}{l}		
+	$\gamma_p(p) = \left\{p \right\}$ \\
+	$\gamma_p(?) = \textsc{Principal}$ \\	
+	\end{tabular}
+	\]	
+\end{definition}
+	
+\subsection{Lifting predicates and functions}
+Once we have the concretization function, we lift predicates and functions on static principals to their consistent predicates and gradual functions on gradual principals. We have a single predicate in our type system, which is the type equality for a principal ($\tau_1 =_p \tau_2$). We lift the type equality predicate to get the consistent type equality on gradual principals.
+\begin{definition}(Consistent type equality). $\tau_1 \: \widetilde{=}_{\widetilde{p}} \: \tau_2$ iff 
+$\tau_1 =_p \tau_2$ for some $p \in \gamma_p(\widetilde{p})$ 
+\end{definition}
+The consistent type equality relation informally says that two types are equal for the unknown principal if there exists a principal in the system for which the type equality relation holds.
+
+Once we have lifted predicates, we lift functions on set of static principals to gradual principals. In \newcalculus{} we have two functions on static principals: $\Delta_p$ and $\bar{\Delta}_p$. Both functions take a static principal and a static type and return a static type ($\textsc{Principal} \times \textsc{Type} \rightarrow \textsc{Type}$). In our gradual calculus we are only interested in supporting gradual principals, but not gradual types. This means that the lifted versions of $\Delta_p$ and $\bar{\Delta}_p$, which are $\wt{\Delta}_p$ and $\wt{\bar{\Delta}}_p$ should take a gradual principal and a static type and return a static type ($\textsc{GPrincipal} \times \textsc{Type} \rightarrow \textsc{Type}$). Let us see a first attempt to define $\wt{\Delta}_p$ using the AGT approach for lifting functions:
+\[
+\begin{tabular}{c}
+$\wt{\Delta}(\wt{p},\tau_1)= \{\tau_2 \:| \: \Delta_p(\tau_1) = \tau_2 \quad p \in \gamma_p(\wt{p})\}$ \\
+\end{tabular}
+\]
+In this definition we write $\wt{\Delta}(\wt{p},\tau_1)$ instead $\wt{\Delta}_{\wt{p}}(\tau_1)$ to make explicit that the function takes a gradual principal as argument. The definition of $\wt{\Delta}(\wt{p},\tau_1)$ theoretically gets an arbitrary set. We can then use the AGT approach and abstract the resulting set of static types to some kind of gradual type, but we do not want gradual types in our system. We do not need to appeal to gradual type because the resulting set in our system must have a single static type. We formalize this property in the following lemma:
+
+\begin{lemma}(Singleton result for $\wt{\Delta}$). $\forall \wt{p}, \tau \quad \wt{\Delta}(\wt{p},\tau) = \{\tau'\}$ for some $\tau'$
+\end{lemma}
+\begin{proof}
+Follows from the $\delta$ mapping constraints that if $\tau \in Dom(\delta_i) \cap Dom(\delta_j)$ then $\delta_i(\tau) = \delta_j(\tau)$. 
+\end{proof}
+
+Now we define the right version of  $\wt{\Delta}$ for our gradual calculus. We use a partial helper function $single$ that is defined only for a set of one element, an in this case returns the element.
+
+\begin{definition}(Gradual version of $\Delta_p$). Let $\wt{\Delta} : {\textsc{GPrincipal}} \times \textsc{Type} \rightarrow \textsc{Type}$ be defined as follows:\\
+$\wt{\Delta}(\wt{p},\tau_1)= single(\{\tau_2 \:| \: \Delta_p(\tau_1) = \tau_2 \quad p \in \gamma_p(\wt{p})  \})$ \\
+\end{definition}
+
+The definition of $\wt{\bar{\Delta}}$ following AGT has to deal with a similar issue. Let us see a first attempt:
+\[
+\begin{tabular}{c}
+$\wt{\bar{\Delta}}(\wt{p},\tau_1)= \{\tau_2 \:| \: \bar{\Delta}_p(\tau_1) = \tau_2 \quad p \in \gamma_p(\wt{p})\}$
+\end{tabular}
+\]
+
+In this case the resulting set could have many inhabitants. For example if we have $\delta_{p_1}($\icode{fh}$_2) = \icode{fh}$,  $\delta_{p_1}(\icode{fh}) = \icode{int}$, $\delta_{p_2}(\icode{fh}_2) = \icode{fh}$, then we have $\bar{\Delta}_{p_1}(\icode{fh}_2) = \icode{int}$ and $\bar{\Delta}_{p_2}(\icode{fh}_2) = \icode{fh}$. This means that $\wt{\bar{\Delta}}(?,\icode{fh}_2) = \{\icode{fh}, \icode{int}\}$. We could provide a kind of bounded gradual type, that is not used explicitly by programmers, but are used internally in gradual functions and predicates. In this work we avoid that and provide a direct version of $\wt{\bar{\Delta}}$, which follows our intuition about the meaning of the unknown in the function $\wt{\bar{\Delta}}$. We have that the function $\bar{\Delta}_p(\tau)$ gives the most concrete view of $\tau$ for $p$, so the function $\wt{\bar{\Delta}}_?(\tau)$ gives the most concrete view of $\tau$ of all principals.
+
+The second constraint in the definition of the $\delta$ mappings (Definition~\ref{def:well-formed-mapping}), tells us that there exists a partial order for type variables and types, which is type precision. For example, if we have for some $p$ that $\Delta_p(\icode{fh}) = \icode{int}$, then we can say that \icode{int} is more precise than \icode{fh} (written $\icode{int} \sqsubseteq \icode{fh}$). Beside, from the constraints of $\delta_p$ mappings, we can say that there exists a unique finite sequence of type variables from a type variable $t$ to the most concrete view $\tau$ that any principal has. This sequence has a type precision order, and hence a minimum.
+
+The final definition of $\wt{\bar{\Delta}}_p$ is the following:
+
+\begin{definition}(Gradual version of $\bar{\Delta}_p$). Let $\wt{\bar{\Delta}} : \textsc{GPrincipal} \times \textsc{Type} \rightarrow \textsc{Type}$ be defined as follows\\
+$\wt{\bar{\Delta}}(\wt{p},\tau_1)= min(\{\tau_2 \:| \: \bar{\Delta}_p(\tau_1) = \tau_2 \quad p \in \gamma_p(\wt{p}) \})$ \\
+\end{definition}
+ 
+\subsection{Gradual Type System}
+We obtain the gradual type system by replacing static principals with gradual principals, lifting predicates on static principals to gradual principals and lifting functions on static principals to gradual principals following AGT. Figure~\ref{fig:gradual-type-system} shows the resulting gradual type system.
+
+\begin{figure}[!htbp]
+\begin{tabular}{ |c| } 
+ \hline
+ $\Gamma, \wt{p} \vdash e : T$  \\
+ \hline
+\end{tabular} \\
+\[
+\begin{tabular}{c c} 
+%var rule
+\infer[\mathrm{\text{[GT-Var]}}] 
+{\Gamma , \wt{p} \vdash x : \wt{\bar{\Delta}}_{\wt{p}}(\Gamma(x))}{} & 
+%const rule
+\infer[\mathrm{\text{[GT-Const]}}] 
+{\Gamma, \wt{p} \vdash b : \texttt{B} }{} \\
+\end{tabular}
+\] 
+
+%app rule
+\[
+\infer[\mathrm{\text{[GT-App]}}] 
+{\Gamma, \wt{p} \vdash \wt{e}_1 \: \wt{e}_2 : \tau }
+{\Gamma, \wt{p} \vdash \wt{e}_1 : \tau_{11} \rightarrow \tau \quad 
+\Gamma, \wt{p} \vdash \wt{e}_2: \tau_{12} \quad \tau_{11} \wt{=}_{\wt{p}} \tau_{12}}
+\]
+\[
+%function
+\infer[\mathrm{\text{[GT-Abs]}}] 
+{\Gamma, \wt{p} \vdash \tslam{x}{\tau_1}{\wt{e}} : \tau_1 \rightarrow \tau_2}
+{\Gamma [x : \tau_1], \wt{p} \vdash \wt{e} : \tau_2 } 
+\]
+\[
+%let
+\infer[\mathrm{\text{[GT-Let]}}] 
+{\Gamma, \wt{p} \vdash \plet{\wt{p}_1}{x}{\tau}{\wt{e_1}}{\wt{e_2}} : \tau_2}
+{\Gamma, \wt{p}_1  \vdash \wt{e}_1 : \tau_1 \quad \Gamma [x:\tau], \wt{p} \vdash \wt{e}_2: \tau_2 \quad \tau \wt{=}_{\wt{p}} \tau_1 }  
+\]
+\[
+%emb
+\infer[\mathrm{\text{[GT-Emb]}}] 
+{\Gamma, \wt{p} \vdash \emb{\wt{e}}{\wt{p}_1\overline{\wt{p}}}{\tau} : \wt{\bar{\Delta}}_{\wt{p}}(\tau)}
+{\Gamma, \wt{p}_1  \vdash \wt{e} : \tau_1 \quad  \vdash \tau_1 \hookleftarrow_{\wt{p}_1\overline{\wt{p}}}  \tau  } 
+\]
+\caption{Gradual Type System}
+		\label{fig:gradual-type-system}
+	\end{figure}	
+	
+	\begin{figure}[!htbp]
+\begin{tabular}{ |c| } 
+ \hline
+ $ \tau \hookleftarrow_{\wt{l}} \tau'$  \\
+ \hline
+\end{tabular} \\
+\[
+\begin{tabular}{c c} 
+%var rule
+\infer[\rulename{T-eq}] 
+{\tau \hookleftarrow_{\wt{p}} \tau'}{\wt{\bar{\Delta}}_{\wt{p}}(\tau) = \wt{\bar{\Delta}}_{\wt{p}}(\tau')} & 
+%const rule
+\infer[\rulename{T-trans}] 
+{\tau \hookleftarrow_{\wt{l}\wt{p}} \tau'}
+{\tau \hookleftarrow_{\wt{l}} \wt{\bar{\Delta}}_{\wt{p}}(\tau') } \\
+\end{tabular}
+\]
+\caption{Gradual collaborative principals knowledge relation $\tau \hookleftarrow_l \tau'$}
+		\label{fig:unified_type-relation_transitive_equality}
+	\end{figure}
+	
+We have some changes in the gradual type system respect to the static type system. We have a gradual principal in the typing context. We also have gradual terms instead of static terms. We also define $ \tau \hookleftarrow_{\wt{l}} \tau'$, the gradual version of the collaborative principals knowledge relation $ \tau \hookleftarrow_{l} \tau'$.
+
+Now we explain how the gradual type system works. We typecheck the examples of Figures~\ref{fig:gradual-motivation-1} and \ref{fig:gradual-motivation-3}. In the example of Figure~\ref{fig:gradual-motivation-1} the important part is to type check the expression $\tslam{x}{\icode{int}}{g~x}.$. We show the typing derivations for the expression $\tslam{x}{\icode{int}}{\gexample{}~x}$, where $g$ is substituted by its definition.
+\begin{center}
+\begin{tabular}{l l}
+\irname{GT-Abs} & $\Gamma, ? \vdash \tslam{x}{\icode{int}}{\gexample{}~x} : \icode{int} \rightarrow \icode{str}$ \\
+\irname{GT-App} & $\quad \Gamma \left[x : \icode{int} \right], ? \vdash \gexample{}~x : \icode{str}$ \\
+\irname{GT-Emb} & $\quad \quad \Gamma \left[x : \icode{int} \right], ? \vdash \gexample{} : \icode{int} \rightarrow \icode{str}$ \\
+... & $\quad \quad \quad \emptyset, h \vdash \tslam{x}{\icode{int}}{toStr \: x} : \icode{int} \rightarrow \icode{str} $ \\
+... & $\quad \quad \quad \quad ...$ \\
+\irname{GT-Var} & $\quad \quad \Gamma \left[x : \icode{int} \right], ? \vdash x : \icode{int}$ \\
+                & $\quad \quad \icode{int} =_{?} \icode{int}$ 
+\end{tabular}
+\end{center}
+
+The above example is well typed and the key point is that the unknown principal refines that the type of the embedding from $\icode{fh} \rightarrow \icode{str}$ to $\icode{int} \rightarrow \icode{str}$. This is possible because there exists a principal, the {\sf host}, that knows that \icode{fh} = \icode{int}. We do not show all the derivation tree, but the most important parts.
+
+In the case of the example in Figure~\ref{fig:gradual-motivation-3} the program is not well-typed because of the rule \irname{GT-Let}:
+\begin{center} 
+\begin{tabular}{c}
+$\Gamma, {\sf world} \vdash \plet{?}{f}{\icode{int} \rightarrow \icode{str}}{\lambda x: \icode{int}.g~x}{f~1}$ 
+\end{tabular}
+\end{center}
+Basically, the side condition of this rule does not hold for the types of the identifier and the named expression, $\icode{int} \rightarrow \icode{fh}~\wt{=}_{?}~\icode{int} \rightarrow \icode{int}$. The problem is that there is no principal that knows \icode{fh} = \icode{int}.
+
+\section{Intermediate language}\label{sec:intermediate_language}
+In this section we present an intermediate cast calculus to execute our gradual principal calculus. We reuse the ideas of Siek and Taha~\cite{siekTaha:sfp2006} to present a type directed translation from the gradual calculus to the intermediate cast calculus. The dynamic semantics of the intermediate calculus gives a mean to execute a program with gradual principals and the inserted casts ensure dynamically that type abstraction is not violated.
+\subsection{Syntax}
+Figure~\ref{fig:syntax_intermediate-language} shows the intermediate language syntax. The syntax does not include the \icode{let} expression because it disappears after the translation. The syntax is basically the same as \newcalculus{}. We add a cast expression $\cast{\tau_1}{\tau_2}e$ for checking that the principal in context knows that both types are equal. We add the error \texttt{AbsViolation} to expressions. This is the error one gets when a cast fails. In the intermediate language, embeddings can be annotated with the unknown principal. We explain how to reduce an embedding of the unknown principal in Section~\ref{sec:dyn-cast-calculus}, but intuitively the expression inside the embedding is reduced using the principal of the context in which the embedding is.
+\begin{figure}[!htbp]
+	\[	
+	\begin{tabular}{ l c l l}	
+		(terms) & $e$ & $::=$ & $ ...~|~ \cast{\tau_1}{\tau_2}$ $~|~\emb{e}{\wt{l}}{\tau}$  $~|~\texttt{AbsViolation}$	\\	
+	\end{tabular}
+	\]
+		\caption{Syntax of the intermediate language}
+		\label{fig:syntax_intermediate-language}
+	\end{figure}
+	
+\subsection{Type system for the intermediate language}
+We present the type system for the intermediate language in Figure~\ref{fig:type_system_il}. We only write the rules for the new expression, because the other rules remains equal as those of the static semantics of the gradual calculus. The \irname{IT-Cast} rule expresses that a cast expression is always well-typed. The \irname{IT-Error} gives a non-determinist type to an error, which expresses that an error can have any expected type. 
+\begin{figure}[!htbp]
+\begin{tabular}{|c|} 
+ \hline
+  $\Gamma, p \vdash e : T$  \\
+ \hline
+\end{tabular} \\
+\[
+\begin{tabular}{c}
+%function
+\infer[\rulename{IT-Error}] 
+{\Gamma, p \vdash \icode{AbsViolation} : \tau}
+{}
+\end{tabular}
+\]
+\[
+%cast
+\begin{tabular}{c c}
+\infer[\rulename{IT-Cast}] 
+{\Gamma, p \vdash \cast{\tau_1}{\tau_2}~e : \tau_1}
+{\Gamma, p \vdash e : \tau_2} &
+\end{tabular}
+\]
+
+\caption{Type system for the intermediate language}
+\label{fig:type_system_il}
+\end{figure}
+\subsection{Translation to intermediate language}\label{sec:translation}
+
+Following the ideas of Siek and Taha~\cite{siekTaha:sfp2006} we provide a translation from the gradual calculus to the intermediate cast calculus. The cast expression appears when the unknown principal is in context and when a \icode{let} expression is annotated with the unknown principal. We define a helper meta function $insert\text{-}cast?$ for inserting cast. This function is similar to the function $insert\text{-}has?$ used by Ba{\~n}ados et al.~\cite{banadosAl:icfp2014}. We avoid to insert a cast if the unknown principal is not assuming the representation knowledge about an abstract type:
+\[
+\begin{tabular}{c}
+$\textit{insert-cast?}(p, \tau_1, \tau_2, e) =  
+\begin{cases} 
+      \cast{\tau_1}{\tau_2} \: e & p = ? \land \tau_1 \neq \tau_2 \\      
+      e &  otherwise
+\end{cases}$
+\end{tabular}
+\]
+
+
+Figure~\ref{fig:Translation} shows the translation judgment $\cij{\wt{e}}{e'}{\tau}$, which can be read as: given the expression $\wt{e}$ in the context of principal $\wt{p}$ we translate $\wt{e}$ to $e'$ maintaining the type $\tau$. The most important rules are \irname{CI-App} and \irname{CI-Let?}. The rule \irname{CI-App} uses the meta function $insert\text{-}cast?$ that inserts a cast expression in the case that the principal in context is the unknown principal and $\tau_11$ and $\tau_12$ are not equal. The rule \irname{CI-Let?} only applies when the annotated principal of the \icode{let} expression is the unknown principal. This rule possibly inserts the cast expression to check that the annotated type in the let expression and the type of the named expression must be equal. This rule produces the expression an embedding with the unknown principal to indicate the expression $e$ belongs to the unknown principal.  
+
+\begin{figure}[!htbp]
+\begin{tabular}{ |c| } 
+ \hline 
+	$\cij{\wt{e}}{e'}{\tau}$  \\
+ \hline
+\end{tabular} 
+\[
+\begin{tabular}{c c} 
+%var rule
+\infer[\rulename{CI-Var}] 
+{\cij{x}{x}{\liftedDeltaBar{\wt{p}}{\Gamma(x)}}}{} & 
+%const rule
+\infer[\rulename{CI-Const}] 
+{\cij{b}{b}{B} }{} 
+\end{tabular}
+\]
+%app rule
+\[
+\infer[\rulename{CI-App}] 
+{\cij{\wt{e}_1 \wt{e}_2}{e'_1 \boxed{\textit{insert-cast?}(p,\tau_{11},\tau_{12}, e'_2)}}{\tau}}
+{\cij{\wt{e}_1}{e'_1}{\tau_{11} \rightarrow \tau}
+\quad 
+\cij{\wt{e}_2}{e'_2}{\tau_{12}} \quad \tau_{11} \wt{=}_p \tau_{12}}
+\]
+%function
+\[
+\infer[\rulename{CI-Abs}] 
+{\cij{\tslam{x}{\tau'}{\wt{e}}}{\tslam{x}{\tau'}{e'}}{\tau' \rightarrow \tau}}
+{\cixj{[x : \tau']}{\wt{p}}{\wt{e}}{e'}{\tau}} 
+\]
+%let
+\[
+\infer[\rulename{CI-Let?}] 
+{\cij{\plet{?}{x}{\tau}{\wt{e_1}}{\wt{e_2}}}{(\tslam{x}{\tau}{e'_2}) 
+(\boxed{\textit{insert-cast?}(?,\tau, \tau_1, \emb{e'_1}{?}{\tau}}))}{\tau_2}}
+{\cixj{}{?}{\wt{e_1}}{e'_1}{\tau_1} \\ \quad 
+\tau \wt{=}_? \tau_1 \quad 
+\cixj{[x:\tau]}{\wt{p}}{\wt{e_2}}{e'_2}{\tau_2}} 
+\]
+%let for static principal
+\[
+\infer[\rulename{CI-LetS}] 
+{\cij{\plet{p}{x}{\tau}{\wt{e_1}}{\wt{e_2}}}{(\tslam{x}{\tau}{e'_2}) (\emb{e'_1}{p}{\tau})}{\tau_2} }
+{p \neq ? \quad \cixj{}{p}{\wt{e_1}}{e'_1}{\tau_1} \quad 
+\bar{\Delta}_{p}(\tau) = \tau_1 \quad 
+\cixj{[x:\tau]}{\wt{p}}{\wt{e_2}}{e'_2}{\tau_2}} 
+\]
+\iffalse
+\[
+%emb
+\begin{tabular}{c }
+$\infer[\rulename{CI-Emb}] 
+{\cij{\emb{\wt{e}}{?}{\tau}}{\emb{e}{?}{\tau}}{\wt{\bar{\Delta}}_\wt{p}(\tau)}}
+{\cixj{}{\wt{p}_1}{\wt{e}}{e}{\tau_1} \quad  \tau_1 \hookleftarrow_{\wt{p}_1\overline{\wt{p}}}  \tau  } $ 
+\end{tabular}
+\]
+\fi
+
+\caption{Type-directed translation to the intermediate language}
+		\label{fig:Translation}
+	\end{figure}
+
+
+\subsection{Dynamic Semantics for cast calculus}\label{sec:dyn-cast-calculus}
+In this section we present the runtime semantics for the intermediate language. The runtime semantics give a meaning to execute a gradual program. Figure~\ref{fig:dyn_semantics_cast_calculus} shows the most important rules for the dynamic semantics of the intermediate cast calculus respects to that of the \newcalculus{}. Equivalents rules to \irname{EApp1}, \irname{EApp}, \irname{EApp2}, \irname{ELet1}, \irname{EEmbr1}, \irname{EEmbr2}, \irname{EEmbrO}, \irname{EEmbrC}, \irname{EEmbrF} are omitted because are very similar. We do not have equivalent rules for the \irname{ELet1} and \irname{ELet2} because the intermediate cast calculus does not have a \icode{let} expression. 
+
+\begin{figure}[!htbp]
+\[
+\infer[\rulename{IE-Emb?}] 
+{\eval{p}{\emb{e}{?}{\tau}} \longmapsto \eval{p}{\emb{e}{p}{\tau}}}
+{} 
+\]
+\[
+\infer[\rulename{IE-CastR}] 
+{\eval{p}{\cast{\tau_2}{\tau_1} e} \longmapsto \eval{p}{\cast{\tau_2}{\tau_1} e'}}
+{\eval{p}{e} \longmapsto \eval{p}{e'}} 
+\]
+\[
+\infer[\rulename{IE-Cast}] 
+{\eval{p}{\cast{\tau_2}{\tau_1} v} \longmapsto \eval{p}{v}}
+{\tau_1 =_p \tau_2}
+\]
+\[
+\infer[\rulename{IE-CastE}] 
+{\eval{p}{\cast{\tau_2}{\tau_1} v} \longmapsto \icode{AbsViolation}}
+{\tau_1 \neq_p \tau_2}
+\]  
+\caption{Dynamic Semantics for the internal language}
+\label{fig:dyn_semantics_cast_calculus}
+\end{figure}
+The unknown principal never executes an expression. The reason is than when we execute an embedding, which is annotated with the unknown principal, we replace the unknown principal for the principal in context (rule \irname{IE-Emb?}). The fact that the top level principal is {\sf world} and it is always known makes no possible to have the unknown principal in the evaluation context. An alternative dynamic semantics can be formulated considering to have a top level unknown principal, but that is left for future work.
+
+The rule \irname{IE-CastR} reduces the expression protected by the cast. Once we have a value with a cast, the \irname{IE-Cast} or \irname{IE-CastE} rules could apply. The rule \irname{IE-Cast} applies when the principal in context knows that both types are equal and in this case we obtain the value. The rule \irname{IE-CastE} applies when the principal does not know the abstraction between both types and in this case an abstraction violation error is raised.
+
+\subsection{Examples}
+In this section we show two examples to clarify the process for evaluating a gradual program. This process involves the type directed translation of the gradual programs to the intermediate calculus and then the execution of the translated program using the runtime semantics of the intermediate calculus. We reuse the example of Figure~\ref{fig:gradual-motivation-1}. We only show the most important translation steps to convert the gradual program to a program in the internal language. We omit the type environment $\Gamma$ in the notation because is not important to see where the cast insertion happens. We start with the expression:
+\[
+\begin{tabular}{c}
+$h \vdash \plet{?}{f}{\icode{int} \rightarrow \icode{str}}{\lambda x: \icode{int}.g~x}{\mathrm{f~1}}$ \\
+\end{tabular}
+\]
+The next step is to transform the named expression. For the translation of the named expression the unknown principal is in context, which means that a cast could be inserted:
+\[
+\begin{tabular}{c}
+$? \vdash \lambda x: \icode{int}.g~x$
+\end{tabular}
+\]
+In fact a cast is inserted because function $g$ has type $\icode{fh} \rightarrow \icode{str}$ and it is applied with \icode{int}, so the rule \irname{CI-App?}applies and a cast is inserted: 
+\[
+\begin{tabular}{c}
+$? \vdash \lambda x: \icode{int}.g~\knows{\icode{fh}}{\icode{int}}x$
+\end{tabular}
+\]
+	
+Once we have the translation for the named expression, we use the rule \irname{CI-Let?} over the expression:
+\[
+\begin{tabular}{c}
+$h \vdash \plet{?}{f}{\icode{int} \rightarrow \icode{str}}{\lambda x: \icode{int}.g~\knows{\icode{fh}}{\icode{int}}x}{\mathrm{f~1}}$ \\
+\end{tabular}
+\]
+to get the final program in the intermediate language: 
+\[
+\begin{tabular}{c}
+$(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})\emb{\lambda x:\icode{int}.g \knows{\icode{fh}}{\icode{int}}x}{?}{\icode{str}}$ \\
+\end{tabular}
+\]
+
+Now we execute the above program with the runtime semantics of the intermediate language. In this example we assume that the execution takes place in the {\sf host} context.
+\begin{center}
+\begin{tabular}{r r l}
+& & $\eval{{\sf h}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})\emb{\lambda x:\icode{int}.g \knows{\icode{fh}}{\icode{int}}x}{?}{\icode{str}}}$\\
+1&\irname{IE-Emb?}& $\eval{{\sf h}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})
+                   \emb{\lambda x:\icode{int}.g \knows{\icode{fh}}{\icode{int}}x}{h}{\icode{str}}}$\\
+2&\irname{IE-EmbF}& $\eval{{\sf h}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})
+                   (\lambda x_1:\icode{int}.\emb{g \knows{\icode{fh}}{\icode{int}}\emb{x_1}{h}{\icode{int}}}{h}{\icode{str}})}$\\
+3&\irname{IE-App}  & $\eval{\sf h}{(\lambda x_1:\icode{int}.\emb{g \knows{\icode{fh}}{\icode{int}}\emb{x_1}{h}{\icode{int}}}{h}{str})~1}$\\
+4&\irname{IE-App}  & $\eval{\sf h}{\emb{g \knows{\icode{fh}}{\icode{int}}\emb{1}{h}{\icode{int}}}{h}{str}}$ \\
+5&\irname{IE-EmbO} & $\eval{\sf h}{\emb{g \knows{\icode{fh}}{\icode{int}}~1}{h}{str}}$ \\
+6&\irname{IE-Cast} & $\eval{\sf h}{\emb{g~1}{h}{str}}$ \\
+&... & ... \\
+&... & $\emb{\text{\quotes{1}}}{h}{str}$ \\
+&\irname{IE-EmbO}& \quotes{1} 
+\end{tabular}
+\end{center}
+
+The most important steps are step 1 and 6. In step 1, we replace the unknown principal of the embedding for the principal in context ({\sf host}). This means that the expression inside the embedding now belongs to the principal {\sf host} and the {\sf host} is the one that must execute the cast. This happens in the step 6, and the cast succeeds because the {\sf host} knows that \icode{fh}=\icode{int}. The other evaluation steps are not interesting and finally the {\sf host} gets a \icode{string}, which is the literal representation of 1. 
+
+Let us see the same program but executed in the {\sf client} context. We omit the translation process because, for this example, it is identical to the one we do for the {\sf host}. The reduction rules are presented below:
+\begin{center}
+\begin{tabular}{r r l}
+& & $\eval{{\sf c}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})\emb{\lambda x:\icode{int}.g \knows{\icode{fh}}{\icode{int}}x}{?}{\icode{str}}}$\\
+1&\irname{IE-Emb?}& $\eval{{\sf c}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})
+                   \emb{\lambda x:\icode{int}.g \knows{\icode{fh}}{\icode{int}}x}{c}{\icode{str}}}$\\
+2&\irname{IE-EmbF}& $\eval{{\sf c}}{(\tslam{f}{\icode{int} \rightarrow \icode{str}}{\mathrm{f~1}})
+                   (\lambda x_1:\icode{int}.\emb{g \knows{\icode{fh}}{\icode{int}}\emb{x_1}{c}{\icode{int}}}{c}{\icode{str}})}$\\
+3&\irname{IE-App}  & $\eval{\sf c}{(\lambda x_1:\icode{int}.\emb{g \knows{\icode{fh}}{\icode{int}}\emb{x_1}{c}{\icode{int}}}{c}{str})~1}$\\
+4&\irname{IE-App}  & $\eval{\sf c}{\emb{g \knows{\icode{fh}}{\icode{int}}\emb{1}{c}{\icode{int}}}{c}{str}}$ \\
+5&\irname{IE-EmbO} & $\eval{\sf c}{\emb{g \knows{\icode{fh}}{\icode{int}}~1}{c}{str}}$ \\
+6&\irname{IE-Cast} & $\icode{AbsViolation}$ 
+\end{tabular}
+\end{center}
+
+The evaluation steps from 1 to 5 are the same, but now we are in the {\sf client} context. That is the reason we replace the unknown principal by the {\sf client} principal in the step 1. The difference here is in the step 6. The {\sf client} does not know that \icode{fh} = \icode{int} and that is the reason we get the \icode{AbsViolation} error.
+
+
+\section{Conclusion}
+We have developed a gradual calculus that makes it possible to strengthen type aliases to abstract types in a gradual way. We developed this gradual calculus over a variation of the calculus of Grossman et al.~\cite{grossmanAl:toplas2000}. 
+
+We use the ideas of AGT to derive the static semantics, but it remains to study if AGT can help design the runtime semantics. In this work we provide the dynamic semantics for the gradual language in the style of Siek and Taha~\cite{siekTaha:sfp2006}, which is to compile the gradual language to an internal language with casts and to define the runtime semantics for the internal language. 
+
+The gradual approach presented in this paper is not complete, as we have not proven the expected formal results of a gradual language, such as a) the gradual language is type safe, b) the gradual language is a conservative extension of the static language, and c) the language satisfies the gradual guarantee of Siek et al.~\cite{siekAl:snapl2015}. These formal results are the next step for future work.
+
+%Bibliography
+\medskip 
+\bibliographystyle{abbrv}
+\bibliography{gsta,pleiad,gp,bib,common}		
+\end{document}
+

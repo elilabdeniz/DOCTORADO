@@ -1,0 +1,501 @@
+body {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    color: #F2DD55;
+    background-color: black;
+    margin: 0px 0px 0px 0px;
+}
+
+h1, h2, h3 {
+    margin-top: 0.5em;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+h1 {
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    margin-bottom: 0.25em;
+}
+
+h3 {
+    margin-bottom: 0;
+}
+
+code {
+    font-family: "Courier New", Courier, monotype;
+    font-weight: bold;
+    color: #004F27;
+}
+
+.big {
+    width: 100%;
+    font-size: 200%;
+    font-weight: bold;
+    text-align: center;
+    margin: 1em 0 1em 0;
+}
+
+.small {
+    font-size: 150%;
+    font-weight: bold;
+    font-variant: small-caps;
+    padding: 1em 0 0 0.5ex;
+    margin: 0;
+}
+
+.registration {
+    display: block;
+    border-radius: 2em; 
+    background-color: #004F27; 
+    color: #FFCC00;
+    position: relative;
+    left: 25%; 
+    bottom: 1em; 
+    width: 50%; 
+    margin-top: 1ex;
+    padding: .5em 1ex .5em 1ex;
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    font-size: 1.5em;
+    text-align: center; 
+    vertical-align: middle;
+}
+
+/* UO HEADER AND FOOTER ----------------------------------------------------------- */
+
+#uobar {
+    display: block;
+    background: #0F2912;
+    background-image: url(_images/background-header.png);
+    background-repeat: repeat-x;
+    background-position: center;
+    width: 100%;
+    height: 41px;
+    margin: 0;
+    padding: 0;
+    min-height: 72px;
+    font-family: Quadon-Regular,Times,Georgia,"DejaVu Serif",serif;
+    line-height: 1.5em
+}
+
+#uobar .logo img {
+    width: 200px;
+    padding-top: 15px;
+    height: auto !important;
+    border: 0;
+    max-width: 100%;
+    color: #489433;
+}
+
+#uobar .logo {
+    float: left;
+    padding-left: 15px;
+}
+
+#uobar .links-outer {
+    display: block;
+    padding-top: 18px;
+    padding-right: 15px;
+    float: right;
+    color: white;
+    line-height: 2em;
+}
+
+#uobar div.links {
+    display: block;
+    margin-bottom: 0;
+    float: left;
+    line-height: 2em
+}
+
+a.uonav:link, a.uonav:visited {
+    font-weight: 300;
+    font-size: 1em;
+    text-transform: uppercase;
+    padding: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+a.uonav:active {
+    outline: 0;
+}
+
+a.uonav:focus {
+    outline: thin dotted;
+}
+
+a.uonav:hover {
+    outline: 0;
+    color: #fdcd07;
+    text-decoration: none;
+}
+
+#outer-footer {
+    display: block;
+    text-transform: uppercase;
+    background: black;
+    font-family: Quadon-Regular,Times,Georgia,"DejaVu Serif",serif;
+    font-weight: 300;
+    line-height: 1.5em;
+}
+
+/*put in because chrome keeps covering up last line*/
+#last-footer {
+    display: block;
+    clear: both;
+    background: black;
+    line-height: 1em;
+}
+
+#uofooter {
+    display: block;
+    max-width: 1200px;
+    padding: 30px 85px 30px 15px;
+    margin: 0;
+    background-image: url(_images/bigO.png);
+    background-repeat: no-repeat;
+    background-size: 53px 44px;
+    background-position: right center;
+    color: white;
+}
+
+.footer {
+    display: block;
+    float: left;
+    margin: 0 2em 0 0;
+}
+
+/* OPLSS styles -------------------------------------------------------------- */
+
+.printbar {
+    display:none;
+}
+
+#oplsstitle {
+    display: block;
+    padding: .75em 0 1.5em 0;
+    min-height: 2.5em;
+    background: white;
+}
+
+#oplsstitle h1 {
+    padding-top: 0.5em;
+    padding-left: 0.5ex;
+    font-family: Quadon-Light,Times,Georgia,"DejaVu Serif",serif;
+    font-weight: 100;
+    font-size: 2.5em;
+    margin: 0;
+}
+
+#oplsstitle a:link, div#oplsstitle a:visited {
+    font-family: Quadon-Light,Times,Georgia,"DejaVu Serif",serif;
+    font-weight: 100;
+    text-decoration: none;
+    color: #004a20;
+}
+
+#oplsstitle a:active, div#oplsstitle a:hover {
+    outline: 0;
+}
+
+#oplsstitle a:focus {
+    outline: thin dotted;
+}
+
+#oplssmasthead  {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    color: #FFCC00;
+    background: #004F27;
+    background-image: url("_images/banner.jpg");
+    background-repeat: repeat;
+    min-height: 200px;
+}
+
+#oplssmasthead .big {
+    color: white;
+}
+
+#oplssmasthead a:link {
+    color: #FFCC00;
+    text-decoration: none;
+}
+
+#oplssmasthead a:visited {
+    color: #FFCC00;
+    text-decoration: none;
+}
+
+#oplssmasthead a:active {
+    color: #F2DD55;
+    text-decoration: none;
+}
+
+#oplssmasthead a:focus {
+    color: white;
+    background: black;
+    text-decoration: underline;
+}
+  
+#oplssmasthead a:hover {
+    text-decoration: underline;
+}
+  
+#oplssmasthead ul {
+    margin: 0 0 0 0px;
+    padding: 0px 0 0 0;
+    display: block;
+    text-align: center;
+} 
+
+#oplssmasthead li {
+    font-size: 125%;
+    font-weight: bold;
+    padding: .3em .7em .3em .7em;
+    list-style: none;
+    display: inline;
+    line-height: 180%;
+}
+
+#oplssmasthead li.showing {
+    color: #FFCC00;
+    background: #F0F0F0;
+    border-radius: .75ex;
+}
+
+#oplssmasthead li.showing a {
+    color: #004F27;
+    background: #F0F0F0;
+}
+
+#page {
+    background: #004F27;
+    color: #F2DD55;
+    display: block;
+    margin: 0 0 0 0;
+    padding: 0 1ex 1ex 1ex;
+}
+
+#page h1, #page h2, #page h3 {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+#page a:link {
+    color: #F2DD55;
+    text-decoration: none;
+}
+
+#page a:visited {
+    color: #F2DD55;
+    text-decoration: none;
+}
+
+#page a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;    
+}
+
+#main {
+    font-family: Georgia,Melior,Times,"Times New Roman",Palatino,serif;
+    position: relative;
+    background: #F0F0F0;
+    color: black;
+    display: block;
+    margin: 0 0 0 0;
+    padding: 1.5em 2ex 2ex 2ex;
+    left: 5%;
+    width: 90%;
+}
+
+#main em {
+    font-style: italic;
+    color: #004F27;
+}
+
+#main strong {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+blockquote {
+    border-left: .5ex solid #004F27;
+    padding-left: 1ex;
+}
+
+mark {
+    font-weight: bold;
+    background-color: #DFD;
+}
+
+#main a:link {
+    color: #004F27;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#main a:visited {
+    color: #004F27;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#main a:focus {
+    color: #004F27;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#main a:hover {
+    color: #004F27;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#main a:active {
+    color: #004F27;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+
+#submenu {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    font-size: 125%;
+    color: #004F27;
+    text-align: center;
+}
+
+#submenu ul {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    display: block;
+    text-align: center;
+}
+
+#submenu li {
+    padding: .75em 3ex .75em 3ex;
+    margin: .5em 4ex .5em 4ex;
+    list-style: none;
+    display: inline-block;
+    line-height: 180%;
+    background: #FFCC00;
+    border-radius: .75ex;
+}
+
+#submenu li a:active {
+    color: black;
+    text-decoration: none;
+}
+
+#submenu li a:focus {
+    color: white;
+    background: black;
+    text-decoration: underline;
+}
+
+#submenu li a:hover {
+    text-decoration: underline;
+}
+
+#submenu .showing {
+    background: #F0F0F0;
+    border: medium solid #FFCC00;
+}
+
+.person {
+    clear: left;
+    display: block;
+    margin: 0 0 0 0;
+    padding: 1ex;
+    height: auto;
+    width: auto;
+}
+
+.name {
+    display: inline-block;
+    margin: 0 0 0 0;
+    padding: 1ex;
+    height: auto;
+    width: 20ex;
+    text-align: left;
+    vertical-align: center;
+}
+
+.inst {
+    display: inline-block;
+    margin: 0 0 0 0;
+    padding: 0.25em 0 0.25em 1ex;
+    height: auto;
+    text-align: left;
+    vertical-align: center;
+    font-weight: bold;
+}
+
+p.aside {
+    font-size: 75%;
+    color: blue;
+}
+
+p.sponsorlink {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    color: #F2DD55;
+    margin: 0.5ex 0 0 0;
+    font-weight: bolder;
+    font-size: 150%;
+    text-align: right;
+    width: 95%;
+}
+
+p.sponsorlink a {
+    color: #F2DD55;
+    font-weight: bolder;
+}
+
+p.sponsorlink a:focus {
+    color: white;
+    background: black;
+    font-weight: bolder;
+    text-decoration: underline;
+}
+
+p.sponsorlink a:hover {
+    color: #F2DD55;
+    font-weight: bolder;
+    text-decoration: underline;
+}
+
+p.sponsorlink a:active {
+    color: #F2DD55;
+    font-weight: bolder;
+    text-decoration: underline;
+}
+
+ul.sponsors {
+    margin: 0 0 0 0;
+    padding: 1em 1em 1em 1em;
+    display: block;
+    text-align: center;
+    vertical-align: middle;
+} 
+
+ul.sponsors li {
+    list-style: none;
+    display: inline;
+    vertical-align: middle;
+    text-align: center;
+}
+
+img {
+    border: 0;
+}
+
+img.sponsor {
+    max-height: 80px;
+    max-width: 250px;
+    vertical-align: middle;
+    padding: 1em 2ex 1em 2ex;
+}

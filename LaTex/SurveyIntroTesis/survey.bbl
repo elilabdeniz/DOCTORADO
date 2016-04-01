@@ -1,0 +1,259 @@
+\begin{thebibliography}{10}
+
+\bibitem{abadiCardelli:otherversion}
+M.~Abadi and L.~Cardelli.
+\newblock {\em A Theory of Objects}.
+\newblock Springer-Verlag New York, Inc., Secaucus, NJ, USA, 1st edition, 1996.
+
+\bibitem{allendeAl:scp2014}
+E.~Allende, O.~Calla{\'u}, J.~Fabry, {\'E}.~Tanter, and M.~Denker.
+\newblock Gradual typing for {Smalltalk}.
+\newblock {\em Sci. Comput. Programming}, 96(1):52--69, Dec. 2014.
+
+\bibitem{allendeAl:oopsla2014}
+E.~Allende, J.~Fabry, R.~Garcia, and {\'E}.~Tanter.
+\newblock Confined gradual typing.
+\newblock In {\em Proceedings of the 29th {ACM SIGPLAN} Conference on
+  Object-Oriented Programming Systems, Languages and Applications (OOPSLA
+  2014)}, pages 251--270, Portland, OR, USA, Oct. 2014.
+
+\bibitem{banadosAl:icfp2014}
+F.~Ba{\~n}ados, R.~Garcia, and {\'E}.~Tanter.
+\newblock A theory of gradual effect systems.
+\newblock In {\em Proceedings of the 19th ACM SIGPLAN Conference on Functional
+  Programming (ICFP 2014)}, pages 283--295, Gothenburg, Sweden, Sept. 2014.
+
+\bibitem{biermanAt:ecoop2014}
+G.~Bierman, M.~Abadi, and M.~Torgersen.
+\newblock {Understanding TypeScript}.
+\newblock In R.~Jones, editor, {\em Proceedings of the 28th European Conference
+  on Object-oriented Programming (ECOOP 2014)}, volume 8586, pages 257--281,
+  Uppsala, Sweden, July 2014.
+
+\bibitem{biermanAl:ecoop2010}
+G.~Bierman, E.~Meijer, and M.~Torgersen.
+\newblock Adding dynamic types to {C$^{\#}$}.
+\newblock In T.~D'Hondt, editor, {\em Proceedings of the 24th European
+  Conference on Object-oriented Programming (ECOOP 2010)}, number 6183, pages
+  76--100, Maribor, Slovenia, June 2010.
+
+\bibitem{bracha:rdl2004}
+G.~Bracha.
+\newblock Pluggable type systems.
+\newblock In {\em Workshop on Revival of Dynamic Languages}, 2004.
+
+\bibitem{cartwrightFagan:pldi1991}
+R.~Cartwright and M.~Fagan.
+\newblock Soft typing.
+\newblock In {\em Proceedings of the ACM SIGPLAN International Conference on
+  Programming Language Design and Implementation (PLDI)}, pages 278--292,
+  Toronto, Ontario, Canada, 1991.
+
+\bibitem{cecil-spec}
+C.~Chambers.
+\newblock The cecil language, specification and rationale.
+\newblock Technical report, University of Washington, Department of Computer
+  Science and Engineering, 1993.
+
+\bibitem{clarkeDrossopoulou:sigplan2002}
+D.~Clarke and S.~Drossopoulou.
+\newblock Ownership, encapsulation and the disjointness of type and effect.
+\newblock 37(11):292--310, Nov. 2002.
+
+\bibitem{clarkeAl:oopsla1998}
+D.~G. Clarke, J.~M. Potter, and J.~Noble.
+\newblock Ownership types for flexible alias protection.
+\newblock In {\em Proceedings of the 13th ACM SIGPLAN Conference on
+  Object-oriented Programming, Systems, Languages, and Applications}, OOPSLA
+  '98, pages 48--64, New York, NY, USA, 1998. ACM.
+
+\bibitem{cousot:popl1977}
+P.~Cousot and R.~Cousot.
+\newblock Abstract interpretation: a unified lattice model for static analysis
+  of programs by construction or approximation of fixpoints.
+\newblock In {\em Conference Record of the 4th {ACM} Symposium on Principles of
+  Programming Languages (POPL 77)}, pages 238--252, Los Angeles, CA, USA, Jan.
+  1977.
+
+\bibitem{dart-spec}
+{Dart Team}.
+\newblock Dart programming language specification, May 2013.
+\newblock Version 0.41.
+
+\bibitem{dezaniCiancaglini:WSFM2009}
+M.~Dezani-Ciancaglini and U.~De'Liguoro.
+\newblock Sessions and session types: An overview.
+\newblock In {\em Proceedings of the 6th International Conference on Web
+  Services and Formal Methods}, WS-FM'09, pages 1--28, Berlin, Heidelberg,
+  2010. Springer-Verlag.
+
+\bibitem{disneyFlanagan:stop2011}
+T.~Disney and C.~Flanagan.
+\newblock Gradual information flow typing.
+\newblock In {\em International Workshop on Scripts to Programs}, 2011.
+
+\bibitem{hack-spec}
+{Facebook Inc}.
+\newblock Hack programming language specification, Feb. 2015.
+
+\bibitem{fennellThiemann:csf2013}
+L.~Fennell and P.~Thiemann.
+\newblock Gradual security typing with references.
+\newblock In {\em Proceedings of the 26th Computer Security Foundations
+  Symposium (CSF)}, pages 224--239, June 2013.
+
+\bibitem{garciaCimini:popl2015}
+R.~Garcia and M.~Cimini.
+\newblock Principal type schemes for gradual programs.
+\newblock In {\em Proceedings of the 42nd {ACM SIGPLAN-SIGACT} Symposium on
+  Principles of Programming Languages (POPL 2015)}, pages 303--315, Mumbai,
+  India, Jan. 2015.
+
+\bibitem{garciaAl:popl2016}
+R.~Garcia, A.~M. Clark, and {\'E}.~Tanter.
+\newblock Abstracting gradual typing.
+\newblock In {\em Proceedings of the 43rd {ACM SIGPLAN-SIGACT} Symposium on
+  Principles of Programming Languages (POPL 2016)}, St Petersburg, FL, USA,
+  Jan. 2016.
+\newblock To appear.
+
+\bibitem{garciaAl:toplas2014}
+R.~Garcia, {\'E}.~Tanter, R.~Wolff, and J.~Aldrich.
+\newblock Foundations of typestate-oriented programming.
+\newblock {\em ACM Trans. Prog. Lang. Syst.}, 36(4):12:1--12:44, Oct. 2014.
+
+\bibitem{henglein:esop94}
+F.~Henglein.
+\newblock Dynamic typing: syntax and proof theory.
+\newblock {\em Sci. Comput. Programming}, 22(3):197--230, June 1994.
+
+\bibitem{hermanAl:hosc10}
+D.~Herman, A.~Tomb, and C.~Flanagan.
+\newblock Space-efficient gradual typing.
+\newblock 23(2):167--189, June 2010.
+
+\bibitem{ina:oopsla2011}
+L.~Ina and A.~Igarashi.
+\newblock Gradual typing for generics.
+\newblock In {\em Proceedings of the 26th {ACM SIGPLAN} Conference on
+  Object-Oriented Programming Systems, Languages and Applications (OOPSLA
+  2011)}, pages 609--624, Portland, Oregon, USA, Oct. 2011.
+
+\bibitem{knowlesFlanagan:toplas2010}
+K.~Knowles and C.~Flanagan.
+\newblock Hybrid type checking.
+\newblock {\em ACM Trans. Prog. Lang. Syst.}, 32(2):Article n.6, Jan. 2010.
+
+\bibitem{marinoMillstein:tldi2009}
+D.~Marino and T.~Millstein.
+\newblock A generic type-and-effect system.
+\newblock In {\em Proceedings of the ACM SIGPLAN International Workshop on
+  Types in Language Design and Implementation}, pages 39--50, 2009.
+
+\bibitem{milner78}
+R.~Milner.
+\newblock A theory of type polymorphism in programming.
+\newblock {\em Journal of Computer and System Sciences}, 17:348--375, 1978.
+
+\bibitem{pierce:atapl}
+B.~C. Pierce, editor.
+\newblock {\em Advanced Topics in Types and Programming Languages}.
+\newblock Cambridge, MA, USA, 2005.
+
+\bibitem{rastogi:popl2012}
+A.~Rastogi, A.~Chaudhuri, and B.~Hosmer.
+\newblock The ins and outs of gradual type inference.
+\newblock In {\em Proceedings of the 39th annual {ACM SIGPLAN-SIGACT} Symposium
+  on Principles of Programming Languages (POPL 2012)}, pages 481--494,
+  Philadelphia, USA, Jan. 2012.
+
+\bibitem{rastogiAl:sigplan2015}
+A.~Rastogi, N.~Swamy, C.~Fournet, G.~Bierman, and P.~Vekris.
+\newblock Safe \& efficient gradual typing for typescript.
+\newblock 50(1):167--180, Jan. 2015.
+
+\bibitem{sergeyClarke:esop2012}
+I.~Sergey and D.~Clarke.
+\newblock Gradual ownership types.
+\newblock In H.~Seidl, editor, {\em Proceedings of the 21st European Symposium
+  on Programming Languages and Systems (ESOP 2012)}, volume 7211, pages
+  579--599, Tallinn, Estonia, 2012.
+
+\bibitem{siekTaha:sfp2006}
+J.~Siek and W.~Taha.
+\newblock Gradual typing for functional languages.
+\newblock In {\em Proceedings of the Scheme and Functional Programming
+  Workshop}, pages 81--92, Sept. 2006.
+
+\bibitem{siekTaha:ecoop2007}
+J.~Siek and W.~Taha.
+\newblock Gradual typing for objects.
+\newblock In E.~Ernst, editor, {\em Proceedings of the 21st European Conference
+  on Object-oriented Programming (ECOOP 2007)}, number 4609, pages 2--27,
+  Berlin, Germany, July 2007.
+
+\bibitem{siekVachharajani:dls2008}
+J.~G. Siek and M.~Vachharajani.
+\newblock Gradual typing with unification-based inference.
+\newblock In {\em Proceedings of the 4th {ACM} Dynamic Languages Symposium (DLS
+  2008)}, pages 7:1--7:12, Paphos, Cyprus, July 2008.
+
+\bibitem{siekAl:snapl2015}
+J.~G. Siek, M.~M. Vitousek, M.~Cimini, and J.~T. Boyland.
+\newblock Refined criteria for gradual typing.
+\newblock In {\em 1st Summit on Advances in Programming Languages (SNAPL
+  2015)}, pages 274--293.
+
+\bibitem{strom:tse86}
+R.~E. Strom and S.~Yemini.
+\newblock Typestate: A programming language concept for enhancing software
+  reliability.
+\newblock 12(1):157--171, 1986.
+
+\bibitem{tanterTabareau:dls2015}
+{\'E}.~Tanter and N.~Tabareau.
+\newblock Gradual certified programming in {Coq}.
+\newblock In {\em Proceedings of the 11th {ACM} Dynamic Languages Symposium
+  (DLS 2015)}, pages 26--40, Pittsburgh, PA, USA, Oct. 2015.
+
+\bibitem{thatte:popl1990}
+S.~Thatte.
+\newblock Quasi-static typing.
+\newblock In {\em Proceedings of the 17th {ACM} Symposium on Principles of
+  Programming Languages (POPL 90)}, pages 367--381, San Francisco, CA, United
+  States, Jan. 1990.
+
+\bibitem{thiemannFennell:esop2014}
+P.~Thiemann and L.~Fennell.
+\newblock Gradual typing for annotated type systems.
+\newblock In Z.~Shao, editor, {\em Proceedings of the 23rd European Symposium
+  on Programming Languages and Systems (ESOP 2014)}, volume 8410, pages 47--66,
+  Grenoble, France, 2014.
+
+\bibitem{toroTanter:oopsla2015}
+M.~Toro and {\'E}.~Tanter.
+\newblock Customizable gradual polymorphic effects for {Scala}.
+\newblock In {\em Proceedings of the 30th {ACM SIGPLAN} Conference on
+  Object-Oriented Programming Systems, Languages and Applications (OOPSLA
+  2015)}, pages 935--953, Pittsburgh, PA, USA, Oct. 2015.
+
+\bibitem{vitousekAl:dls2014}
+M.~M. Vitousek, A.~M. Kent, J.~G. Siek, and J.~Baker.
+\newblock Design and evaluation of gradual typing for python.
+\newblock In {\em Proceedings of the 10th {ACM} Dynamic Languages Symposium
+  (DLS 2014)}, pages 45--56, Portland, OR, USA, Oct. 2014.
+\newblock , 50(2).
+
+\bibitem{wolffAl:ecoop2011}
+R.~Wolff, R.~Garcia, {\'E}.~Tanter, and J.~Aldrich.
+\newblock Gradual typestate.
+\newblock In M.~Mezini, editor, {\em Proceedings of the 25th European
+  Conference on Object-oriented Programming (ECOOP 2011)}, volume 6813, pages
+  459--483, Lancaster, UK, July 2011.
+
+\bibitem{zdancewic}
+S.~Zdancewic.
+\newblock {\em Programming Languages for Information Security}.
+\newblock PhD thesis, Cornell University, Aug. 2002.
+
+\end{thebibliography}

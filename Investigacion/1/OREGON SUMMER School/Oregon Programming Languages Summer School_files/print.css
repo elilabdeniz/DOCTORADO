@@ -1,0 +1,218 @@
+body {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    color: black;
+    background-color: white;
+    margin: 0 0 0 0;
+}
+
+h1, h2, h3 {
+    margin-top: 0.25em;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+h2 {
+    margin-bottom: 0;
+}
+
+h3 {
+    margin-bottom: 0;
+}
+
+code {
+    font-family: "Courier New", Courier, monotype;
+}
+
+a {
+    color: black;
+    text-decoration: underline;
+}
+
+a:after {
+    content: " [" attr(href) "]";
+    color: black;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.big {
+    width: 100%;
+    font-size: 150%;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+.small {
+    font-size: 100%;
+    font-weight: bold;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+/* UO HEADER AND FOOTER ----------------------------------------------------------- */
+
+#uobar {
+    display: none;
+}
+
+a.uonav:link, a.uonav:visited {
+    display: none;
+}
+
+#outer-footer {
+    display: none;
+}
+
+/*put in because chrome keeps covering up last line on screen */
+#last-footer {
+    display: none;
+}
+
+#uofooter {
+    display: none;
+}
+
+.footer {
+    display: none;
+}
+
+/* OPLSS styles -------------------------------------------------------------- */
+
+#oplsstitle {
+    display: block;
+    padding: .75em 0 1.5em 0;
+    min-height: 2.5em;
+    color: black;
+    background: white;
+}
+
+#oplsstitle h1 a {
+    test-decoration: none;
+}
+
+#oplsstitle h1 a:after {
+    content: "";
+}
+
+#oplsstitle a:link, #oplsstitle a:visited {
+    font-family: Quadon-Light,Times,Georgia,"DejaVu Serif",serif;
+    font-weight: 100;
+    text-decoration: none;
+    color: #004a20;
+}
+
+#oplsstitle a:active, #oplsstitle a:hover {
+    outline: 0;
+}
+
+#oplsstitle a:focus {
+    outline: thin dotted;
+}
+
+#oplssmasthead  {
+    display: none;
+}
+
+#page {
+    background: white;
+    color: black;
+    display: block;
+    margin: 1ex 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#page h1, #page h2, #page h3 {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+#main {
+    font-family: Georgia,Melior,Times,"Times New Roman",Palatino,serif;
+    background: white;
+    color: black;
+    display: block;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#sponsors {
+    font-family: Arial, Verdana, Helvetica, sans-serif;
+    color: #black;
+    margin: 1ex;
+    float: right;
+    font-weight: bolder;
+    font-size: 150%;
+}
+
+#submenu {
+    display: none;
+}
+
+p.sponsorlink {
+    display: none;
+}
+
+ul.sponsors {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    display: block;
+    text-align: center;
+    vertical-align: middle;
+} 
+
+ul.sponsors li {
+    padding: 0.5ex 2em 0.5ex 2em;
+    list-style: none;
+    display: inline;
+    vertical-align: middle;
+    text-align: center;
+}
+
+img {
+    border: 0;
+}
+
+img.sponsor {
+    max-height: 80px;
+    max-width: 250px;
+}
+
+.person {
+    clear: left;
+    display: block;
+    margin: 0 0 0 0;
+    padding: 1ex;
+    height: auto;
+    width: auto;
+}
+
+.name {
+    font-size: 1.15em;
+    display: block;
+    margin: 1ex 0 0 0;
+    padding: 0 0 0 0;
+    text-align: left;
+}
+
+.name a {
+    text-decoration: none;
+}
+
+.name a:after {
+    content: none;
+}
+
+.inst {
+    display: block;
+    margin: 0 0 0 0;
+    padding: 0 0 0 1ex;
+    text-align: left;
+}
+
+ul.sponsors a:after {
+    content: none;
+}
+

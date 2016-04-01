@@ -1,0 +1,643 @@
+%%% Doctype
+\documentclass{article}
+
+%%%% Packages
+\usepackage{hyperref} %package for generating bookmarks
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%used for figure, for stopping auto float
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stackengine}
+
+%Multiline comment
+\usepackage{verbatim}
+%for logic proofs
+\usepackage{proof}
+\usepackage{pdflscape}
+% Package that contains captionof
+\usepackage{caption}
+% Package for code listings
+\usepackage{listings}
+\lstset{language=ML} 
+
+%\usepackage{color}
+\usepackage[usenames, dvipsnames]{color}
+%\setcounter{secnumdepth}{6}
+
+%% BEGIN{CUSTOM COMMAND}
+%% emb:: creates a term embedding
+\newcommand{\emb}[3]{\texttt{[}#1\texttt{]}_{#2}^{#3}}
+%% typefirm:: creates the type firm for type rule
+\newcommand{\typefirm}{
+\begin{tabular}{ |c| } 
+ \hline
+ $\Gamma \vdash e : T$ \\  
+ \hline
+\end{tabular}}
+%% lam
+\newcommand{\tlam}[3]{\lambda #1 : \textcolor[rgb]{0,0,1}{#2}. \: #3}
+\newcommand{\lam}[2]{\lambda #1 . \: #2}
+\newcommand{\pcast}[2]{\left\langle #1\right\rangle_{#2}}
+%% cast
+\newcommand{\cast}[1]{\left\langle #1 \right\rangle}
+\newcommand\tcast[2]{\left\langle #1 \Leftarrow #2 \right\rangle }
+%% quotes
+\newcommand{\quotes}[1]{``#1''}
+\newcommand{\cifelse}[3]{\textcolor[rgb]{0,0,1}{if}(#1)\: #2 \: \textcolor[rgb]{0,0,1}{else} \: #3}
+
+\newcommand\stlc[0]{$\lambda^{\rightarrow}$}
+\newcommand\gstlc[0]{$\lambda^?_{\rightarrow}$}
+\newcommand\obj[0]{$\text{Ob}^{<:}$}
+\newcommand\gobj[0]{$\texttt{Ob}^?_{<:}$}
+\newcommand\gcobj[0]{$\texttt{Ob}^{\left\langle . \right\rangle}_{<:}$}
+\newcommand\csub[0]{\substack{<\\\sim}}
+\newcommand\rcsub[0]{$\prec:$}
+\newcommand\gradualtalk[0]{Gradualtalk}
+
+\newcommand\iqm[0]{?`}
+
+\newcommand\powerset[0]{\mathcal P}
+
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+
+%command used for rule names in the \infer enviroment
+\newcommand\rulename[1]{\mathrm{\text{[#1]}}}
+\newcommand\irname[1]{[#1]}
+
+%% remarkable text indicating complete or improve something
+\newcommand\myworries[1]{\textcolor{red}{$\rhd$ #1 $\lhd$}}
+\newcommand\redtext[1]{\textcolor{red}{#1}}
+\newcommand\fix[1]{\textcolor{red}{#1}}
+\definecolor{grayDeleted}{gray}{0.6}
+\definecolor{grayRemark}{gray}{0.6}
+
+\newcommand\todelete[1]{\textcolor{grayDeleted}{$\rhd$ #1 $\lhd$}}
+\newcommand\icode[1]{\texttt{#1}}
+
+\newcommand\newtext[1]{\textcolor{blue}{#1}}
+
+%% END{CUSTOM COMMAND}
+
+%STYLES CUSTOMIZATION FOR LAMBDA CALCULUS
+\definecolor{classcolor}{RGB}{43,145,175}
+\definecolor{commentcolor}{RGB}{0,128,0}
+\definecolor{stringcolor}{RGB}{163,21,21}
+%Defintion of lambda code listing style
+\lstdefinelanguage{Lambda}{%
+  morekeywords={%
+    let,in,if,then,else,fix,type,true,false,ref,fun % keywords go here
+  },%
+  morekeywords={[2]int,string, bool},   % types go here
+	morekeywords={[3]fh,celsius},
+  otherkeywords={:}, % operators go here
+  literate={% replace strings with symbols
+		{<=}{{$\Leftarrow$}}{2}
+    {->}{{$\to$}}{2}
+    {lambda}{{$\lambda$}}{1}
+  },
+  basicstyle={\sffamily},
+  keywordstyle={\color{blue}},
+  keywordstyle={[2]\color{blue}}, % style for types
+	keywordstyle={[3]\color{classcolor}}, % style for types
+	morecomment=[l]{//},
+	commentstyle=\color{commentcolor}, % white comments		
+	showstringspaces=false,
+	morestring=[b]",
+	morestring=[d]',
+	stringstyle=\color{stringcolor}\ttfamily, % typewriter type for strings
+  keepspaces,
+  mathescape % optional
+}[keywords,comments,strings]%
+
+%JAVA CODE STYLE
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+
+\lstset{language=Java,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  basicstyle=\ttfamily,
+  moredelim=[il][\textcolor{pgrey}]{$$},
+  moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%}
+}
+
+%ENVIROMENTS FOR THEOREMS, COROLLARY AND LEMMAS
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}{Lemma}
+
+\usepackage{authblk}
+
+\title{\bf Gradual Verification of Program Properties: A short survey}
+\author{Raimil Cruz
+\thanks{Funded by grant CONICYT, CONICYT-PCHA/Doctorado Nacional/2014-63140148}}
+\affil{Computer Science Department (DCC), University of Chile, Chile}
+\date{}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\begin{document}
+	\maketitle
+	\renewcommand{\abstractname}{Abstract}	
+	\begin{abstract}
+	Gradual typing combines static and dynamic typing safely within a single language. Siek and Taha  defined its theory in 2006 to combine the untyped lambda calculus and the simply typed lambda calculus. In the last decade many proposals have developed gradual typing for other language features. This paper surveys some of the most important work on gradual typing and its application to real language design. In particular, we are interested in exploring the extension of gradual typing to gradually checking advanced program properties.
+	\end{abstract}	
+\section{Introduction}
+Statically and dynamically typed languages have well-known advantages and drawbacks making them more appropriate in different scenarios. On the one hand, statically-typed languages like Java, C\# and Haskell provide early error detection, are more efficient, provide machine-checked documentation and  have better support for tools (e.g auto-completion features, code analysis). On the other hand, dynamically-typed languages are more suitable for rapid prototyping, support more flexible programming idioms, do not report spurious errors, and are easier to learn. The strengths of ones are the weaknesses of the others. There has been a lot of effort in combining the best of both worlds in the same language using different approaches. One of the most studied recently has been \textit{gradual typing}~\cite{siekTaha:sfp2006}. 
+
+\emph{Gradual typing} was introduced by Siek and Taha~\cite{siekTaha:sfp2006} to name a class of type systems that combine static and dynamic type checking in the same program. Gradual typing gives programmers the control over which discipline is used in each part of the code. Static regions can be safely optimized, providing a \quotes{pay-as-you-go} runtime cost of dynamism. It means that a fully  annotated program in the gradual language runs as fast as in a statically-typed language. Another fact that makes the gradual typing approach interesting is that it allows gradual evolution from static to dynamic or vice versa.  It means that a graduallly-typed language is a superset of both a static and a dynamic language, and more than that partially-typed programs are supported. 
+
+The theory of gradual typing introduces the \emph{unknown type} ? to deal with dynamism. (The unknown type is also named \emph{dyn} or \emph{dynamic} type.) To work with the unknown type, type equality is relaxed to \emph{type consistency}. Type consistency expresses that the unknown type is consistent with any type. The gradual type system accepts or rejects programs based on type consistency. The presence of the unknown type delays type checking to runtime. The runtime semantics of the gradual language is not directly defined over source programs. Instead, to run a gradual program, a translation is done to an intermediate language with \emph{casts}. During translation, casts are inserted where consistency is used. Casts perform dynamic type checking, safeguarding static assumptions.
+
+Gradual typing has received attention in both academia and industry. Its ideas have been applied to real language design such as TypeScript~\cite{biermanAt:ecoop2014}, Dart~\cite{dart-spec}, Hack~\cite{hack-spec} and an extension of C\# with the dynamic type~\cite{biermanAl:ecoop2010}. Beyond simple typing, gradual typing has been applied to other typing disciplines such as ownership types~\cite{sergeyClarke:esop2012}, type-and-effects~\cite{banadosAl:icfp2014, toroTanter:oopsla2015}, security typing~\cite{disneyFlanagan:stop2011, fennellThiemann:csf2013}, annotated type systems~\cite{thiemannFennell:esop2014}, typestates~\cite{wolffAl:ecoop2011} and refinement types~\cite{tanterTabareau:dls2015}.
+
+In this short survey we describe gradual typing (in Section \ref{section:gradual_typing}), presenting the original work of Siek and Taha and subsequent work that extends gradual typing to other language features. In Section \ref{section:gradual_verification} we highlight some of the most important uses of gradual typing applied to the verification of program properties. Finally in Section \ref{section:discussion} we comment on some of the challenges of gradual typing such as performance issues and the search for a unified theory that can make it easier to extend gradual typing to other typing disciplines.
+
+\section{Gradual typing}\label{section:gradual_typing}
+In this section we provide a gentle introduction to gradual typing by examples. After that, we summarize the original paper of Siek and Taha~\cite{siekTaha:sfp2006} with the theory of gradual typing, and other subsequent relevant work in this research area.
+
+\subsection{Gradual typing by examples}
+In a gradually-typed language, type annotations are optional. The gradual type system uses the information of the typed part of the programs to detect type inconsistency and statically reject programs. In the absence of static type information, errors are detected dynamically during the execution of the program. A gradual system is a superset of a static and dynamic type system, which means that either a fully annotated code or a code with no type annotation at all can be accepted. It also supports partially-annotated programs. This is the most interesting. 
+
+Figure \ref{fig:gt-example-1} presents a program that does not have type annotations. We have a function \icode{f} that adds \icode{2} to its argument. As the argument is not annotated, the \icode{f} function could be applied with an argument of any type. There is another function \icode{h} which applies its argument \icode{g} to \icode{1}. Reading the definition of \icode{h} we can see that there is an implicit intention of receiving a function, but as the parameter \icode{g} is not annotated, this assumption is not statically enforced. The third line is an application of \icode{h} with \icode{f}. After two steps of substitutions the addition is performed, producing \icode{3}.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x) = x + 2
+def h(g) = g(1)
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Dynamically-checked valid program}%
+\label{fig:gt-example-1}%
+\end{figure}
+  
+In the example of Figure \ref{fig:gt-example-2}, the function \icode{h} applies its argument \icode{g} to \icode{true}. In this case the application of \icode{h} with \icode{f} produces a runtime type error when trying to evaluate \icode{true + 2}. The \icode{+} operator requires its operands to be of type \icode{int}, and the first operand is a \icode{boolean} value.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x) = x + 2
+def h(g) = g(true)	
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Dynamically-checked invalid program (runtime error)}%
+\label{fig:gt-example-2}%
+\end{figure} 
+ 
+In these previous examples type checking is done dynamically because there is no static type information. A gradual system also supports fully annotated programs. Instead of detecting errors at runtime, the gradual type system uses the type information to report type errors statically. In the following example we have annotated the arguments of functions \icode{f} and \icode{h}. A static validation is done for the expressions \icode{g(1)} and \icode{h(f)}. No type inconsistencies are found and the program executes to \icode{3}.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x:int) = x + 2
+def h(g:int -> int) = g(1)	
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Statically-checked valid program}%
+\label{fig:gt-example-3}%
+\end{figure} 
+ 
+In the next example (Figure~\ref{fig:gt-example-4}), we change the function \icode{h}. Now it applies its parameter to \icode{true}. In this case the parameter \icode{g} is annotated with the type \icode{int $\rightarrow$ int} indicating it is a function from \icode{int} to \icode{int}. This program does not type check because \icode{g} is applied with a \icode{boolean} value. The program	 is therefore rejected statically.
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x:int) = x + 2
+def h(g:int -> int) = g(true)	
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Statically-checked invalid program (compile-time error)}%
+\label{fig:gt-example-4}%
+\end{figure}  
+
+\paragraph{Sound Interoperability} Gradual typing goes beyond supporting fully annotated or fully dynamic programs in the same program. It is possible to combine static and dynamic checking. Let us see how gradual typing provides a sound interoperability between both checking disciplines.
+
+In the example of Figure~\ref{fig:gt-example-5} we have a statically-typed function \icode{f}. Function \icode{g} is dynamically typed. The interaction between both worlds takes place when the function \icode{h} is applied with function \icode{g}. After one reduction step we have the expression \icode{f(1)}. Instead of doing another step of reduction directly,  for this example, a dynamic check is performed before calling \icode{f}, which protects assumptions made in the static code. This program is well-typed, and evaluates to \icode{3} successfully. 
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x:int) = x + 2
+def h(g) = g(1)	
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Gradual program, valid}%
+\label{fig:gt-example-5}%
+\end{figure}
+
+In the next example we changed the definition of the function \icode{h}. Now it applies its argument \icode{g} to \icode{true}. After a reduction step we get the expression \icode{f(true)}. A dynamic check is done and a type inconsistency is detected: we are trying to apply a function that receives an \icode{int} with a \icode{boolean}. For this program, we get a dynamic cast error. 
+\begin{figure}[!htbp]
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python]
+def f(x:int) = x + 2
+def h(g) = g(true)	
+h(f)
+\end{lstlisting}
+\end{tabular}
+\end{center}
+\caption{Gradual program, invalid (runtime cast error)}%
+\label{fig:gt-example-6}%
+\end{figure}  
+Unlike the example in Figure~\ref{fig:gt-example-2}, where the dynamic type error is detected in the body of the function \icode{f} (just before the expression \icode{x + 2} is executed), in this example the type error is detected earlier, specifically when the function \icode{f} is applied in the expression \icode{f(true)}. The difference is that the type annotation of the argument of function \icode{f} make its body safe. That mean no dynamic error occurs in the body of \icode{f} and that therefore \icode{f} can be compiled efficiently (using an unchecked \icode{+} primitive).
+
+These examples show that is possible to move from a fully dynamically-typed program to a fully statically-checked program. We can get early error detection by adding type annotations. The gradual system detects static type errors if there is enough type information to prove that there exists a static type violation. Otherwise, it defers type checking to runtime. 
+ 
+\subsection{Theory}
+We now present the formal work of Siek and Taha~\cite{siekTaha:sfp2006}, which defines how static and dynamic type checking are combined in a gradually-typed language.
+
+\subsubsection{Gradual Typing for functional languages}\label{ref:gtfl}
+Siek and Taha published the original gradual typing paper in 2006~\cite{siekTaha:sfp2006}. Before that, several programming languages provide gradual typing to some degree such as Cecil~\cite{cecil-spec} or extensions proposed to C\#, Java, ML and Scheme. Siek and Taha provide a theoretical foundation for these languages. Other important approaches for combining static and dynamic checking are Quasi-static typing~\cite{thatte:popl1990}, soft typing~\cite{cartwrightFagan:pldi1991}, optional types~\cite{bracha:rdl2004} and hybrid types~\cite{knowlesFlanagan:toplas2010}. Siek and Taha compare gradual typing to those approaches in their paper. The key feature of gradual typing is the fine-grained, sound interoperability it provides.
+
+They present a calculus named \gstlc \: which extends the simply typed lambda calculus \stlc \: with the unknown type (?). This gives the desired dynamic flexibility in the type checking. In their calculus the unknown type appears in the absence of type annotations. For instance, the expression $\lambda x. x+1$, where the argument $x$ does not have an annotated type, corresponds to the expression $\lambda x:?. x+1$. Siek and Taha introduce the notion of \textit{consistency} to express compatibility between types in the presence of the unknown type.
+\paragraph{Type Consistency}\label{ref:type-consistency}
+\[
+\begin{tabular}{l l}
+\infer[\rulename{CRefl}] 
+{\tau \sim \tau}{} &
+\infer[\rulename{CFun}] 
+{\tau_1 \rightarrow \tau_2 \sim \tau'_1 \rightarrow \tau'_2}
+{\tau_1 \rightarrow \tau'_1 \quad \tau_2 \rightarrow \tau'_2} \\
+\\
+\infer[\rulename{CUnR}] 
+{\tau \sim  \: ?}{} &
+\infer[\rulename{CUnL}] 
+{ ? \sim \tau}{} 
+\end{tabular}
+\]
+
+Type consistency captures the notion that it is plausible for the unknown type to be any type. The consistency relation is reflexive and symmetric, but not transitive. With transitivity we could prove that all types are consistent, for example \icode{bool} and \icode{int}, using that \icode{bool $\sim \:$ ?} and \icode{? $\sim$ int}, but a gradual type system rejects statically the use of an \icode{int} for a \icode{bool}.
+The consistency relation affects how type checking is done. For example in the simply typed lambda calculus \stlc \: the application rule requires that the function formal argument type must be equal to the actual argument type:
+\[
+\infer[\rulename{TApp}] 
+{\Gamma \vdash e_1 \: e_2 : \tau_2 }
+{\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2 \quad 
+\Gamma \vdash e_2: \tau_1}
+\]
+Siek and Taha relax in \gstlc \: the equality relation between types, changing the above rule for two rules appealing to the consistency relation.
+
+\[
+\begin{tabular} {c}
+
+\infer[\rulename{GApp1}] 
+{\Gamma \vdash_G e_1 \: e_2 : ? }
+{\Gamma \vdash_G e_1 : ? \quad 
+\Gamma \vdash_G e_2: \tau_2}
+
+\\
+\\
+
+\infer[\rulename{GApp2}] 
+{\Gamma \vdash_G e_1 \: e_2 : \tau_2 }
+{\Gamma \vdash_G e_1 : \tau_{11} \rightarrow \tau_2 \quad 
+\Gamma \vdash_G e_2: \tau_{12} \quad \tau_{11} \sim \tau_{12}}
+
+\end{tabular}
+\]
+These rules allow the gradual type checker to accept programs like \icode{($\lambda$x:?. x+1) true}, though this concrete program is going to fail at runtime. The introduced flexibility in the static type rules is checked at runtime. Instead of providing a runtime semantics for the gradual language, Siek and Taha compile gradual source programs to a cast calculus where dynamic type checking is performed via casts. The intermediate language extends \gstlc \: with a cast expression and a \icode{CastError} term to represent runtime type errors. Values are extended with a tagged value $\tcast{?}{\tau}v$.
+\[
+\begin{tabular}{l l c l}
+(terms) &$e$ &::= & ... $\mid$  $\tcast{\tau_2}{\tau_1}e$ $\mid$ $\texttt{CastError}$ \\
+(values) &$v$ &::= & ... $\mid$  $\tcast{?}{\tau}v$ ($\tau \neq \: ?$)
+\end{tabular}
+\]
+In a cast expression $\tcast{\tau_2}{\tau_1}e$, $\tau_2$ expresses the desired type of the expression $e$ and $\tau_1$ the known type of the expression.
+The following small-step evaluation rules are the important ones to understand how dynamic type checking is done with casts. The evaluation cast rules here are written with a different syntax than the ones of Siek and Taha but are equivalent. Rule \irname{EC1} compacts two casts with ? in the middle, \irname{EC2} raises an error if both types are not consistent and \irname{EC3} handles successful cast. Rule \irname{EC4} applies for higher-order casts. For such a cast, a wrapper function is created, in which the argument and the result are cast to the expected types.
+\[
+\begin{tabular}{c}
+
+\infer[\rulename{EC1}] 
+{\tcast{\tau_2}{?} \tcast{?}{\tau_1} v \longmapsto  \tcast{\tau_2}{\tau_1} }
+{\tau_1 \neq ?}
+
+\\
+\\
+
+\infer[\rulename{EC2}] 
+{\tcast{\tau_2}{\tau_1} v \longmapsto \texttt{CastError}}
+{\tau_1 \nsim \tau_2 }
+
+\\
+\\
+
+\infer[\rulename{EC3}] 
+{\tcast{\tau_2}{\tau_1} v \longmapsto v }
+{\tau_1 = \tau_2}
+\\
+\\
+\infer[\rulename{EC4}] 
+{\tcast{\tau_2}{\tau_1} v \rightarrow 
+\lambda x : \tau_{21}. \tcast{\tau_{22}}{\tau_{12}} (v \tcast{\tau_{11}}{\tau_{21}} x) }
+{\tau_1 \neq \tau_2 \quad \tau_1 = \tau_{11} \rightarrow \tau_{12}
+\quad \tau_2 = \tau_{21} \rightarrow \tau_{22} \quad \tau_1 \sim \tau_2} 
+
+\end{tabular}
+\]
+
+The translation from \gstlc~to the intermediate calculus introduces cast when the unknown type appears. For programs that are fully annotated no casts are inserted. This fact is expressed in the rule \irname{CIApp1} and ensures a \textit{\quotes{pay as you go}} cost of dynamism. 
+
+\[
+\begin{tabular}{c}
+\infer[\rulename{CIApp1}] 
+{\gij{e_1 \: e_2}{e'_1 \: e'_2}{\tau'}}
+{\gij{e_1}{e'_1}{\tau \rightarrow \tau'} \quad \gij{e_2}{e'_2}{\tau}}
+
+\\ 
+\\
+\infer[\rulename{CIApp2}] 
+{\gij{e_1 \: e_2}{e'_1 \: \tcast{\tau}{\tau_2} e'_2}{\tau} }
+{\gij{e_1}{e'_1}{\tau \rightarrow \tau'} \quad \gij{e_2}{e'_2}{\tau_2}
+\quad \tau_2 \neq \tau \quad \tau_2 \sim \tau}
+
+\\
+\\ 
+
+\infer[\rulename{CIApp3}] 
+{\gij{e_1 \: e_2}{(\tcast{\tau \rightarrow ?}{?} e'_1) \: e'_2}{?} }
+{\gij{e_1}{e'_1}{?} \quad \gij{e_2}{e'_2}{\tau}}
+\end{tabular}
+\]
+
+Let us see how cast insertion works, inserting casts on the expressions of the example of Figure~\ref{fig:gt-example-6}. The argument \icode{g} of function \icode{h} has an unknown type. In the body of \icode{h}, \icode{g} is cast from unknown (\icode{?}) to \icode{bool} $\rightarrow$ \icode{?} using rule \irname{CIApp3}. In the line 3, the translation process inserts a cast from \icode{int} $\rightarrow$ \icode{int} to \icode{?} for argument \icode{f} (rule \irname{CIApp2}): 
+\lstset{language=Python,
+ literate={% replace strings with symbols
+		{<=}{{$\Leftarrow$}}{2}
+    {->}{{$\to$}}{2}
+    {lambda}{{$\lambda$}}{1}
+  },
+}
+\begin{lstlisting}
+def f(x:int) = x + 2
+def h(g:?) = (<bool->? <= ?>g)(true)
+h(<? <= int->int>f)
+\end{lstlisting}
+The expression $\tcast{?}{\icode{int} \rightarrow \icode{int}}$ \icode{f} is already a value so the first evaluation step is a substitution getting the following expression:
+\begin{lstlisting}
+(<bool->? <= ?><? <= int->int>f)(true)
+\end{lstlisting}
+We apply rule \irname{EC1} to combine cast and we get:
+\begin{lstlisting}
+(<bool->? <= int->int>f)(true)
+\end{lstlisting}
+Evaluation of this cast produces \icode{CastError} (rule \irname{EC2}), because \icode{bool} $\rightarrow $\icode{?} is not consistent with \icode{int}$\rightarrow$\icode{int}.
+
+The key property for a typed language is \emph{type safety}, which informally says that if a program $p$ is well typed, then the evaluation of $p$ does not reach an invalid ending state. For example for \stlc \: the only valid ending state is a value. In gradually-typed languages a new valid ending state is added: \icode{CastError}. Siek and Taha prove indirectly type safety for the gradual language, proving type safety for the intermediate language and proving that the translation from the gradual source language to the intermediate language preserves typing~\cite{siekTaha:sfp2006}.
+
+Siek and Taha also explicitly express the relation with fully annotated type programs and fully unannotated programs.  The next propositions make clear that the gradually typed language supersedes both the dynamically and the statically typed languages:
+\begin{enumerate}
+	\item \emph{Equivalence to the Simply Typed Lambda Calculus (STLC) for fully annotated terms}. This theorem says that for a fully annotated expression \emph{e} the gradual type system gives the same static type to \emph{e} that the STLC type system gives, and the evaluation of \emph{e} in both system produces the same value.
+	\item \emph{Embedding of Dynamically Typed Lambda Calculus (DLTC)}. For a term \emph{e} of the DTLC, the gradual system also accepts its lifted version \emph{$\left\lceil e\right\rceil$} and gives it the unknown type. Besides, if \emph{e} reduces to a value \emph{v} in DTLC, \emph{$\left\lceil e\right\rceil$} reduces to \emph{v} in \gstlc.	
+\end{enumerate} 
+The \emph{$\left\lceil e\right\rceil$} embeds a term of DTLC into the \gstlc. This encoding casts all values to the unknown type. 
+
+\subsubsection{Gradual typing for objects}
+After their first gradual typing paper, Siek and Taha published Gradual Typing for Objects~\cite{siekTaha:ecoop2007} in 2007. In this work they extend the statically typed object calculus of Abadi and Cardelli \obj \: \cite{abadiCardelli:otherversion} with gradual typing. The \obj \: calculus has structural subtyping and the main contribution of that paper is to combine subtyping with gradual typing safely.
+
+The consistency relation has to deal with structural object types. Siek and Taha follow the intuition that two types are consistent if their known parts are equal. The following example shows the idea. The notation $[m_1: s_1, ..., m_n : s_m]$ represents a type for an object where $m : s$ is the name $m$ of the attribute and $s$ its signature.
+\[
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c}
+$\tau \sim \tau \quad \tau \sim \: ? \quad ? \sim \tau$ \\
+$[x: int \rightarrow \:?, y:\:? \rightarrow bool] \sim [y:\: ? \rightarrow bool, x: int \rightarrow \:?]$ 
+\end{tabular}
+\]
+However for the following types the consistency relation does not hold. In the first case there is an inconsistency in the type of attribute $x$. In the second case types have different sizes.
+\[
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l}
+$[x: int \rightarrow int, y:\:? \rightarrow bool] \nsim [x:\: bool \rightarrow int, y: ? \rightarrow bool]$ \\
+$[x: int \rightarrow int, y:\:? \rightarrow ?] \nsim [y: int \rightarrow int]$ 
+\end{tabular}
+\]
+This consistency relation is formalized in the paper, but is unsurprising.
+
+ To combine gradual typing with subtyping is the real challenge. Siek and Taha make a separation between the unknown type (?) with the top of the subtyping relation (e.g. \icode{Object} in Java). The challenge is that subtyping is transitive, while consistency should not be (\ref{ref:type-consistency}). Therefore, they treat \icode{?} neutral to subtyping, which is expressed with the new rule $? \: <: \:?$:
+\[
+\begin{tabular}{c}
+$\tau <: \tau \quad ? \: <: \:?$ \\
+$[m_i : s_i \:^{i \in 1..n+m}] <: [m_i : s_i \:^{i \in 1..n}]$
+\end{tabular}
+\]
+In the above definition we omit the subtyping rule that allows covariance and contravariance for object types, because it is not relevant to get the intuition about the role of the unknown type with respect to subtyping. Once the separation between consistency and subtyping is done, they define \emph{consistent subtyping} $\csub$. This relation is characterized alternatively as:
+\begin{enumerate}
+	\item $\sigma \csub \tau$ iff $\sigma <: \tau'$ and $\tau' \sim \tau$ for some $\tau'$
+	\item $\sigma \csub \tau$ iff $\sigma \sim \tau'$ and $\tau' <: \tau$ for some $\tau'$
+\end{enumerate}
+For example
+\[
+\begin{tabular}{l}
+$[x: int \rightarrow ?, y:\:bool \rightarrow bool ] \csub [x: \:? \rightarrow int]$ 
+\end{tabular}
+\]
+because there exists the type $[x: ? \rightarrow int, y:\:bool \rightarrow bool]$ for which :
+\[
+\begin{tabular}{l}
+$[x: int \rightarrow ?, y:\:bool \rightarrow bool] \sim [x: \:? \rightarrow int, y:\:bool \rightarrow bool]$  \\
+$[x: ? \rightarrow int, y:\:bool \rightarrow bool] <: [x: \:? \rightarrow int] $ 
+\end{tabular}
+\]
+
+The gradual type system is straightforward to derive with the consistent-subtyping relation. The runtime semantics of the gradual calculus is also defined through a translation to an intermediate language with casts named \gcobj. A key aspect in the dynamic semantics is the computation of type $\tau'$ that makes the consistent-subtyping relation holds between two types. They define a \emph{merge operator} written $\sigma \leftharpoonup \tau$ to calculate $\tau'$. Proofs of type safety are done similar to those for gradual typing for functional languages.
+
+\subsubsection{Gradual typing for generics}
+Generics, or parametric polymorphism, is another language feature for which gradual typing was applied. Ina and Igarashi~\cite{ina:oopsla2011} presented gradual typing for generics. They develop a gradual calculus for generics over a class-based language (with nominal subtyping instead of structural subtyping), similar to Java.  
+
+One of the contributions of their work is to provide a flexible consistency relation for parametric types in the presence of the unknown type (noted \icode{dyn}). In a language like Java, the subtying relation for generic types is invariant with respect to type parameters. For instance for the types \icode{List<T1>} and \icode{List<T2>} the subtyping relation only holds if \icode{T1 = T2}.  Their consistency relation allows covariance and contravariance with \icode{dyn} as a type parameter, for example, \icode{List<Rectangle>} $\csub$  \icode{List<dyn>} and \icode{List<dyn> $\csub$ List<Rectangle>}. The following assignments are valid.
+\begin{lstlisting}[language=Java]
+List<dyn> l1 = new List<Rectangle>();
+List<Rectangle> l2 = l1;
+\end{lstlisting}
+
+This consistency relation is used in the gradual type system, but it is too permissive for the intermediate language. Let us see the following code:
+\begin{lstlisting}[language=Java]
+List<dyn> l1 = new List<Rectangle>();
+l1.add(new Object());
+List<Rectangle> l2 = l1;
+l2[0].area();
+\end{lstlisting}
+In the above program the third line introduces the type \icode{List<Rectangle>} which is fully known. Note that the method invocation on the fourth line is statically valid (\icode{l2[0]} has type \icode{Rectangle}), so it should not fail at runtime. However, because of the assignment on line 3, \icode{l2[0]} is not a \icode{Rectangle} object, so the static assumption is violated.
+    
+In order to address this issue, Ina and Igarashi introduce a more restrictive consistency relation \rcsub \: for casts, which removes \icode{List<dyn> \rcsub \: List<Rectangle>}, but still supports \icode{List<Rectangle> \rcsub \: List<dyn>}. In that case the expected cast \icode{List<Rectangle>} $\Leftarrow$ \icode{List<dyn>} on the third line is going to fail in the intermediate language, protecting the statically typed regions from performing an unsafe operation.
+
+\subsubsection{Refined criteria for gradual typing}
+Despite the fact that much work has been done in last decade to integrate dynamically and statically typed programs associated to gradual typing, not all satisfy the original intention of gradual typing. In 2015, Siek et al~\cite{siekAl:snapl2015} present a stronger criterion to characterize gradual typing precisely. 
+
+The \emph{gradual guarantee} is related to a notion of precision on types and terms. For instance, the type $int \rightarrow \:?$ is more precise that ?, but less precise than $int \rightarrow int$. The gradual guarantee informally says three things:
+\begin{enumerate}
+	\item if a gradually typed program is well typed,  the same program with less precise type annotations is also well typed.
+\item if a gradually typed program evaluates to a value, the same program with less precise type annotations also evaluates to this value.
+\item if a gradually typed program evaluates to a value, the same program with more precise type annotations also evaluates to this value or produces a runtime error.
+\end{enumerate}
+
+A corollary to the first statement is that if a program is not well typed, adding more type annotations will not make the program well typed. In a gradually-typed language, the gradual guarantee gives to programmers a notion of what they can expect when adding or removing type annotation in a well-typed program.
+
+\subsection{Gradual typing vs type inference}
+Gradual typing and type inference have one thing in common, ie. that programmers do not need to annotate types. The main difference is that type inference requires static type checking. Some work has been done in integrating gradual typing and type inference~\cite{siekVachharajani:dls2008, garciaCimini:popl2015, rastogi:popl2012}.
+
+In \gstlc \:the expression $\lambda x. x \: x$ is equivalent to $\lambda x:?. x \: x$, because the absence of a type annotation is interpreted as the unknown type. This expression in \gstlc \: has type $? \rightarrow \: ?$. However in the STLC with type inference, the expression $\lambda x. x \: x$ is rejected.
+
+Siek and Vachharajani combine gradual typing with type inference~\cite{siekVachharajani:dls2008}. They define a new calculus $\lambda^{?\alpha}_{\rightarrow}$ which is the result of extending \gstlc with type variables. The type inference algorithm is responsible for choosing a solution that does not introduce unnecessary casts. This means that if there are many options for a type, they choose the less informative (that is the one that contains more unknown types). 
+
+In this new system a function parameter that is not annotated is implicitly annotated with the dynamic type, however for local variables (defined with a \icode{let} expression) static types are inferred. An expression \icode{let x = e$_1$ in e$_2$}, where the type of \icode{x} is not annotated, is converted to \icode{($\tlam{x}{\alpha}{e_2}$) e$_2$} instead of the classical encoding for this \icode{let} expression : \icode{($\tlam{x}{?}{e_2}$) e$_2$}. The type variable $\alpha$ in the argument of the function denotes that its type must be inferred. In their system the expression $\lambda x. x \: x$ is well typed, but the expression $\tlam{x}{\alpha}{x \: x}$ is not well typed because of this distinction between the unknown type and type variables.
+
+Garc{\'i}a and Cimini~\cite{garciaCimini:popl2015} recently presented an approach to combine gradual typing and type inference in a gradual implicitly typed language (ITGL). A key aspect in ITGL is that gradual types are not inferred. Implicit types are static types. This means the expression $\lambda x.x \: x$ is not well typed in their system. In order for this expression to be well typed we have to add an unknown type annotation for the function argument: $\lambda x:?.x \: x$. Gradual types in this system only appear with explicit type annotations. Garc{\'i}a and Cimini prove that their type system accepts the same programs as the one of Siek and Vachharajani, despite the fact that they are conceptually distinct. They claim that their approach is modular and extensible and they extend ITGL to solve an open problem in the work of Siek and Vachharajani, namely to support \emph{let polymorphism}~\cite{milner78}.
+
+\subsection{Applications in concrete languages}\label{sec:gradual_papers}
+Many industrial languages have adopted the idea of combining static and dynamic type checking. These combinations usually differ from gradual typing proper. Also, some research projects have applied gradual typing to existing languages.
+
+A common fact in industrial gradual typed languages is that designers sacrifice type soundness of the gradual languages for pragmatics reason of performance. Casts, in particular higher-order casts, are costly. Type safety is preserved because the execution environments of these languages are type safe.
+
+\begin{itemize}
+	\item \textsc{TypeScript} is an extension to JavaScript created to be a better choice for building large-scale JavaScript applications~\cite{biermanAl:ecoop2010}. TypeScript is a superset of JavaScript, so every JavaScript program is a TypeScript program. The TypeScript compiler emits JavaScript code. TypeScript implements a form of gradual typing, but in order to support common JavaScript idioms and codebases, the designers of TypeScript sacrificed type soundness. This means that well typed TypeScript program can produce errors in a JavaScript execution environment. Rastogi et al.~\cite{rastogiAl:sigplan2015} present a proposal for achieving safe and efficient gradual typing for TypeScript.
+	\item \textsc{Dart} is programming language of Google that was initially created for programming web applications~\cite{dart-spec}. Type annotations in Dart are optional. Dart does not report static type errors, but warning. This means it is possible to run a Dart program even though it is not well typed. One interesting design aspect of Dart is that it can be run in two modes: \emph{checked} and \emph{production}. In checked mode, which is intended to be used during development, type annotations are used to do dynamic type checking during the execution just like gradual typing. However in production mode no type checking is performed and one can get \texttt{MessageNotUndertood} errors of the Dart Virtual Machine just like in TypeScript. This makes Dart unsound too, but type safety is ensured by the Dart Virtual Machine. Checked mode follows the theory of gradual typing except that static error are reported as warning. Production mode, where type annotations do not affect the semantics of the language, follows the ideas of optional typing~\cite{bracha:rdl2004} of Bracha.
+	\item \textsc{Dynamic in C\# :} A dynamic type was added to C\# to support interaction with dynamic languages on the .NET platform. Bierman et al formalize this extension~\cite{biermanAl:ecoop2010}. C\# programs are executed over the Dynamic Language Runtime, which enables efficient implementation of dynamic programming languages. In this extension the flexibility of the dynamic type is reduced to achieve an efficient implementation. For example generic type parameters are invariant with respect to the dynamic type.
+	\item \textsc{Hack} is a Facebook's programming language that extends PHP with type annotations, generics, first-class functions and other modern programming language features~\cite{hack-spec}. Hack supports most of PHP features but there are some features that are not supported such as mixing HTML with Hack code. Hack programs are executed on the Hip Hop Virtual Machine (HHVM). Hack has its own type checker, which is useful as a tool for the programmer to get static type errors before running a Hack program. The type checker has different modes, but the most interesting is the \emph{partial mode}. In partial mode the type checker reports errors based on type information, but it does not demand the code to be fully annotated. However, in any case, it is possible to run a Hack program with type errors and in this case we can get an error in the HHVM, similarly to Dart in checked mode.  
+	\item \textsc{Gradual Typing for Python}. Reticulated Python is a system for experimenting with gradually-typed dialects of Python~\cite{vitousekAl:dls2014}. Reticulated  Python is a source-to-source translator that implements gradual typing on top of Python 3. The authors discuss different dynamic semantics to deal with mutable objects (references) and the application of gradual typing to third-party Python programs. 
+	\item \textsc{Gradual Typing for Smalltalk.} Allende et al report on the design, implementation and application of \gradualtalk, a gradually-typed Smalltalk meant to enable incremental typing of existing programs~\cite{allendeAl:scp2014}. Any Smalltalk program is a valid \gradualtalk~program and type annotations can be added selectively per expression. For a \gradualtalk~program, the programmer has the option of using a gradual typing approach or an optional typing approach.  
+\end{itemize}
+
+\section{Gradual Verification}\label{section:gradual_verification}
+Gradual typing ideas have been applied to advanced typing disciplines such as effects~\cite{banadosAl:icfp2014,toroTanter:oopsla2015}, ownership types~\cite{clarkeDrossopoulou:sigplan2002}, and security typing~\cite{disneyFlanagan:stop2011,fennellThiemann:csf2013} among others. The original motivation of gradual typing was to combine dynamic and static checking. In most systems we present in this section, the motivation is the combination of a system that is unaware of the advanced typing discipline with another that is aware of the typing discipline. 
+
+\subsection{Gradual effects} 
+Effect systems allow to track side effects that happen in a program. Different kinds of effect systems have been developed for different effect domains, such as I/O and exceptions. To abstract from specific effect disciplines, Marino and Millstein developed a generic framework~\cite{marinoMillstein:tldi2009}. Their framework allows to express effect systems seeing a specific effect as a \emph{privilege} that can be \emph{granted} and \emph{checked}. For example, for Java checked exceptions, the \emph{privilege} is \quotes{to throw an exception}, a \icode{try} block is the one that \emph{grants} the exception privilege and the \icode{throw} statement is the one that \emph{checks} if it is valid to use the privilege of throwing an exception in a certain context. In Marino and Millstein's framework, function types are annotated with the effect they may produce when applied. For example the following function has type $\icode{int} \stackrel{IO}{\rightarrow} \icode{int}$ indicating that it produces the \icode{IO} effect.
+\begin{lstlisting}[language=Lambda]
+int add1(int x){
+ print("hello!");
+ return x+1;
+}
+\end{lstlisting}
+In Marino and Millstein's framework each expression is checked under a privilege set that represents the allowed privileges the expression can produce during its execution in this context. 
+
+Ba{\~n}ados et al.~\cite{banadosAl:icfp2014} develop a gradual effect calculus based on Marino and Millstein's framework. They introduce \iqm \: to denote statically unknown effects. One of the most important contributions of their work is to give a meaning to unknown effect and consistent privilege sets using ideas of abstract interpretation~\cite{cousot:popl1977}. The unknown effect \iqm \: stands for any number of effects: zero or many. A consistent privilege set is a set of privileges that can include the unknown effect. For example for a mutable state effect discipline, privilege sets $\Phi$ and consistent sets $\Xi$ are defined as follow:
+\[
+\begin{tabular}{l}
+$\Phi \in \texttt{PrivSet} = \powerset(\{\texttt{read, write, allow}\})$\\
+$\Xi \in \texttt{CPrivSet} = \powerset(\{\texttt{read, write, allow, \iqm} \})$ 
+\end{tabular}
+\]
+ For instance $\Xi=\{\texttt{read, \iqm}\}$ represents all privileges sets that include at least the \texttt{read} privilege. Their work provides some insight on how to derive the gradual static semantics in more sophisticated typing disciplines, based on interpreting the gradual concept \emph{X} as sets of possible static \emph{X}. (We come back to this point in Section~\ref{sec:agt}.) They provide the runtime semantics for the gradual calculus though a translation to an intermediate cast calculus. The cast calculus is unusual in that it captures dynamic effect checking and runtime adjustment of privilege sets. 
+
+Toro and Tanter~\cite{toroTanter:oopsla2015} present an implementation of gradual effects for Scala. They extend gradual effects with effect polymorphism and develop a theory of gradual effect polymorphism. They introduce the notion of customizable effect disciplines through a domain specific language called EffScript. In EffScript, programmers define effects and can specify which Scala functions produce which effects. For example it is possible to express that \icode{system.out.print*} Scala functions produce I/O effects. Toro and Tanter's work allows to evolve from a Scala program that does not track effects to a program where a defined effect discipline is gradually checked.
+
+\subsection{Gradual ownership types}
+Type systems for ownership in object-oriented languages provide a declarative way to statically enforce a notion of object encapsulation~\cite{clarkeAl:oopsla1998,clarkeDrossopoulou:sigplan2002}. Object ownership ensures that objects cannot escape from the scope of the object or collection of objects that own them, and prevents unauthorized references to object fields. In ownership types, classes have ownership parameters. All classes have at least the \icode{owner} parameter that represents the owner of the current instance. It is possible to specify more ownership parameters, to cover advanced ownership scenarios, but they are not necessary to understand the intuition of ownership types. For example the class \icode{Square} owns an instances of \icode{Point} \icode{p}, which is expressed by passing the owner \icode{this} to the owner parameter of class \icode{Point}. The \icode{world} owner in \icode{Color<world> c} expresses that \icode{c} is shared. The use of the \icode{owner} parameter in the instance field \icode{size} indicates that the field is owned by the owner of the \icode{Square} instance:
+\begin{lstlisting}[language=Java,tabsize=2]
+class Square<owner>{
+	Point<this> p;
+	Size<owner> size;
+	Color<world> c;
+	Square(){
+		p1 = new Point<this>(0,0);
+		size = new Size<owner>(1,1);
+		c  = new Color<world>(0,255,0);
+	}	
+}
+\end{lstlisting}
+In the following program, the assignment \icode{s.c = new Color<world>(255,0,0)} is accepted because \icode{c} is not owned by the \icode{Square} instance \icode{s}. However \icode{s.p.getX()} fails because it is accessing the \icode{p} field, which is owned by \icode{s}.
+\begin{lstlisting}[language=Java,tabsize=2]
+class Program{
+	void main(){
+		Square<world> s = new Square<world>();
+		s.c = new Color<world>(255,0,0);//accepted because field c is not owned by Square, it is shared
+		int x = s.p.getX(); //fails, direct access of p (outside Square) and p is owned by Square.
+		Size<world> size = new Square<world>();
+		s.size = size; //accepted because world is the owner of field ``size'' (since it is the owner of ``s'')
+	}
+}
+\end{lstlisting}
+
+One of the obstacles for adopting ownership types is the verbosity and rigidity of the typing discipline. Sergey and Clarke applied gradual typing to ownership as a way of migrating from ownership-unaware to ownership-annotated code~\cite{sergeyClarke:esop2012}. They introduce the concept of an \emph{unknown owner}. The absence of an owner annotation is interpreted as an unknown owner. For example \icode{Point p1} is equivalent to \icode{Point<?> p1}. Two ownership types are consistent if their known parts are equals. For example \icode{C<owner,?,o2> $\sim$ C<?,o1,o2>}. They adapt the consistent-subtyping relation of Siek and Taha~\cite{siekTaha:ecoop2007} to ownership types. They also provide the runtime semantics of the gradual language via a translation to a cast calculus.
+
+\subsection{Gradual security typing}
+The idea of providing gradual verification of program properties has been explored in security typing too. Security typing allows programmers to reason about the flow of sensitive data in their applications~\cite{zdancewic}. Security type systems usually ensure \emph{non-interference}: if we run two programs that only differ in private data, they will not produce different public results. In other words, non-interference captures confidentiality, i.e. that private data is not accidentally leaked. Types are annotated with security labels to indicate the degree of security of the data. For example we can think of a scenario where there are public and private data and we have a security lattice with two labels \icode{L} and \icode{H} to indicate low and high confidentiality respectively. Security labels form a partial order to indicate the degree of security: \icode{L} $\preceq$ \icode{H}. We can express, for example, that a credit card number is private data by assigning it the security type \texttt{int}$^\texttt{H}$. For instance, in the following program a private credit card number is passed to a function that expect a public data. The function application \icode{sendToInternet(creditCard)} is rejected because it could expose the credit card number. 
+\begin{lstlisting}[language=Lambda]  
+int$^H$ creditCard = ...;
+sendToInternet(int$^L$ v){...}
+sendToInternet(creditCard); //rejected
+\end{lstlisting}
+However, it is possible to pass public data to private channels, because it does not affect the confidentiality of the data.
+
+Disney and Flanagan~\cite{disneyFlanagan:stop2011} present a calculus with explicit casts, which allows the migration of code that does not have security types. They do not use the notion of unknown security labels, and hence no notion of consistency between security types is defined. Instead, data that does not have security label annotation is considered as public (\icode{top} in the security lattice) and programmers write explicit down casts from types without security label to types with security labels. 
+
+Following this direction of gradual verification of security, Fennell and Thiemman extend the work of Disney and Flanagan taking into account references~\cite{fennellThiemann:csf2013}. The addition of references introduces significant complications, because the heap can serve as an indirect way of violating confidentiality. They use the notion of unknown security label to get dynamism in some scenarios where the security typing discipline is too rigid. The unknown security label is allowed in type annotation, but not in security values annotation. This fact reflects that a value at runtime has a known security label. In the lattice the unknown security label is also top: H $\preceq$ ?. They define a compatibility relation $\sim$ for gradual security types that holds when both types have the same structure but differ in the annotated security label. For example $int^{H} \sim int^{L}$. Their source language has cast expressions like the one of Disney and Flanagan~\cite{disneyFlanagan:stop2011}. A cast $int^{L} \Leftarrow int^{H}$ is statically accepted but dynamically rejected.
+
+\subsection{Gradual annotated type systems}
+Thiemann and Fennell present a generic gradual calculus for annotated type systems~\cite{thiemannFennell:esop2014}. An example of annotated types are numbers annotated with dimension (e.g velocity, time). The following function type checks in a language with annotated dimension.
+\begin{lstlisting}[language=Java,tabsize=2]
+fun eta(dist:float[m], vel:float[m/s]):float[s] =
+	dist / vel
+\end{lstlisting}
+However the function \icode{eta\_bad} does not type check because the \icode{-} operator requires the same dimension on both arguments.
+\begin{lstlisting}[language=Java,tabsize=2]
+fun eta_bad(dist:float[m],vel:float[m/s]):float[s] =
+	dist - vel
+\end{lstlisting}
+
+They show that annotated type systems, where the annotation is restricted to base types, can be gradualized by applying a simple procedure. They start with a simply-typed lambda calculus extended with primitive operations, generic base type annotations and value annotations. The calculus is also parametrized by a set of annotation operations, such as \icode{m/(m/s) = s}. To get the gradual calculus, they extend type annotations and value annotations with \icode{?} and they lift operations on annotations of static types to operations on gradual annotations of static types. All operations on annotations with any ? argument gives as result ?. For example \icode{m/? = ?} and \icode{?/m = ?}. They also extend expressions with explicit casts between types. The typing rule for cast has a notion of compatibility between annotations to deal with the unknown annotation. 
+
+They do not provide a translation to an intermediate cast calculus, because their gradual source calculus has explicit casts. The runtime semantics is directly defined for the gradual source calculus, but programmers must introduce casts manually.
+
+\subsection{Gradual typestate}
+Another type discipline where gradual typing has been applied is \textit{typestate}~\cite{strom:tse86}. Typestates reflect how the legal operations on imperative objects can change at runtime as their internal state changes. For example an open file cannot be opened again. In a typestate-oriented programming language, there are static constructions to indicate how the state of an object changes during the object life. For example we can indicate that the \icode{close} operation on a \icode{File} object takes the object from the \quotes{open} state and leaves it in the \quotes{closed} state. A typestate checker is in charge of ensuring that objects are used in accordance with their state at any given point in a computation. Type safety for this calculus ensures that no invalid operation is performed on objects.
+
+Wolff et al developed a gradual version of typestate~\cite{wolffAl:ecoop2011, garciaAl:toplas2014}. The gradual language allows interaction with dynamic types, so the following programa is statically accepted:
+\begin{lstlisting}[language=Java]
+File f = new File();
+f.open();
+f.close();
+Dyn d = f;
+d.read();
+\end{lstlisting}
+For this case a runtime check ensures that \icode{d} is in a valid state for the \icode{read} operation. The gradual source language is also translated to a cast calculus where runtime checks take place.
+
+\section{Challenges and Conclusion}\label{section:discussion}
+We have surveyed some of the most important pieces of work in the area of gradual typing with an inclination towards the study of gradual typing ideas applied to verification of program properties such as: effects, ownership types, security types and typestates. Beyond the large amount of work in the last decade, gradual typing research is far from be over. It is still an active research area because there are many challenges and open problems. In this section we discuss some of them.
+
+\subsection{Resolving performance issues}
+Even though gradual typing is a valuable theory to integrate static and dynamic type checking, the sound execution of gradual programs presents some performance issues in practice. One of them is associated with executing higher-order casts (or casts between function types). A higher-order cast evaluates to a function wrapper that ensures that arguments and return values have the expected types. Wrapper functions affect runtime performance. Allende et al.~\cite{allendeAl:oopsla2014} present two approaches to reduce the cost of higher-order casts and validate them on \gradualtalk~\cite{allendeAl:scp2014}. The first approach reduces the expressiveness of gradual system by restricting certain interaction between typed parts and untyped parts. The second approach tries to predict when a value goes from typed code to untyped code and then back to the same original type or a subtype. In this case the wrapper function can be avoided. Rastogi et al.~\cite{rastogi:popl2012} use type inference to eliminate unnecessary casts.
+
+Herman et al. present an implementation strategy that compact casts, and in this way reduce the space consumption of gradual programs~\cite{hermanAl:hosc10}. Instead of using casts they use \emph{coercions}~\cite{henglein:esop94}. Coercions are reducible. This work is presented for the gradually typed lambda calculus \gstlc \:, so it would be interesting to see what happens when it is applied to more sophisticated type systems, for example, with recursive types and polymorphic types.
+
+\subsection{Application to other typing disciplines}
+Despite previous experience in gradualizing typing disciplines, it is always a challenge to apply gradual typing to a new discipline. One of the key points is to determine what the unknown type information means and how static typing rules are lifted to their gradual counterpart. But what is more challenging is to provide a proper runtime semantics to evaluate a program in the presence of unknown type information. The more complex the typing discipline is, the more challenging the gradual system. Some examples of complex type disciplines are: linear types~\cite{pierce:atapl}, dependent types~\cite{pierce:atapl} and session types~\cite{dezaniCiancaglini:WSFM2009}.
+
+\subsection{Unifying theory and principles (AGT)}\label{sec:agt}
+As we have described here, applying the gradual typing ideas to a new discipline requires a certain insight to get the right static and dynamic semantics of the gradual language in presence of unknown. Most proposals define an intermediate calculus to execute gradual programs. However some foundational questions remain: what is the minimal cast calculus we need to execute a specific gradual program? Is there a way of getting this intermediate language by construction? How we can provide a runtime semantics for the gradual calculus instead of compiling it to an intermediate language?
+
+Some advances has recently been done  in that direction. One of the most promising is the work of Garcia et al~\cite{garciaAl:popl2016}, called \emph{Abstracting Gradual Typing (AGT)}. They present an abstract framework to derive the gradual language from the statically typed language. Their framework is based on abstract interpretation, specifically in Galois connections~\cite{cousot:popl1977}. This work extends the ideas first explored by Ba{\~n}ados et al.~\cite{banadosAl:icfp2014} to derive the gradual effect type system.
+
+The AGT methodology starts with the static type system, where rules have explicit side conditions. Then, the language designer provides a meaning for the unknown type through a concretization function ($\gamma$)from gradual types to sets of static types. One must then find the abstraction function ($\alpha$) from sets of static types to gradual types such as $\alpha$ and $\gamma$ form a Galois connection. With these functions, AGT systematically lifts predicates and functions used in side condition of typing rules to their gradual versions. For example the consistency relation is the result of lifting the static type equality. The gradual type system is obtained by changing the static predicates and functions with their gradual versions. 
+
+Another interesting contribution of this work is that for the first time a direct runtime semantics for the gradual source language is provided. They use implicit \emph{evidence} of the typing derivations for generating dynamic checks. For example in the typing derivation of $\texttt{int} \rightarrow ? \sim \: ? \rightarrow \texttt{bool}$ there is an implicit information about the type that makes the consistency relation holds, which is $\texttt{int} \rightarrow \texttt{bool}$. They combine evidence for each reduction step. If it is not possible to combine evidence then an error is reported. Despite this contribution, their runtime semantics does not provide \quotes{pas as you go} cost for dynamism, because all term carry evidence. To provide an efficient version for the runtime semantics is one of the challenges of future work on AGT. 
+
+Abstracting Gradual Typing opens a lot of perspectives, from validating previous gradual languages designs, to deriving new gradual verification systems.
+
+
+\medskip 
+\bibliographystyle{abbrv}
+\bibliography{gsta,pleiad,bib,gp,common}	
+\end{document}
