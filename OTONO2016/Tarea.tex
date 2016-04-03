@@ -1,5 +1,6 @@
 \documentclass [proof]{article}
 
+\usepackage{caption}
 \usepackage{amsmath}
 \usepackage{proof}
 \usepackage[T1]{fontenc}
@@ -31,9 +32,9 @@
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \begin{document}
 
-\setlength{\oddsidemargin}{-5mm}
-\setlength{\evensidemargin}{-5mm}
-\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-10mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\topmargin}{-10mm}
 %\setlength{\textwidth}{125mm}
 %\setlength{\textheight}{195mm}
 
@@ -172,7 +173,6 @@ $\Gamma$&$::=$&&$contexts:$\\
 &&$\varnothing$&$empty \ context:$\\
 &&$\Gamma , x:T$&$term \ variable \ binding$\\
 \end{tabular}
-\label{tabla:sencilla}
 \end{center}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Sintaxis
@@ -228,60 +228,79 @@ x &= 2 + 2\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Evaluation
 \end{comment}
 
-\renewcommand{\arraystretch}{2}% 
+
+\setlength{\tabcolsep}{2pt}
+\setlength{\extrarowheight}{20pt}
+%\setlength{\extracolumnheight}{20pt}
+%\renewcommand{\arraystretch}{2}% 
 \begin{table}[htbp]
 \begin{center}
 \begin{tabular}{|l|l|}
 \hline
-\begin{tabular}{l c r}
-\multicolumn{2}{l}{$Evaluation$}&$t \tto t'$\\
-&$\infer[]{t_1 t_2 \tto t'_1 t_2}{(t_1 \tto t'_1)}$&$\rulename{EApp_1}$\\
-&$\infer[]{v_1 t_2  \tto v_1 t'_2} {t_2 t'_2}$&$\rulename{EApp_2}$\\
-&$\infer[]{(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12}}{}
-$&$\rulename{EAppAbs}$\\
-&$\infer []{t_1.l \tto t'_1.l}{t_1 \tto t'_1}$&$\rulename {EProj}$\\
-&$\infer []
-{\{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\}} {t_j \tto t'_j}$&$\rulename {ERcd}$\\
-&$\infer []{let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}{}$&$\rulename{ELetV}$\\
-&$\infer [] {let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}{t_1 \tto t'_1}$&$\rulename{ELet}$\\
-&$\infer []{fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}{}$&$\rulename {EFixBeta}$\\
-&$\infer[]{fix \ t_1 \tto fix \ t'_1}{t_1 \tto t'_1}$&$\rulename {EFix}$\\
-&$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$&\\
-\end{tabular}
- &
+
+\begin{tabular} {l}
+\setlength{\extrarowheight}{0pt}
+\begin{tabular}{l c l r}
+$Syntax$ &&& \\ 
+$t$ & $::=$ & &$terms:$\\ 
+&&$x$&$variable$\\ 
+&&$\lambda x:T.t$&$abstraction$\\
+&&$t \ t$&$application$\\
+&&$let \ x = t \ in \ t$&$let \ binding$\\
+&&${l_i=t_i^{i \in 1 \cdots n}}$&$record$\\
+&&$t.l$&$projection$\\
+&&$fix \ t$&$fixed \ point\ of \ t$\\
+&&&\\
+$v$ & $::=$ & &$values:$\\
+&&$\lambda x:T.t$&$abstraction \ value$\\
+&&$\{l_i=v_i^{i \in 1 \cdots n}\}$&$record \ value$\\
+&&&\\
+$T$&$::=$&&$types:$\\
+&&$T \to T$&$type \ of \ functions$\\
+&&$\{l_i=T_i^{i \in 1 \cdots n}\}$&$type \ of \ record$\\
+&&&\\
+$\Gamma$&$::=$&&$contexts:$\\
+&&$\varnothing$&$empty \ context:$\\
+&&$\Gamma , x:T$&$term \ variable \ binding$\\
+\end{tabular}\\
 \begin{tabular}{l c r}
 \multicolumn{2}{l}{$Typing$}&$\env t:T$\\
-&$\infer []{\env \ x:T}{x:T \in \Gamma}$&$\rulename{TVar}$\\
-&$\infer []{\env \lambda x : T_1.t_2:T_1 \to T_2}{\Gamma , x:T_1 \vdash t_2:T_2}$&$\rulename{TAbs}$\\
-&$\infer []{\env t_1 t_2 : T_{12}}{\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}$&$\rulename{TApp}$\\
-&$\infer []{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}{for \ each \ i \ \ \env t_i:T_i}$&$\rulename{TRcd}$\\
-&$\infer []{\env t_1.l_j:T_j}{\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}
+&$\inference {x:T \in \Gamma}{\env \ x:T}$&$\rulename{TVar}$\\
+&$\inference {\Gamma , x:T_1 \vdash t_2:T_2}{\env \lambda x : T_1.t_2:T_1 \to T_2}$&$\rulename{TAbs}$\\
+&$\inference {\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}{\env t_1 t_2 : T_{12}}$&$\rulename{TApp}$\\
+&$\inference {for \ each \ i \ \ \env t_i:T_i}{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}$&$\rulename{TRcd}$\\
+&$\inference {\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}{\env t_1.l_j:T_j}
 $&$\rulename {TProj}$\\
-&$ \infer []{\env \ let \ x = t_1 \ in \ t_2 : T_2}{\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}$&$\rulename {TLet}$\\
-&$\infer []{\env fix \ t_1:T_1}{\env t_1:T_1 \to T_1}$&$\rulename {TFix}$\\
+
+\end{tabular}\\
+\end{tabular}
+&
+\begin{tabular}{l c r}
+&$ \inference {\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}{\env \ let \ x = t_1 \ in \ t_2 : T_2}$&$\rulename {TLet}$\\
+&$\inference {\env t_1:T_1 \to T_1}{\env fix \ t_1:T_1}$&$\rulename {TFix}$\\
+\multicolumn{2}{l}{$Evaluation$}&$t \tto t'$\\
+&$\inference{t_1 \tto t'_1}{t_1 t_2 \tto t'_1 t_2}$&$\rulename{EApp_1}$\\
+&$\inference {t_2 t'_2}{v_1 t_2  \tto v_1 t'_2}$&$\rulename{EApp_2}$\\
+&${(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12}}$&$\rulename{EAppAbs}$\\
+&$\inference {t_1 \tto t'_1}{t_1.l \tto t'_1.l}$&$\rulename {EProj}$\\
+&$\inference {t_j \tto t'_j}{\begin{block} \vspace{-1.7cm} \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\
+\tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \end{block}}$&$\rulename {ERcd}$\\
+&${let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}$&$\rulename{ELetV}$\\
+&$\inference {t_1 \tto t'_1}{let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}$&$\rulename{ELet}$\\
+&${fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}$&$\rulename {EFixBeta}$\\
+&$\inference{t_1 \tto t'_1}{fix \ t_1 \tto fix \ t'_1}$&$\rulename {EFix}$\\
+&$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$&\\
+\end{tabular}\\ 
+\hline
 \end{tabular}
 
-\end{tabular}
+\captionsetup{justification=centering}
+\caption{Simply typed lambda-calculus with Let binding, Records and General recursion.}
+\label{tabla:sencilla}
+
+
 \end{center}
 \end{table}
 
-
-\begin{equation} 
-\begin{split} 
-&\{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\
-&\tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\}
-\end{split} 
-\end{equation}
-
-$\infer [\rulename {ERcd}]{ \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} }{t_j \tto t'_j}$ 
-
-$ \inference {A\&B \quad B \quad D}{C}[[ ERcd] ]$
-
-$$
-\inference{\neg \phi \vee \neg \psi&
-\inference{\inference{\inference{}{\phi \wedge \psi}[2]}{\phi} & \inference{}{\neg \phi}[1]}{\perp} &
-\inference{\inference{\inference{}{\phi \wedge \psi}[2]}{\psi} & \inference{}{\neg \psi}[1]}{\perp}
-}{\inference{\perp}{\neg (\phi \wedge \psi)}}[2]
-$$
-
+ 
 \end{document}
