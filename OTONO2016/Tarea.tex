@@ -20,6 +20,8 @@
 \usepackage{longtable}
 \usepackage{xcolor,colortbl}
 \usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+
 
 \newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
 \newcommand{\vect}{(x_1,x_2,\dots,x_n)}
@@ -32,9 +34,9 @@
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \begin{document}
 
-\setlength{\oddsidemargin}{-10mm}
-\setlength{\evensidemargin}{0mm}
-\setlength{\topmargin}{-10mm}
+%\setlength{\oddsidemargin}{-12mm}
+%\setlength{\evensidemargin}{0mm}
+%\setlength{\topmargin}{-20mm}
 %\setlength{\textwidth}{125mm}
 %\setlength{\textheight}{195mm}
 
@@ -227,13 +229,14 @@ x &= 2 + 2\\
 \end{equation*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Evaluation
 \end{comment}
+\newgeometry{left=1cm,bottom=0.1cm}
 
 
+\begin{table}[htbp]
 \setlength{\tabcolsep}{2pt}
 \setlength{\extrarowheight}{20pt}
 %\setlength{\extracolumnheight}{20pt}
 %\renewcommand{\arraystretch}{2}% 
-\begin{table}[htbp]
 \begin{center}
 \begin{tabular}{|l|l|}
 \hline
@@ -241,13 +244,13 @@ x &= 2 + 2\\
 \begin{tabular} {l}
 \setlength{\extrarowheight}{0pt}
 \begin{tabular}{l c l r}
-$Syntax$ &&& \\ 
+$Syntax:$ &&& \\ 
 $t$ & $::=$ & &$terms:$\\ 
 &&$x$&$variable$\\ 
 &&$\lambda x:T.t$&$abstraction$\\
 &&$t \ t$&$application$\\
 &&$let \ x = t \ in \ t$&$let \ binding$\\
-&&${l_i=t_i^{i \in 1 \cdots n}}$&$record$\\
+&&$\{l_i=t_i^{i \in 1 \cdots n}\}$&$record$\\
 &&$t.l$&$projection$\\
 &&$fix \ t$&$fixed \ point\ of \ t$\\
 &&&\\
@@ -264,31 +267,32 @@ $\Gamma$&$::=$&&$contexts:$\\
 &&$\Gamma , x:T$&$term \ variable \ binding$\\
 \end{tabular}\\
 \begin{tabular}{l c r}
-\multicolumn{2}{l}{$Typing$}&$\env t:T$\\
+\multicolumn{2}{l}{$Typing:$}&$\env t:T$\\
 &$\inference {x:T \in \Gamma}{\env \ x:T}$&$\rulename{TVar}$\\
 &$\inference {\Gamma , x:T_1 \vdash t_2:T_2}{\env \lambda x : T_1.t_2:T_1 \to T_2}$&$\rulename{TAbs}$\\
 &$\inference {\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}{\env t_1 t_2 : T_{12}}$&$\rulename{TApp}$\\
 &$\inference {for \ each \ i \ \ \env t_i:T_i}{{\env \{l_i=t_i^{i \in 1 \cdots n}\}:\{l_i:T_i^{i \in 1 \cdots n}\}}}$&$\rulename{TRcd}$\\
 &$\inference {\env t_1:\{l_i:T_i^{i \in 1 \cdots n}\}}{\env t_1.l_j:T_j}
 $&$\rulename {TProj}$\\
-
+&$\inference {\env t_1:T_1 \to T_1}{\env fix \ t_1:T_1}$&$\rulename {TFix}$\\
 \end{tabular}\\
 \end{tabular}
 &
 \begin{tabular}{l c r}
 &$ \inference {\env t_1:T_1 & \Gamma, x:T_1 \vdash t_2:T_2}{\env \ let \ x = t_1 \ in \ t_2 : T_2}$&$\rulename {TLet}$\\
-&$\inference {\env t_1:T_1 \to T_1}{\env fix \ t_1:T_1}$&$\rulename {TFix}$\\
-\multicolumn{2}{l}{$Evaluation$}&$t \tto t'$\\
+\multicolumn{2}{l}{$Evaluation:$}&$t \tto t'$\\
 &$\inference{t_1 \tto t'_1}{t_1 t_2 \tto t'_1 t_2}$&$\rulename{EApp_1}$\\
-&$\inference {t_2 t'_2}{v_1 t_2  \tto v_1 t'_2}$&$\rulename{EApp_2}$\\
+&$\inference {t_2 \tto t'_2}{v_1 t_2  \tto v_1 t'_2}$&$\rulename{EApp_2}$\\
 &${(\lambda x:T_{11}.t_{12}) \ v_2 \tto [x \mapsto v_2]t_{12}}$&$\rulename{EAppAbs}$\\
+&$\{ l_i = v_i ^ { i \in 1 \cdots n} \}.l_j \tto v_j$&$\rulename{EProjRcd}$\\
 &$\inference {t_1 \tto t'_1}{t_1.l \tto t'_1.l}$&$\rulename {EProj}$\\
-&$\inference {t_j \tto t'_j}{\begin{block} \vspace{-1.7cm} \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\
+&\setlength{\extrarowheight}{0pt} $\inference {t_j \tto t'_j}{ \vspace{-0.6cm}\begin{block}  \{l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \\
 \tto \{ l_i = v_i ^ {i \in 1 \cdots j-1}, l_j = t'_j, l_k = t_k ^ {k \in j+1 \cdots n}\} \end{block}}$&$\rulename {ERcd}$\\
 &${let \ x=v_1 \ in \ t_2 \tto [x \mapsto v_1]t_2}$&$\rulename{ELetV}$\\
 &$\inference {t_1 \tto t'_1}{let \ x = t_1 \ in \ t_2 \tto let \ x \ = t'_1 \ in \ t_2}$&$\rulename{ELet}$\\
-&${fix(\lambda x:T_1:t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}$&$\rulename {EFixBeta}$\\
+&${fix(\lambda x:T_1.t_2)\tto [x \mapsto (fix (\lambda x:T_1.t_2))]t_2}$&$\rulename {EFixBeta}$\\
 &$\inference{t_1 \tto t'_1}{fix \ t_1 \tto fix \ t'_1}$&$\rulename {EFix}$\\
+\multicolumn{2}{l}{$Derived \ Forms:$}&\\
 &$letrec \ x:T_1 = t_1 \ in \ t_2 \myeq let \ x = fix(\lambda x:T_1.t1)\ in \ t_2$&\\
 \end{tabular}\\ 
 \hline
@@ -297,10 +301,97 @@ $&$\rulename {TProj}$\\
 \captionsetup{justification=centering}
 \caption{Simply typed lambda-calculus with Let binding, Records and General recursion.}
 \label{tabla:sencilla}
-
-
 \end{center}
 \end{table}
+\restoregeometry
+%\setlength{\oddsidemargin}{0mm}
+%\setlength{\evensidemargin}{0mm}
+%\setlength{\topmargin}{0mm}
+%\setlength{\marginparwidth}{0mm}
+%\setlength{\marginparsep}{0mm}
+%\setlength{\textheight}{195mm}
 
- 
+LEMMA [Inversion of the Typing Relation]:
+\begin{enumerate}
+\item If $\env \ x : R$ , then $x : R \in \Gamma$
+\item If $\env \ \lambda x: T_1. t_2 : R$, then $R = T_1 \to R_2$ for some $R_2$, with $\Gamma$, $x : T_1\vdash t_2 : R_2$.
+\item If $\env \  t_1 \ t_2 : R$, then there is some type $T_{11}$ such that $\env t_1 : T_{11} \to R$ and $\env t_2 : T_{11}$.
+\item If $\env \ let \ x = t_1 \ in \ t_2 : R$, then  there is some type $T_{1}$ such that $\env t_1 : T_{1}$, with $\Gamma$, $x : T_1\vdash t_2 : R$.
+\item If $\env \ \{l_i = t_i ^ {\ i \in 1 \cdots n}\} :R$, then there are some types $R_i ^ {\ i \in 1\cdots n}$ such that for each $i$ is satisfied that $\env t_i:R_i$ and $R = \{l_i=R_i^{\ i \in 1 \cdots n}\}$.
+\item If $\env \ t.l_j : R$, then there is some type $\{l_i=R_i^{\ i \in 1 \cdots n}\}$ such that $\env t : \{l_i=R_i^{\ i \in 1 \cdots n}\}$ and $R = R_j$.
+\item $\env \ fix \ t_1 : R$ then $\env \ t1 : R \to R$.
+\end{enumerate}
+$Proof:$ Immediate from the definition of the typing relation.\ \\
+
+LEMMA [Canonical Forms]:
+\begin{enumerate}
+\item If $v$ is a value of type $T_1 \to T_2$, then $v = \lambda x : T_1. t_2$.
+\item If $v$ is a value of type $\{l_i=T_i^{\ i \in 1 \cdots n}\}$ then $v = \{l_i=v_i^{\ i \in 1 \cdots n}\}$, and $\env v_i:T_i {\ i \in 1 \cdots n}$.
+\end{enumerate}
+$Proof:$ Straightforward.\ \\
+
+THEOREM [Progress]: Suppose $t$ is a closed, well-typed term (that is, $ \vdash \ t' : T$ for some $T$). Then either $t$ is a value or else there is some $t'$ with $t \tto t'$.
+Proof: Straightforward induction on typing derivations.
+\begin{enumerate}
+\item The variable case cannot occur (because $t$ is closed).
+\item The abstraction case is immediate, since abstractions are values.
+\item For application, where $t = t_1 \ t_2$, with $\vdash \ t_1 : T_{11} \tto T_{12}$ and $\vdash \ t_2 : T_{11}$, for the inversion lemma. Then, by the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation, and likewise $t_2$. If $t_1$ can take a step, then rule $EApp1$ applies to $t$. If $t_1$ is a value and $t_2$ can take a step, then rule $EApp2$ applies. Finally, if both $t_1$ and $t_2$ are values, then the canonical forms lemma tells us that $t_1$ has the form $\lambda x: T_{11}.t_{12}$, and so rule $EAppAbs$ applies to $t$.
+\item If $t = (let \ x = t_1 \ in \ t_2) $, then $\vdash \ t_1 : T_{1}$ and $\vdash \ t_2 : T_{2}$, for the inversion lemma. Then, by the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation. If $t_1$ can take a step, then rule $ELet$ applies to $t$. If $t_1$ is a value, then rule $ELetV$ applies.
+\item If $t = \{l_i=t_i^{\ i \in 1 \cdots n}\}$, then there are some types $T_i ^ {\ i \in 1\cdots n}$ such that for each $i$ is satisfied that $\env t_i:T_i$ and $T = \{l_i=T_i^{\ i \in 1 \cdots n}\}$. By the induction hypothesis, for each $t_i^{\ i \in 1 \cdots n}$, either it is a value or else it can make a step of evaluation. If all the $t_i^{\ i \in 1\cdots n}$ are values, then $t$  is a value. If all the $t_i^{\ i \in 1\cdots n}$ are not values, then there is $t_j$ such that it can take a step, then rule $ERcd$ applies to $t$. 
+\item If $t = t'.l_j$, then there is some type $\{l_i=T_i^{\ i \in 1 \cdots n}\}$ such that $\env t' : \{l_i=T_i^{\ i \in 1 \cdots n}\}$ and $T = T_j$. By the induction hypothesis, either $t'$ is a value or else it can make a step of evaluation. If $t'$ can take a step, then rule $EProj$ applies to $t$. If $t'$ is a value, then rule $EProjRcd$ applies.
+\item If $t = fix \ t'$, then $\env \ t' : T \to T$, for the inversion lemma. By the induction hypothesis, either $t'$ is a value or else it can make a step of evaluation. If $t'$ can take a step, then rule $EFix$ applies to $t$. If $t'$ is a value, then the canonical forms lemma tells us that $t'$ has the form $\lambda x: T.t_1$, and so rule $EFixBeta$ applies to $t$.
+\end{enumerate}
+
+LEMMA[Permutation]: If $\env \ t : T$ and $\Delta$ is a permutation of $\Gamma$, then $\Delta \vdash \ t : T$.\\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+LEMMA[Weakening]: If $\env \ t : T$ and $x \not \in dom(\Gamma)$, then $\Gamma, x : S \vdash \ t:T$.\\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+LEMMA [Preservation of types under substitution]: If $\Gamma , x:S \ \vdash \ t : T$ and $\env s : S$, then $\env \ [x \mapsto s]t : T$.\\
+$Proof$: By induction on a derivation of the statement $ \Gamma, x:S \ \vdash \ t : T$. For a given derivation, we proceed by cases on the final typing rule used in the proof.
+\begin{enumerate}
+\item $Case \ TVar: t = z$ with $z:T \in (\Gamma , x:S)$. There are two sub-cases to consider, depending on whether $z$ is $x$ or another variable. If $z = x$, then $[x \mapsto s]z = s$. The required result is then $\env \ s : S$, which is among the assumptions of the lemma. Otherwise, $[x \mapsto s]z = z$, and the desired result is immediate.
+\item $Case \ TAbs$: $t = \lambda y:T_2.t_1, with \ T = T_2 \to T_1$ and $ \Gamma, x:S, y:T_2 \ \vdash \ t_1 : T_1$. By convention, we may assume $x \not=  y$ and $y \not\in FV(s)$. Using permutation on the given subderivation, we obtain $\Gamma, y:T_2, x:S \ \vdash \ t_1 : T_1$. Using weakening on the other given derivation $(\env \ s : S)$, we obtain $\Gamma, y:T_2 \ \vdash \ s : S$. Now, by the induction hypothesis, $\Gamma , y:T_2 \ \vdash \ [x \mapsto s]t_1 : T_1$. By $TAbs, \env \ \lambda y: T_2.[x \mapsto s]t_1 : T_2 \to T_1$. But this is precisely the needed result,since, by the definition of substitution, $[x \mapsto s]t = \lambda y:T_1. [x \mapsto s]t_1$.
+\item $Case \ TApp$: $t = t_1 \ t_2, \Gamma, x:S\ \vdash \ t_1 : T_2 \to T_1, \Gamma, x:S\ \vdash \ t_2 : T_2, T = T_1$.
+By the induction hypothesis, $\env \ [x \mapsto s]t_1: T_2 \to T_1$ and $\env \ [x \mapsto s]t_2 : T_2.$ By $TApp$, $\env \ [x \mapsto s]t_1 \ [x \mapsto s]t_2:T$, then $\env \ [x \mapsto s] (t_1 \ t_2):T$.
+\item $Case \ TRcd$: $t = \{l_i = t_i^ {\ i \in 1 \cdots n}\}$, for each $i, \Gamma, x:S \ \vdash \ t_i :T_i$, $T = \{l_i = T_i^ {\ i \in 1 \cdots n}\}$.
+By the induction hypothesis, for each $i, \env \ [x \mapsto s]t_i :T_i$. By the $TRcd$, $\env \{l_i = [x \mapsto s]t_i^ {\ i \in 1 \cdots n}\} : T$, then $\env [x \mapsto s]\{l_i = t_i^ {\ i \in 1 \cdots n}\} : T$.
+\item $Case \ TLet$: $t = (let \ y = t_1 \ in \ t_2), \Gamma, x:S \ \vdash \ t_1 :T_1, \Gamma, x:S, \ y:T_1 \ \vdash \ t_2 :T_2, \ T = T_2$. By convention, we may assume $x \not=  y$ and $y \not\in FV(s)$. Using permutation on the given subderivation, we obtain $\Gamma, y:T_1, x:S \ \vdash \ t_2 : T_2$. Using weakening on the other given derivation $(\env \ s : S)$, we obtain $\Gamma, y:T_1 \ \vdash \ s : S$. Now, by the induction hypothesis, $\Gamma , y:T_1 \ \vdash \ [x \mapsto s]t_2 : T_2$ and $\Gamma \ \vdash \ [x \mapsto s]t_1 : T_1$. By $TLet, \env \ let \ y: [x \mapsto s]t_1\ in \ [x \mapsto s]t_2 : T_2$. But this is precisely the needed result,since, $[x \mapsto s]t = (let \ y = [x \mapsto s]t_1\ in \ [x \mapsto s]t_2)$.
+\item $Case \ TProj$: $t = t_1.l_j, \ \Gamma, x : S \vdash \ t_1 : \{l_i = T_i^{\ i \in 1 \cdots n}\}$ and $T = T_j$. By the induction hypothesis, $\env \ [x \mapsto s]t_1 : \{l_i = T_i^{\ i \in 1 \cdots n}\}$. By $TProj$, $\env \ [x \mapsto s]t_1.l_j : T$. But this is precisely the needed result,since, $[x \mapsto s]t =  [x \mapsto s]t_1.l_j$.
+\item $Case \ TFix$: $t = fix \ t_1$ and $\Gamma, x:S \vdash t_1 : T \to T$. By the induction hypothesis, $\env \ [x \mapsto s]t_1 : T \to T$. By $TFix$, $\env \ fix \ [x \mapsto s]t_1 : T$. But this is precisely the needed result,since, $[x \mapsto s]t = fix \ [x \mapsto s]t_1$.
+\end{enumerate}
+
+LEMMA[Preservation]: If $\env \ t : T$ and $t \tto t'$, then $\env \ t' : T$.\\
+$Proof$: By induction on a derivation of $t : T$. At each step of the induction, we assume that the desired property holds for all subderivations (i.e., that if $s : S$ and $s \tto s'$, then $s' : S$, whenever s : S is proved by a subderivation of the present one) and proceed by case analysis on the final rule in the derivation.
+\begin{enumerate}
+\item $Case \ TVar$: It cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TAbs$: $t = \lambda x:T_2.t_1, with \ T = T_2 \to T_1$ and $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. If the last rule in the derivation is $TAbs$, then we know from the form of this rule that t must be a function $\lambda x:T_2.t_1$ and $T$ must be $T_2 \to T_1$, with $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. But then $t$ is a value, so it cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TApp$: $t = t_1 \ t_2, \ \vdash \ t_1 : T_2 \to T$ and $\vdash \ t_2 : T_2$. If the last rule in the derivation is $TApp$, then we know from the form of this rule that $t$ must have the form $t_1 \ t_2$, for some $t_1$ and $t_2$. We must also have a subderivation with conclusions $\vdash t_1 : T_2 \to T$ and $\vdash t_2 : T_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $t \tto t'$ can be derived: $EApp1$, $EApp2$ and $EAppAbs$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EApp1$: $t_1 \tto t_1', \ t' = t_1' \ t_2$. By the induction hypothesis, $\vdash t_1' : T_2 \to T$, then we can apply rule $TApp$, to conclude that $\vdash t_1' \ t_2: T$ , that is $\vdash t' : T$.
+\item $Subcase \ EApp2$: $t_2 \tto t_2', \ t' = t_1 \ t_2'$. By the induction hypothesis, $\vdash t_2' : T_2 $, then we can apply rule $TApp$, to conclude that $\vdash t_1 \ t_2' : T$, that is $\vdash t' : T$.
+\item $Subcase \ EAppAbs$: $t_1 = \lambda x:T_{1}.t_{12}$, $t_2 = v_2$, $t' = [x \mapsto v_2]t_{12}$ and $\vdash t_{12}: T$ for the inversion lemma. The resulting term $\vdash [x \mapsto v_2]t_{12}:T$, for the Substitution lemma, that is $\vdash t' : T$.
+\end{itemize}
+\item $Case \ TRcd$: $t = \{l_i = t_i^ {\ i \in 1 \cdots n}\}$, for each $i, \vdash \ t_i :T_i$, $T = \{l_i = T_i^ {\ i \in 1 \cdots n}\}$.
+\begin{itemize}
+\item If for each $i$, $t_i = v_i$, then $t$ is a value, so it cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Subcase \ ERcd$: $t = \{l_i = v_i^ {\ i \in 1 \cdots j-1}, l_j = t_j, l_k = t_k^ {\ k \in j+1 \cdots n}\}$, $t_j \tto t_j'$, $t' = \{l_i = v_i^ {\ i \in 1 \cdots j-1}, l_j = t_j', l_k = t_k^ {\ k \in j+1 \cdots n}\}$ and $\vdash t_j : T_j$. By the induction hypothesis, $\vdash t_j' : T_j$, then we can apply rule $TRcd$, to conclude that $\vdash t' : T$.
+\end{itemize}
+\item $Case \ TLet$: $t = (let \ x = t_1 \ in \ t_2), \Gamma \vdash \ t_1 :T_1$ and $\Gamma, x:T_1 \ \vdash \ t_2 :T$. If the last rule in the derivation is $TLet$, then we know from the form of this rule that $t$ must have the form $(let \ x = t_1 \ in \ t_2)$, for some $t_1$ and $t_2$. We must also have a subderivation with conclusions $\vdash t_1 : T_1$ and $\vdash t_2 : T_2$. Now, looking at the evaluation rules with $Let$ form on the left-hand side, we find that there are two rules by which $t \tto t'$ can be derived: $ELetV$ and $ELet$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ ELetV$: $t_1 = v_1$, $t' = [x \mapsto v_1]t_2$, and $\vdash t_2 : T$. Then for the substitution lemma $t': T$.
+\item $Subcase \ ELet$: $t_1 \tto t_1'$ and $t'= (let \ x = t_1' \ in \ t_2)$. By the induction hypothesis, $\vdash t_1' : T_1 $, then we can apply rule $TLet$, to conclude that $\vdash (let \ x = t_1' \ in \ t_2) : T$, that is $\vdash t' : T$.
+\end{itemize}
+\item $Case \ TProj$: $t = t_1.l_j,\ \vdash \ t_1 : \{l_i = T_i^{\ i \in 1 \cdots n}\}$ and $T = T_j$. If the last rule in the derivation is $TProj$, then we know from the form of this rule that $t$ must have the form $t_1.l_j$. We must also have a subderivation with conclusions $\vdash t_1 : \{l_i = T_i^{\ i \in 1 \cdots n}\}$ and $T = T_j$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are two rules by which $t \tto t'$ can be derived: $EProjRcd$ and $EProj$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EProjRcd$: $t_1 = \{l_i = v_i^{\ i \in 1 \cdots n}\}$ and $t' = v_j$.This means we are finished, since we know $\vdash v_j : T_j$ and $T =T_j$.
+\item $Subcase \ EProj$: $t_1 \tto t_1'$ and $t' = t_1'.t_j$. By the induction hypothesis, $\vdash t_1' : \{l_i = T_i^{\ i \in 1 \cdots n}\} $, then we can apply rule $TLet$, to conclude that $\vdash t_1'.t_j : T_j$, that is $\vdash t' : T$.
+\end{itemize}
+\item $Case \ TFix$: $t = fix \ t_1$ and $\vdash t_1 : T \to T$. If the last rule in the derivation is $TFix$, then we know from the form of this rule that $t$ must have the form $fix \ t_1$, for some $t_1$. We must also have a subderivation with conclusions $\vdash t_1 : T \to T$. Now, looking at the evaluation rules with $fix$ on the left-hand side, we find that there are two rules by which $t \tto t'$ can be derived: $EFixBeta$ and $EFix$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EFixBeta$: $t_1 = \lambda x : T_1.t_2, \ t' = [x \mapsto (fix \ (\lambda x : T_1.t_2))]t_2$, $\vdash t_1 : T \to T$ and $\vdash t_2 : T$, for the inversion lemma. Then, by the substitution lemma, $ \vdash [x \mapsto (fix \ (\lambda x : T_1.t_2))]t_2 : T$, which is what we need.
+\item $Subcase \ EFix$: $t_1 \tto t_1'$ and $t' = fix \ t_1'$. By the induction hypothesis, $\vdash t_1' : T \to T $, then we can apply rule $TFix$, to conclude that $\vdash fix \ t_1' : T$, that is $\vdash t' : T$.          
+\end{itemize}
+\end{enumerate}
 \end{document}

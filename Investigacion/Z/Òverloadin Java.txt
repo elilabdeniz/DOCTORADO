@@ -1,0 +1,27 @@
+package tets;
+public class Test {
+	public static void main(String[] args) {
+		OperationBase o = new Operation();
+		ElemB b = new ElemB();
+		ElemC c = new ElemC();
+		System.out.println(o.op(b,c));}}
+
+class ElemA{}
+class ElemB extends ElemA{}
+class ElemC extends ElemB{}
+class ElemD extends ElemC{}
+class ElemE extends ElemD{}
+
+class OperationBase {
+	//public int op(ElemA e) {return 4;}
+	//public int op(ElemB e) {return 5;}
+	//public int op(ElemC e) {return 6;}
+	public int op(ElemB e, ElemA a) {return 3;}
+	//public String op(ElemA e, ElemC a) { return "chao";}
+	}
+
+class Operation extends OperationBase{
+	//public int op(ElemA e) { return 1; }
+	//public int op(ElemB e, int a) { return 2; }
+	//public int op(ElemC e, int a) { return 3; }
+	public String op(ElemA e, ElemC a) { return "hola";}}
