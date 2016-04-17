@@ -1,0 +1,76 @@
+\documentclass [proof]{article}
+
+
+
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage[latin1]{inputenc} % acentos sin codigo
+\usepackage{verbatim} % comentarios
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+\usepackage{float}
+\usepackage{definitions}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor,colortbl}
+\usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\env}{{\Gamma \vdash}}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\begin{document}
+
+\begin{enumerate}
+    \item Solution 13.1.1: $a = \{$\textsf ref $0, $ \textsf ref $0 \}$  and $b = (\lambda x: $ \textsf {Ref Nat}. $\{x, x\}) ($ \textsf ref $0)$. In the case of $a$ is created with two different references, while $b$ is created with the same reference.
+     \begin{center} \includegraphics{fig1.jpg} \end{center}
+  	\item Solution 13.1.2: The  new update would not behave the same way. Calls to lookup with any index other than the one given to \textsf update will now diverge. The point is that we need to make sure we look up the value stored in a before we overwrite it with the new function. Otherwise, when we get around to doing the lookup, we will find the new function, not the original one.
+    \item Solution 13.1.3:
+    \begin{itemize}
+    	\item \textsf let $r =$ \textsf ref $0$ \text in
+		\item \textsf let $s = r $ \text in
+		\item \textsf free $r;$
+		\item \textsf let $t =$ \textsf {ref} $true$ \text in
+		\item $t :=$  $false;$
+		\item \textsf succ $(!s)$
+	\end{itemize}
+		If the language provides a primitive \textsf free that takes a reference cell as argument and releases its storage so that (say) the very next allocation of a reference cell will obtain the same piece of memory. Then the program will evaluate to the stuck term \textsf succ $false$. Note that aliasing plays a crucial role here in setting up the problem, since it prevents us from detecting invalid deallocations by simply making free $r$ illegal if the variable r appears free in the remainder of the expression.
+\item Solution 13.4.1:
+	\begin{itemize}
+	\item \textsf let $r_1 = $ \textsf ref $(\lambda x:$ \textsf Nat$. \ 0)\ in$
+	\item \textsf let $r_2 = $\textsf ref $(\lambda x:$ \textsf Nat$.(!r_1)\ x) \ in$\\
+    $(r_1 := (\lambda x:$\textsf Nat$.(!r_2)\ x);$\\
+    $r_2);$
+	\end{itemize}
+	
+
+	\item Solution 13.5.2: Let $\mu$ be a store with a single location  $l$\\
+	 $\mu = (l \mapsto \lambda x:$ \textsf Unit. $(!l)(x))$,\\
+     and $\Gamma$ the empty context. Then $\mu$ is well typed with respect to both of the following store typings:\\
+     $\Sigma_1 = l:$Unit$\to$Unit\\
+     $\Sigma_2 = l:$ Unit$\to($Unit$\to$Unit)$.$\\
+	\item Solution 13.5.8: There are well-typed terms in this system that are not strongly normalizing. For example:
+	\begin{itemize}
+	\item $t1 = \lambda r:$ \textsf Ref $($Unit $\to$ Unit$)$.\\
+	$(r := (\lambda x:$ Unit.$(!r) \ x);$\\
+	$(!r)$ \textsf unit$);$
+	\item $t_2 =$ \textsf ref $(\lambda x:$ Unit$. x);$
+	\end{itemize}
+	The term $(t_1 \ t_2)$ yields a (well-typed) divergent term. Its type is Unit.	
+\end{enumerate}
+\end{document}
