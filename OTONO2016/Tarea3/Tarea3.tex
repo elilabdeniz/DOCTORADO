@@ -1,0 +1,101 @@
+\documentclass [proof]{article}
+
+
+
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage[latin1]{inputenc} % acentos sin codigo
+\usepackage{verbatim} % comentarios
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+\usepackage{float}
+\usepackage{definitions}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor,colortbl}
+\usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+\usepackage{amssymb}
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\env}{{\Gamma | \Sigma \ \vdash}}
+\newcommand{\envE}{{\varnothing | \Sigma \ \vdash}}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\begin{document}
+LEMMA [Inversion of the Typing Relation]:
+\begin{enumerate}
+\item If $\env \ x : R$ , then $x : R \in \Gamma$
+\item If $\env \ \lambda x: T_1. t_2 : R$, then $R = T_1 \to R_2$ for some $R_2$, with $\Gamma$, $x : T_1\vdash t_2 : R_2$.
+\item If $\env \  t_1 \ t_2 : R$, then there is some type $T_{11}$ such that $\env t_1 : T_{11} \to R$ and $\env t_2 : T_{11}$.
+\item If $\env \ ref \ t : R$, then $R = Ref \ T_1$ for some $T_1$ and $\env \ t_1 : T_1.$
+\item If $\env \ !t : R$, then $\env \ t : Ref \ R$. 
+\item If $\env \ t_1:= t_2 : R$, then $R = Unit$, $\env \ t_1 : Ref \ T_1$, for some $T_1$ and $\env \ t_2 : T_1$.
+\item If $\env \ l : R$, then $R = Ref \ T_1$, for some $T_1$, and $\Sigma (l) = T_1$.
+\end{enumerate}
+$Proof:$ Immediate from the definition of the typing relation.\ \\
+
+LEMMA [Canonical Forms]:
+\begin{enumerate}
+\item If $v$ is a value of type $T_1 \to T_2$, then $v = \lambda x : T_1. t_2$.
+\item If $v$ is a value of type $Unit$, then $v = unit$.
+\item If $v$ is a value of type $Ref \ T$, then $v = l$.
+\end{enumerate}
+$Proof:$ Straightforward.\ \\
+
+THEOREM [Progress]: Suppose $t$ is a closed, well-typed term (that is, $ \envE \ t : T$ for some $T$). Then either $t$ is a value or else, for any store $\mu$ such that $\envE \ \mu$, there is some term $t'$ with $t|\mu \tto t'|\mu'$.\\
+Proof: Straightforward induction on typing derivations.
+\begin{enumerate}
+\item The variable case cannot occur (because $t$ is closed).
+\item The abstraction case is immediate, since abstractions are values.
+\item For application, where $t = t_1 \ t_2$, with $\envE \ t_1 : T_{11} \tto T_{12}$ and $\envE \ t_2 : T_{11}$, for the inversion lemma. Then, by the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation, and likewise $t_2$. If $t_1$ can take a step, then rule $EApp1$ applies to $t$. If $t_1$ is a value and $t_2$ can take a step, then rule $EApp2$ applies. Finally, if both $t_1$ and $t_2$ are values, then the canonical forms lemma tells us that $t_1$ has the form $\lambda x: T_{11}.t_{12}$, and so rule $EAppAbs$ applies to $t$.
+\item The $unit$ case is immediate, since $unit$ is a value.
+\item If $t = Ref \ t_1$, then $T = Ref \ T_1$, for some $T_1$, and $\envE \ t_1 : T_1$. By the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation. If $t_1$ can take a step, then for any store $\mu$ such that $\envE \ \mu$, there is some term $t_1'$ with $t_1|\mu \tto t_1'|\mu'$. For this reason, for any store $\mu$ such that $\envE \ \mu$, the rule $ERef$ applies to $t$, which guarantees the existence of $t'$ and $\mu'$. If $t_1$ is a value ($t_1 = Ref \ v_1$) then the rule $ERefV$ applies to $t$, obtaining that $t' = l,$ with $l \not\in dom(\mu)$ and $\mu' = (\mu, l \mapsto v_1)$.
+\item If $t = \ !t_1$, then $\envE \ t_1 : Ref \ T$. By the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation. If $t_1$ can take a step, then for any store $\mu$ such that $\envE \ \mu$, there is some term $t_1'$ with $t_1|\mu \tto t_1'|\mu'$. For this reason, for any store $\mu$ such that $\envE \ \mu$, the rule $EDeref$ applies to $t$, which guarantees the existence of $t'$ and $\mu'$. If $t_1$ is a value ($t_1 = l$, for the Canonical Forms Lemma) then the rule $EDerefLoc$ applies to $t$ (since $\envE \ l : Ref \ T$ and $\envE \ \mu$ then $\mu(l)$ is defined), obtaining that $t' = \mu(l),$ and $\mu' = \mu$.
+\item If $t = t_1 := t_2$, then then $T = Unit$, $\envE \ t_1 : Ref \ T_1$, for some $T_1$ and $\envE \ t_2 : T_1$. By the induction hypothesis, either $t_1$ is a value or else it can make a step of evaluation, and likewise $t_2$. If $t_1$ can take a step, then for any store $\mu$ such that $\envE \ \mu$, there is some term $t_1'$ with $t_1|\mu \tto t_1'|\mu'$. For this reason, for any store $\mu$ such that $\envE \ \mu$, the rule $EAssing1$ applies to $t$, which guarantees the existence of $t'$ and $\mu'$. If $t_2$ can take a step, is the same, but with the rule $EAssing2$. Finally, if both $t_1$ and $t_2$ are values, then the canonical forms lemma tells us that $t_1$ has the form $l$. Then the rule $EAssing$ applies to $t$, which guarantees the existence of $t'$ and $\mu'$.
+\item If $t = l$, then it is immediate, since locations are values.
+
+\end{enumerate}
+
+LEMMA[Permutation]: If $\env \ t : T$ and $\Delta$ is a permutation of $\Gamma$, then $\Delta | \Sigma \ \vdash \ t : T$.\\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+LEMMA[Weakening]: If $\env \ t : T$ and $x \not \in dom(\Gamma)$, then $\Gamma, x : S | \Sigma \ \vdash \ t:T$.\\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+LEMMA [Preservation of types under substitution]: If $\Gamma , x:S  | \Sigma \ \vdash \ t : T$ and $\env s : S$, then $\env \ [x \mapsto s]t : T$.\\
+$Proof$: By induction on a derivation of the statement $ \Gamma, x:S \ \vdash \ t : T$. For a given derivation, we proceed by cases on the final typing rule used in the proof.\\
+
+LEMMA [1]: If $\env \ \mu$, $\Sigma(l) = T$ and $ \env \ v:T$ then $\env [l \mapsto v]\mu$.\\
+$Proof$: Straightforward induction.\ \\
+
+LEMMA [2]: If $\env \ t : T$ and $\Sigma \subseteq \Sigma'$ then $\Gamma | \Sigma' \ \vdash \ t:T$.\\
+$Proof$: Straightforward induction.\ \\
+
+LEMMA[Preservation]: If $\env \ t : T$ and $t \tto t'$, then $\env \ t' : T$.\\
+$Proof$: By induction on a derivation of $t : T$. At each step of the induction, we assume that the desired property holds for all subderivations (i.e., that if $s : S$ and $s \tto s'$, then $s' : S$, whenever s : S is proved by a subderivation of the present one) and proceed by case analysis on the final rule in the derivation.
+\begin{enumerate}
+\item $Case \ TVar$: It cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TAbs$: $t = \lambda x:T_2.t_1, with \ T = T_2 \to T_1$ and $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. If the last rule in the derivation is $TAbs$, then we know from the form of this rule that t must be a function $\lambda x:T_2.t_1$ and $T$ must be $T_2 \to T_1$, with $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. But then $t$ is a value, so it cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TApp$: $t = t_1 \ t_2, \ \vdash \ t_1 : T_2 \to T$ and $\vdash \ t_2 : T_2$. If the last rule in the derivation is $TApp$, then we know from the form of this rule that $t$ must have the form $t_1 \ t_2$, for some $t_1$ and $t_2$. We must also have a subderivation with conclusions $\vdash t_1 : T_2 \to T$ and $\vdash t_2 : T_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $t \tto t'$ can be derived: $EApp1$, $EApp2$ and $EAppAbs$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EApp1$: $t_1 \tto t_1', \ t' = t_1' \ t_2$. By the induction hypothesis, $\vdash t_1' : T_2 \to T$, then we can apply rule $TApp$, to conclude that $\vdash t_1' \ t_2: T$ , that is $\vdash t' : T$.
+\item $Subcase \ EApp2$: $t_2 \tto t_2', \ t' = t_1 \ t_2'$. By the induction hypothesis, $\vdash t_2' : T_2 $, then we can apply rule $TApp$, to conclude that $\vdash t_1 \ t_2' : T$, that is $\vdash t' : T$.
+\item $Subcase \ EAppAbs$: $t_1 = \lambda x:T_{1}.t_{12}$, $t_2 = v_2$, $t' = [x \mapsto v_2]t_{12}$ and $\vdash t_{12}: T$ for the inversion lemma. The resulting term $\vdash [x \mapsto v_2]t_{12}:T$, for the Substitution lemma, that is $\vdash t' : T$.
+\end{itemize}
+
+\end{enumerate}
+\end{document}
