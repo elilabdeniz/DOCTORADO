@@ -1,6 +1,5 @@
+
 \documentclass [proof]{article}
-
-
 
 \usepackage{caption}
 \usepackage{amsmath}
@@ -33,6 +32,8 @@
 \newcommand{\tto}{\longrightarrow}
 \newcommand{\env}{{\Gamma | \Sigma \ \vdash}}
 \newcommand{\envE}{{\varnothing | \Sigma \ \vdash}}
+\newcommand{\envEP}{{\Gamma | \Sigma \ \vdash \ }}
+\newcommand{\envEPP}{{\Gamma | \Sigma' \ \vdash \ }}
 \newcommand{\lambdax}{\lambda x}
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \begin{document}
@@ -79,23 +80,35 @@ $Proof$: Straightforward induction on typing derivations.\ \\
 LEMMA [Preservation of types under substitution]: If $\Gamma , x:S  | \Sigma \ \vdash \ t : T$ and $\env s : S$, then $\env \ [x \mapsto s]t : T$.\\
 $Proof$: By induction on a derivation of the statement $ \Gamma, x:S \ \vdash \ t : T$. For a given derivation, we proceed by cases on the final typing rule used in the proof.\\
 
-LEMMA [1]: If $\env \ \mu$, $\Sigma(l) = T$ and $ \env \ v:T$ then $\env [l \mapsto v]\mu$.\\
+LEMMA [1]: If $\envEP \ \mu$, $\Sigma(l) = T$ and $ \env \ v:T$ then $\envEP [l \mapsto v]\mu$.\\
 $Proof$: Straightforward induction.\ \\
 
-LEMMA [2]: If $\env \ t : T$ and $\Sigma \subseteq \Sigma'$ then $\Gamma | \Sigma' \ \vdash \ t:T$.\\
+LEMMA [2]: If $\envEP \ t : T$ and $\Sigma \subseteq \Sigma'$ then $\Gamma | \Sigma' \ \vdash \ t:T$.\\
 $Proof$: Straightforward induction.\ \\
 
-LEMMA[Preservation]: If $\env \ t : T$ and $t \tto t'$, then $\env \ t' : T$.\\
-$Proof$: By induction on a derivation of $t : T$. At each step of the induction, we assume that the desired property holds for all subderivations (i.e., that if $s : S$ and $s \tto s'$, then $s' : S$, whenever s : S is proved by a subderivation of the present one) and proceed by case analysis on the final rule in the derivation.
+LEMMA[Preservation]: If $\envEP \ t : T$, $\envEP \mu$ and $t|\mu \tto t'|\mu'$, then for some $\Sigma' \supseteq \Sigma$, $\envEP \ t' : T$ and $\envEPP \mu'$.\\
+$Proof$:
 \begin{enumerate}
-\item $Case \ TVar$: It cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
-\item $Case \ TAbs$: $t = \lambda x:T_2.t_1, with \ T = T_2 \to T_1$ and $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. If the last rule in the derivation is $TAbs$, then we know from the form of this rule that t must be a function $\lambda x:T_2.t_1$ and $T$ must be $T_2 \to T_1$, with $ \Gamma, x:T_2 \ \vdash \ t_1 : T_1$. But then $t$ is a value, so it cannot be the case that $t \tto t'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
-\item $Case \ TApp$: $t = t_1 \ t_2, \ \vdash \ t_1 : T_2 \to T$ and $\vdash \ t_2 : T_2$. If the last rule in the derivation is $TApp$, then we know from the form of this rule that $t$ must have the form $t_1 \ t_2$, for some $t_1$ and $t_2$. We must also have a subderivation with conclusions $\vdash t_1 : T_2 \to T$ and $\vdash t_2 : T_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $t \tto t'$ can be derived: $EApp1$, $EApp2$ and $EAppAbs$. We consider each case separately.
+\item $Case \ TVar$: $\cdots$
+\item $Case \ TAbs$: $\cdots$
+\item $Case \ TApp$: $\cdots$
+\item $Case \ TLoc$: If the last rule in the derivation is $TLoc$, then we know from the form of this rule that $t$ must be a location $l$, then $t$ is a value, so it cannot be the case that $t | \mu \tto t'| \mu'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TUnit$: If the last rule in the derivation is $TUnit$, then we know from the form of this rule that $t$ must be $unit$, then $t$ is a value, so it cannot be the case that $t | \mu \tto t'| \mu'$ for any $t'$, and the requirements of the theorem are vacuously satisfied.
+\item $Case \ TRef$: $t = ref \ t_1$, $ \envEP ref \ t_1 : Ref \ T_1$, for some $T_1$ and $\envEP t_1 : T_1$. If the last rule in the derivation is $TRef$, then we know from the form of this rule that $t$ must have the form $ref \ t_1$, for some $t_1$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are two rules by which $t|\mu \tto t'|\mu'$ can be derived: $ERefV$ and $ERef$. We consider each case separately.
 \begin{itemize}
-\item $Subcase \ EApp1$: $t_1 \tto t_1', \ t' = t_1' \ t_2$. By the induction hypothesis, $\vdash t_1' : T_2 \to T$, then we can apply rule $TApp$, to conclude that $\vdash t_1' \ t_2: T$ , that is $\vdash t' : T$.
-\item $Subcase \ EApp2$: $t_2 \tto t_2', \ t' = t_1 \ t_2'$. By the induction hypothesis, $\vdash t_2' : T_2 $, then we can apply rule $TApp$, to conclude that $\vdash t_1 \ t_2' : T$, that is $\vdash t' : T$.
-\item $Subcase \ EAppAbs$: $t_1 = \lambda x:T_{1}.t_{12}$, $t_2 = v_2$, $t' = [x \mapsto v_2]t_{12}$ and $\vdash t_{12}: T$ for the inversion lemma. The resulting term $\vdash [x \mapsto v_2]t_{12}:T$, for the Substitution lemma, that is $\vdash t' : T$.
+\item $Subcase \ ERef$: $t_1|\mu \tto t_1'|\mu', \ t' = ref \ t_1'$. By the induction hypothesis, $\envEPP t_1' : T_1$, for some $\Sigma'$,  where $\envEPP \mu'$. Then we can apply rule $TRef$, to conclude that $\envEPP ref \ t_1' : Ref \ T_1 $ , that is $\envEPP t' : T$, where $\envEPP \mu'$.
+\item $Subcase \ ERefV$: $t = ref \ v_1$, $t' = l$ and $l \not\in dom(\mu)$. For $\Sigma' = \Sigma \cup (l, T_1)$, for the rule $TLoc$, is true that $\envEPP l : Ref \ T_1$, and $\envEPP (\mu, l \mapsto v_1)$.
 \end{itemize}
-
+\item $Case \ TAssing$: $t = t_1:= t_2$, $T = Unit$, $\envEP t_1 : Ref \ T_1$, for some $T_1$, and $\envEP t_2 : T_1$. If the last rule in the derivation is $TAssing$, then we know from the form of this rule that $t$ must have the form $t_1:= \ t_2$, for some $t_1$ and $t_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $t|\mu \tto t'|\mu'$ can be derived: $EAssing1$, $EAssing2$ and $EAssing$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EAssing1$: $t_1|\mu \tto t_1'|\mu', \ t' = t_1' := t_2$. By the induction hypothesis, $\envEPP t_1' : Ref \ T_1$, for some $\Sigma'$,  where $\envEPP \mu'$. Moreover, $\envEPP t_2 : T_1$, for Lemma[2]. Then we can apply rule $TAssing$, to conclude that $\envEPP t_1' := t_2 : Unit $ , that is $\envEPP t' : T$, where $\envEPP \mu'$.
+\item $Subcase \ EAssing2$: Similar to the above.
+\item $Subcase \ EAssing$: $t = l := v$ and $t' = unit$. Then for $\Sigma$, it is satisfied that $\envEP t' : Unit$, that is  $\envEP t' : T$, and for $\mu' = [l \mapsto v]\mu$ is true that $\envEP [l \mapsto v]\mu$ for Lemma[1].
+\end{itemize}
+\item $Case \ TDeref$: $t = \ !t_1$ and $ \envEP t_1 : Ref \ T$. If the last rule in the derivation is $TDeref$, then we know from the form of this rule that $t$ must have the form $t = \ !t_1$, for some $t_1$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are two rules by which $t|\mu \tto t'|\mu'$ can be derived: $EDeref$ and $EDerefLoc$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ EDeref$: $t_1|\mu \tto t_1'|\mu', \ t' = \ !t_1'$. By the induction hypothesis, $\envEPP t_1' : Ref \ T$, for some $\Sigma'$,  where $\envEPP \mu'$. Then we can apply rule $TDeref$, to conclude that $\envEPP !t_1' : T $ , that is $\envEPP t' : T$, where $\envEPP \mu'$.
+\item $Subcase \ EDerefLoc$: $t_1 = l$, $\mu(l) = v$, for some $v$ and $t' = v$. We know that $\envEP l : Ref \ T$, then for the inversion lemma, $\Sigma(l) = T$. We know too, that $\envEP \mu$, then $\envEP \mu(l) : \Sigma(l)$, that is $\envEP v : T$.
+\end{itemize}
 \end{enumerate}
 \end{document}
