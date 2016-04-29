@@ -1,0 +1,71 @@
+\documentclass{article}
+
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage[latin1]{inputenc} % acentos sin codigo
+\usepackage{verbatim} % comentarios
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+\usepackage{float}
+\usepackage{definitions}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor,colortbl}
+\usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+\usepackage{amssymb}
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\env}{{\Gamma | \Sigma \ \vdash}}
+\newcommand{\envE}{{\varnothing | \Sigma \ \vdash}}
+\newcommand{\envEP}{{\Gamma | \Sigma \ \vdash \ }}
+\newcommand{\envEPP}{{\Gamma | \Sigma' \ \vdash \ }}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\begin{document}
+
+\begin{enumerate}
+
+\item (16.2.5) By induction on declarative typing derivations. Proceed by cases on the final rule in the derivation.
+\begin{itemize}
+\item $Case \ T-Var$: $t = x$ and $\Gamma(x) = T$. Immediate, by $TA-Var$.
+\item $Case \ T-Abs$: $t = \lambda x:T_1.t_2$, $\Gamma, x:T_1 \vdash \ t_2 : T_2$ and $T = T_1 \to T_2$. By the induction hypothesis, $\Gamma, x:T_1 \vdash \ t_2 : S_2$, for some $S_2 <: T_2$. By $TA-Abs$, $\Gamma  t : T_1 \to S_2$.
+\end{itemize}
+
+\begin{comment}
+ By S-Arrow, T1!S2 <: T1!T2, as required.
+Case T-App: t = t1 t2 ?? t1 : T11!T12 ?? ` t2 : T11 T = T12
+By the induction hypothesis, ?? `? t1 : S1 for some S1 <: T11!T12 and ?? `?
+t2 : S2 for some S2 <: T11. By the inversion lemma for the subtype relation
+(15.3.2), S1 must have the form S11!S12, for some S11 and S12 with T11 <: S11
+and S12 <: T12. By transitivity, S2 <: S11. By the completeness of algorithmic
+subtyping, `? S2 <: S11. Now, by TA-App, ?? `? t1 t2 : S12, which finishes this
+case (since we already have S12 <: T12).
+Case T-Rcd: t = {li=ti
+i21..n} ?? ` ti : Ti for each i
+T = {li:Ti
+i21..n}
+Straightforward.
+Case T-Proj: t = t1.lj ?? ` t1 : {li:Ti
+i21..n} T = Tj
+Similar to the application case.
+Case T-Sub: t : S S <: T
+By the induction hypothesis and transitivity of subtyping.
+\end{comment}
+\item (16.2.6) If we dropped the arrow subtyping rule $S-Arrow$ but kept the rest of the declarative subtyping and typing rules the same, the system do not still have the minimal typing property. For example, the term $\lambda x:\{a:Nat\}.x$ has both the types $\{a:Nat\} \to \{a:Nat\}$ and $\{a:Nat\} \to Top$ under the declarative rules. With the algorithmic typing has the type $\{a:Nat\} \to \{a:Nat\}$,  but without $S-Arrow$, this type is incomparable with $\{a:Nat\} \to Top$.
+\item (16.3.3) The minimal type of $ \mathsf{if} \ true \ \mathsf {then} \ false \ \mathsf {else} \  \{ \ \}$ is $Top$, the join of $Bool$ and $\{ \ \}$. However, it is hard to imagine that the programmer really intended to write this expression, after all, no operations can be performed on a value of type Top.
+\end{enumerate}
+\end{document}

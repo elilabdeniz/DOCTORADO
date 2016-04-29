@@ -1,0 +1,78 @@
+\documentclass{article}
+
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+%\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage{verbatim} % comentarios
+%\usepackage[spanish]{babel}
+\usepackage{mathtools}
+%\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+\usepackage{float}
+\usepackage{definitions}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor,colortbl}
+\usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\env}{{\Gamma \vdash \ }}
+\newcommand{\envE}{{\Gamma \Vdash \ }}
+\newcommand{\envEP}{{\Gamma | \Sigma \ \vdash \ }}
+\newcommand{\envEPP}{{\Gamma | \Sigma' \ \vdash \ }}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\begin{document}
+\begin{enumerate}
+\item (16.2.5) By induction on declarative typing derivations. Proceed by cases on the final rule in the derivation.
+\begin{itemize}
+\item $Case \ TVar$: $t = x$ and $\Gamma(x) = T$. Immediate, by $TAVar$.
+\item $Case \ TAbs$: $t = \lambda x:T_1.t_2$, $\Gamma, x:T_1 \vdash \ t_2 : T_2$ and $T = T_1 \to T_2$. By the induction hypothesis, $\Gamma, x:T_1 \Vdash \ t_2:S_2$, for some $S_2 <: T_2$. By $SArrow$, $T_1 \to S_2 <: T_1 \to T_2$.
+\item $Case \ TApp$: $t = t_1 t_2$, $\env t_1 : T_{11} \to T_{12}$, $\env t_2 : T_{11}$ and $T = T_{11}$. By the induction hypothesis, $\envE t_1 : S_1$, for some $S_1 <: T_{11} \to T_{12}$ and $\ envE t_2 :S_2$, for some $S_2 <: T_{11}$. By the inversion lemma for the subtype relation, $S_1$ must have the form $S_{11} \to S_{12}$, for some $S_{11}$ and $S_{12}$ with $T_{11} <: S_{11}$ and $S_{12} <: T_{12}$ . By transitivity, $S_2 <: S_{11}$. By the completeness of algorithmic subtyping, $\Vdash S_2 <: S_{11}$. Now, by $TAApp$, $\envE t_1 t_2 : S_{12}$, which finishes this case (since we already have $S_{12} <: T_{12}$).
+\item $Case TRcd$: $t = \{ l_i = t_i ^ {\ i \in 1 \cdots n}\}$, $\env t_i : T_i$ for each $i$ and $T = \{ l_i:T_i ^ {\ i \in 1 \cdots n} \}$. By the induction hypothesis, $\envE t_i : S_i$, with $S_i <: T_i$ for each $i$. Now, by $TARcd$, $\envE \{ l_i = t_i ^ {\ i \in 1 \cdots n}\}: \{l_i:S_i ^ {\ i \in 1 \cdots n}\}$. By $SRcd \ \{l_i:S_i ^ {\ i \in 1 \cdots n}\} <: \{l_i:T_i ^ {\ i \in 1 \cdots n}\}$, which finishes this case.
+\item $TProj$: $t = t_1 .l_j$, $\env t_1 : \{ l_i :T_i ^ {i\in 1 \cdots n} \}$ and $T = T_j$. By the induction hypothesis, $\envE t_1 : S$, with $S <: \{ l_i : T_i ^ {i\in 1 \cdots n} \}$. By the inversion lemma in subtyping relation, $S$ must have the form $\{ k_i : S_i ^ {i\in 1 \cdots m} \}$, with at least the labels $\{l_i ^ {\ i \in 1 \cdots n }\}$ i.e., $\{l_i ^ {i\in 1 \cdots n }\}  \subseteq \{k_j ^ {\ j \in 1 \cdots m} \}$,  with $S_j <: T_i$ for each common label $l_i = k_j $. By $SARcd$ $\envE t_1.t_j : S_j$ , which finishes this case (since we already have $S_j <: T_j$).
+\item $Case \ TSub$: $ \env t : S$ and $S <: T$. By the induction hypothesis and transitivity of subtyping.
+\end{itemize}
+\item (16.2.6) If we dropped the arrow subtyping rule $S-Arrow$ but kept the rest of the declarative subtyping and typing rules the same, the system do not still have the minimal typing property. For example, the term $\lambda x:\{a:Nat\}.x$ has both the types $\{a:Nat\} \to \{a:Nat\}$ and $\{a:Nat\} \to Top$ under the declarative rules. With the algorithmic typing has the type $\{a:Nat\} \to \{a:Nat\}$,  but without $S-Arrow$, this type is incomparable with $\{a:Nat\} \to Top$.
+\item (16.3.3) The minimal type of $ \mathsf{if} \ true \ \mathsf {then} \ false \ \mathsf {else} \  \{ \ \}$ is $Top$, the join of $Bool$ and $\{ \ \}$. However, it is hard to imagine that the programmer really intended to write this expression, after all, no operations can be performed on a value of type Top.
+\item (14.3.1)
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l c l r}
+$Syntax$ &&& \\ 
+$t$ & $::=$ & &$terms:$\\ 
+&&$x$&$variable$\\ 
+&&$\lambda x:T.t$&$abstraction$\\
+&&$t \ t$&$application$\\
+&&$\mathsf{rise} \ (<l = t> \mathsf{as} \ T)$&$rise \ exception$\\
+&&$\mathsf{try} \ t \ \mathsf{with} \ \lambda x:T. \ \mathsf{case} \ x \ \mathsf{of} \ $ & $handle \ exception$\\
+&&&\\
+$v$ & $::=$ & &$values:$\\
+&&$\lambda x:T.t$&$abstraction \ value$\\
+&&$\{l_i=v_i^{i \in 1 \cdots n}\}$&$record \ value$\\
+&&&\\
+$T$&$::=$&&$types:$\\
+&&$T \to T$&$type \ of \ functions$\\
+&&$\{l_i=T_i^{i \in 1 \cdots n}\}$&$type \ of \ record$\\
+&&&\\
+$\Gamma$&$::=$&&$contexts:$\\
+&&$\varnothing$&$empty \ context:$\\
+&&$\Gamma , x:T$&$term \ variable \ binding$\\
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{enumerate}
+\end{document}
