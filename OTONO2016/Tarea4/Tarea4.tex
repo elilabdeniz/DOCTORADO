@@ -58,21 +58,51 @@ $t$ & $::=$ & &$terms:$\\
 &&$t \ t$&$application$\\
 &&$\mathsf{rise} \ (<l = t> \mathsf{as} \ T)$&$rise \ exception$\\
 &&$\mathsf{try} \ t \ \mathsf{with} \ \lambda x:T. \ \mathsf{case} \ x \ \mathsf{of} \ $ & $handle \ exception$\\
-&&&\\
-$v$ & $::=$ & &$values:$\\
-&&$\lambda x:T.t$&$abstraction \ value$\\
-&&$\{l_i=v_i^{i \in 1 \cdots n}\}$&$record \ value$\\
-&&&\\
-$T$&$::=$&&$types:$\\
-&&$T \to T$&$type \ of \ functions$\\
-&&$\{l_i=T_i^{i \in 1 \cdots n}\}$&$type \ of \ record$\\
-&&&\\
-$\Gamma$&$::=$&&$contexts:$\\
-&&$\varnothing$&$empty \ context:$\\
-&&$\Gamma , x:T$&$term \ variable \ binding$\\
+&&$<l = x> \ \mathsf{=>} \ h$&\\
+&&$| \_ \ \mathsf{=>} \  \mathsf{rise} \ x$&\\
 \end{tabular}
 \end{center}
 \end{table}
+
+$\inference{\env t_j : T_j & T_{exn} = \{ l_i : T_i ^ {i \in 1 \cdots n} \} }{\mathsf{rise} \ (<l_j = t_j> \mathsf{as} \ T_{exn})}{\rulename {TExn}}$ \\
+\\
+
+$\inference{\env t : T & T_{exn} = \{ l_i : T_i ^ {i \in 1 \cdots n} \} & \Gamma, x_j : T_j \vdash \ h : T}{\begin{block} \env \mathsf{try} \ t \ \mathsf{with} \ \lambda e:T_{exn}. \ \mathsf{case} \ e \ \mathsf{of} \ \\
+ <l_j = x_j> \ \mathsf{=>} \ h\\
+| \_ \ \mathsf{=>} \  \mathsf{rise} \ e : T\end{block}}{\rulename {TTry}}$\\
+\\
+
+$ (\mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})) \ t_2 \tto \mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})  \ \rulename{EAppRaise1}$\\
+\\
+
+$ v \ (\mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})) \tto \mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})  \ \rulename{EAppRaise2}$\\
+\\
+
+$\inference{t_1 \tto t_1'} {\mathsf{rise} \ t_1 \tto \mathsf{rise} \ t_1'}{\rulename {ERaise}}$ \\
+\\
+
+$ \mathsf{rise} \ (\mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})) \tto \mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})  \ \rulename{ERaiseRaise}$\\
+\\
+
+$\inference{t_j \tto t_j'} {\mathsf{rise} \ (<l_j = t_j> \ \mathsf{as} \ T_{exn}) \tto \mathsf{rise} \ (<l_j = t_j'> \ \mathsf{as} \ T_{exn})}{\rulename {ERaiseVariant}}$\\
+\\
+
+$\mathsf{try} \ v \ \mathsf{with} \ t_2 \tto v \ \rulename {ETryV}$\\
+\\
+
+$\begin{block}\mathsf{try} \ \mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})\ \mathsf{with}  \ \lambda e:T_{exn}. \ \mathsf{case} \ e \ \mathsf{of} \ \\
+ <l_j = x_j> \ \mathsf{=>} \ h\\
+| \_ \ \mathsf{=>} \  \mathsf{rise} \ e  \tto  [x_j \mapsto v_j]h \ \rulename{ETryRise1} \end{block}$\\
+\\
+
+$\inference{l_j \neq l_k} {\begin{block}\mathsf{try} \ \mathsf{rise} \ (<l_j = v_j> \ \mathsf{as} \ T_{exn})\ \mathsf{with}  \ \lambda e:T_{exn}. \ \mathsf{case} \ e \ \mathsf{of} \ \\
+ <l_j = x_j> \ \mathsf{=>} \ h\\
+| \_ \ \mathsf{=>} \  \mathsf{rise} \ e \tto \mathsf{rise} \  (<l_j = v_j> \ \mathsf{as} \ T_{exn})\end{block}}{\rulename {ETryRise2}}$\\
+\\
+
+$\inference{t_1 \tto t_1'} {\mathsf{try} \ t_1 \ \mathsf{with} \ t_2 \tto \mathsf{try} \ t_1' \ \mathsf{with} \ t_2 }{\rulename {ETry}}$\\
+\\
+
 
 \end{enumerate}
 \end{document}
