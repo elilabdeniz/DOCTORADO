@@ -1,0 +1,154 @@
+\documentclass {article}
+
+
+\usepackage{changepage}
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage[T1]{fontenc}
+\usepackage{ebproof}
+\usepackage{amssymb} % To provide the \varnothing symbol
+\usepackage[latin1]{inputenc} % acentos sin codigo
+\usepackage{verbatim} % comentarios
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{soul}%sombreado
+\usepackage[pdftex]{color}
+\usepackage{semantic}
+\usepackage{float}
+\usepackage{definitions}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor,colortbl}
+\usepackage{multirow}
+\usepackage[letterpaper]{geometry}
+
+\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
+\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
+\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\lambdax}{\lambda x}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+
+\newcommand{\app}[2]{#1 \ #2}
+\newcommand{\appD}{t_1 \ t_2}
+\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
+\newcommand{\absD}{\lambda x:T_1. \ t_2}
+\newcommand{\conf}[2][s]{#2 \ [#1]}
+\newcommand{\confx}[1]{#1 \ [(x,v):s]}
+\newcommand{\confy}[1]{#1 \ [(y,v):s]}
+\newcommand{\subxD}{[(x,v):s]}
+\newcommand{\subx}{[(x,v):s']}
+\newcommand{\suby}{[(y,v):s']}
+\newcommand{\env}{{\Gamma \vdash \ }}
+\newcommand{\envE}{{\Gamma , x:T_1 \vdash \ }}
+\newcommand{\envC}{{\Gamma_s \vdash \ }}
+\newcommand{\envEC}{{\Gamma_s , x:T_1 \vdash \ }}
+\newcommand{\tyC}{{\vdash_c \ }}
+\begin{document}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l c l r|}
+\hline
+$\mathsf {Syntax}:$&&&\\
+&&&\\
+$t$&$::=$&&$\mathsf {terms}$\\
+&&$x$&$\mathsf {variable}$\\
+&&$\abs {x}{T}{t}$&\ $\mathsf {abstraction}$\\
+&&$\app {t_1}{t_2}$&$\mathsf {application}$\\
+&&&\\
+$c$&&&$\mathsf {configurations}$\\
+&&$\conf {x}$&\\
+&&$\conf {\abs {x}{T}{t}}$&\\
+&&$\conf {\app {t_1}{t_2}}$&\\
+&&$c \ c $&\\
+&&$\conf {\abs {x}{T}{t}}$&$\mathsf {clause }$\\
+$v$&$::=$&&$\mathsf {values}$\\
+&&&\\
+$T$&$::=$&&$\mathsf {types}$\\
+&&$T \to T$&$\mathsf {type \ of \ functions}$\\
+&&&\\
+$\Gamma$&$::=$&&$\mathsf {contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
+$[s]$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+&&$[ ]$&$\mathsf {empty \ substitutions}$\\
+&&$\subxD$&$\mathsf {not \ empty \ substitutions}$\\
+\hline
+\end{tabular}
+\caption{Syntax of the simply typed lambda-calculus with explicit substitution.}
+\label{tabla:sencilla}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\hspace*{-1.8cm}
+\begin{tabular}{|l|l|}
+\hline
+\begin{tabular}{l c r}
+&&\\
+\multicolumn{2}{l}{$\mathsf {Typing \ terms}:$}&$\env t:T$\\
+&&\\
+&$\inference {x:T \in \Gamma}{\env x:T}$&$\rulename{TVar}$\\
+&&\\
+&$\inference {\envE t_2:T_2}{\env \absD:T_1 \to T_2}$&$\rulename{TAbs}$\\
+&&\\
+&$\inference {\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}{\env \appD : T_{12}}$&$\rulename{TApp}$\\
+&&\\
+&&\\
+&&\\
+&&\\
+\end{tabular}&
+\begin{tabular}{l c r}
+&&\\
+\multicolumn{2}{l}{$\mathsf {Typing \ configurations}:$}&$\tyC c:T$\\
+&&\\
+&$\inference {\tyC s(x):T}{\tyC \conf {x}:T}$&$\rulename{TCVar}$\\
+&&\\
+&$\inference {\envEC t_2:T_2}{\tyC \conf {\absD} :T_1\to T_2}$&$\rulename{TCAbs}$\\
+&&\\
+&$\inference {\tyC \conf {t_1} : T_{11} \to T_{12} & \tyC \conf {t_2} : T_{11}}{\tyC  \conf {\appD} : T_{12}}$&$\rulename{TCApp}$\\
+&&\\
+&$\inference {\tyC \conf {c_1} : T_{11} \to T_{12} & \tyC \conf {c_2} : T_{11}}{\tyC  \conf {\app {c_1}{c_2}} : T_{12}}$&$\rulename{TCCApp}$\\
+&&\\
+\end{tabular}\\
+\hline
+\end{tabular}
+\hspace*{-1cm}
+\caption{Typing rules for terms and configurations.}
+\label{tabla:sencillaA}
+\end{center}
+\end{table}
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c l|}
+\hline
+&\\
+$\appD \ [s] \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+&\\
+$\confx {x} \tto v$&$\rulename{VarOk}  $\\
+&\\
+$\confy {x} \tto x \ [s]$&$\rulename{VarFail}  $\\
+&\\
+$\absD \ [s] \ v \tto \confx{t_2}  $&$\rulename{\beta}  $\\
+&\\
+$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{\nu}  $\\
+&\\
+$ \inference {c \tto c'}{\absD \ [s] \ c \tto \absD \ [s] \ c'}$&$\rulename{\mu}  $\\
+&\\
+\hline
+\end{tabular}
+\caption{Evaluation Rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{table}
+\end{document}
