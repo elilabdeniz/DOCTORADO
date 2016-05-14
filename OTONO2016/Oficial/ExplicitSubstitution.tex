@@ -41,6 +41,8 @@
 \newcommand{\conf}[2][s]{#2 \ [#1]}
 \newcommand{\confx}[1]{#1 \ [(x,v):s]}
 \newcommand{\confy}[1]{#1 \ [(y,v):s]}
+\newcommand{\confxE}[1]{#1 \ [(x,v):s']}
+\newcommand{\confyE}[1]{#1 \ [(y,v):s']}
 \newcommand{\subxD}{[(x,v):s]}
 \newcommand{\subx}{[(x,v):s']}
 \newcommand{\suby}{[(y,v):s']}
@@ -67,8 +69,8 @@ $c$&&&$\mathsf {configurations}$\\
 &&$\conf {\abs {x}{T}{t}}$&\\
 &&$\conf {\app {t_1}{t_2}}$&\\
 &&$c \ c $&\\
-&&$\conf {\abs {x}{T}{t}}$&$\mathsf {clause }$\\
 $v$&$::=$&&$\mathsf {values}$\\
+&&$\conf {\abs {x}{T}{t}}$&$\mathsf {clause }$\\
 &&&\\
 $T$&$::=$&&$\mathsf {types}$\\
 &&$T \to T$&$\mathsf {type \ of \ functions}$\\
@@ -78,7 +80,7 @@ $\Gamma$&$::=$&&$\mathsf {contexts}$\\
 &&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
 &&&\\
 $[s]$&$::=$&&$\mathsf {explicit \ substitutions}$\\
-&&$[ ]$&$\mathsf {empty \ substitutions}$\\
+&&$[ \ ]$&$\mathsf {empty \ substitutions}$\\
 &&$\subxD$&$\mathsf {not \ empty \ substitutions}$\\
 \hline
 \end{tabular}
@@ -127,23 +129,22 @@ $[s]$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 \end{center}
 \end{table}
 
-
 \begin{table}
 \begin{center}
 \begin{tabular}{|c l|}
 \hline
 &\\
-$\appD \ [s] \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
-&\\
 $\confx {x} \tto v$&$\rulename{VarOk}  $\\
 &\\
 $\confy {x} \tto x \ [s]$&$\rulename{VarFail}  $\\
+&\\
+$\appD \ [s] \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 &\\
 $\absD \ [s] \ v \tto \confx{t_2}  $&$\rulename{\beta}  $\\
 &\\
 $\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{\nu}  $\\
 &\\
-$ \inference {c \tto c'}{\absD \ [s] \ c \tto \absD \ [s] \ c'}$&$\rulename{\mu}  $\\
+$ \inference {c \tto c'}{v  \ c \tto v \ c'}$&$\rulename{\mu}  $\\
 &\\
 \hline
 \end{tabular}
@@ -151,4 +152,87 @@ $ \inference {c \tto c'}{\absD \ [s] \ c \tto \absD \ [s] \ c'}$&$\rulename{\mu}
 \label{tabla:sencilla}
 \end{center}
 \end{table}
+LEMMA [Inversion of the Typing Relation of terms]:
+\begin{enumerate}
+\item If $\env x : R$ , then $x : R \in \Gamma$
+\item If $\env \absD : R$, then $R = T_1 \to R_2$ for some $R_2$, with $\envE t_2 : R_2$.
+\item If $\env t_1 \ t_2 : R$, then there is some type $T_{11}$ such that $\env t_1 : T_{11} \to R$ and $\env t_2 : T_{11}$.
+\end{enumerate}
+$Proof:$ Immediate from the definition of the typing relation.\ \\
+
+LEMMA [Inversion of the Typing Relation of configurations]:
+\begin{enumerate}
+\item If $\tyC x \ [s] : R$ , then $\tyC s(x) : R$
+\item If $\tyC \absD \ [s]: R$, then $R = T_1 \to R_2$ for some $R_2$, with $\envEC t_2 : R_2$.
+\item If $\tyC  t_1 \ t_2\ [s] : R$, then there is some type $T_{11}$ such that $\tyC t_1 [s] : T_{11} \to R$ and $\tyC t_2 [s] : T_{11}$.
+\item If $\tyC   c_1 \ c_2 : R$, then there is some type $T_{11}$ such that $\tyC c_1 : T_{11} \to R$ and $\tyC c_2: T_{11}$.
+\end{enumerate}
+$Proof:$ Immediate from the definition of the typing relation.\ \\
+
+LEMMA [Canonical Forms]:
+\begin{enumerate}
+\item If $v$ is a value of type $T_1 \to T_2$, then $v = \absD \ [s]$.
+\end{enumerate}
+$Proof:$ Straightforward.\ \\
+
+DEFINITION: The typing context built from a substitution $[s]$, writing $\Gamma_s$, it is defined as follows:
+\[ \Gamma_s = \begin{cases} 
+     \varnothing & [s] = [ \ ]\\
+      \Gamma_{s'}, x:typeof(v) & [s] = \subx 
+   \end{cases}
+\]
+where $typeof(v) = T$ if $\tyC v : T$. \ \\
+
+THEOREM [Progress]: Suppose $c$ is a well-typed configuration (that is, $ \tyC c : T$ for some $T$). Then either $c$ is a value or else there is some $c'$ with $c \tto c'$. \ \\
+Proof: Straightforward induction on typing derivations.
+\begin{enumerate}
+\item $Case \ TCVar$ : $c = x[s]$, with $\tyC s(x):T$. Since $x \in dom([s])$, if the substitution $[s] = \subx$, then rule $VarOk$, applies, otherwise, rule $VarFail$ applies.
+
+\item $Case \ TCAbs$: $c = \absD \ [s]$. This case is immediate, since clause are values.
+
+\item $Case \ TCApp$: $c = t_1 \ t_2 \ [s]$, so rule $AppSub$ applies to $c$.
+
+\item $Case \ TCCApp$: $c = c_1 \ c_2$, with $\tyC c_1 : T_{11} \to T$, for some $T_{11}$ and $\tyC c_2 : T_{11}$, for the inversion lemma. Then, by the induction hypothesis, either $c_1$ is a value or else it can make a step of evaluation, and likewise $c_2$. If $c_1$ can take a step, then rule $\nu$ applies to $c$. If $c_1$ is a value and $c_2$ can take a step, then rule $\mu$ applies. Finally, if both $c_1$ and $c_2$ are values, then the canonical forms lemma tells us that $c_1$ has the form $\lambda x: T_{11}.t_{12} \ [s]$, and so rule $\beta$ applies to $c$.
+\end{enumerate}
+
+DEFINITION: A substitution $[s]$ is said well typed with a typing context $\Gamma$, writing $\env [s]$, if $dom([s]) = dom(\Gamma)$ and $ \tyC s(x):\Gamma(x)$, for every $x \in dom(\Gamma)$. \ \\
+
+LEMMA[Permutation]: If $\env \ t : T$ and $\Delta$ is a permutation of $\Gamma$, then $\Delta \vdash \ t : T$.\\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+LEMMA[1]: If $\env [s]$ then $Gamma$ is a permutation of $\Gamma_s$.\\
+$Proof$: Straightforward by the definition of well typed substitution.\ \\
+
+LEMMA[2]: If $\env [s]$ and $\tyC v : T$, then $\envE \subx$. \\
+$Proof$: Straightforward by the definition of well typed substitution.\ \\
+
+LEMMA[3]: If $\env [s]$ then $\tyC t \ [s] : T$ if and only if $\env t :T$. \\
+$Proof$: Straightforward induction on typing derivations.\ \\
+
+THEOREM[Preservation]: If $\tyC c : T$ and $c \tto c'$, then $\tyC t' : T$.\\
+$Proof$: By induction on a derivation of $t : T$.
+
+\begin{enumerate}
+\item $Case \ TCVar$: $c = x \ [s]$, with $\tyC s(x):T$. If the last rule in the derivation is $TCVar$, then we know from the form of this rule that $c$ must have the form $x \ [s]$, for some $x$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are two rule by which $c \tto c'$ can be derived: $VarOk$ and $VarFail$. We consider each case separately.
+\begin{itemize}
+\item $Subcase \ VarOk$: $[s] = \subx$ and $c' = v$. Since $s(x) = v$, then  $\tyC v : T$, to conclude that $\tyC c' : T$.
+
+\item $Subcase \ VarFail$: $[s] = \suby$ and $c' = x \ [s']$. Since $s(x) = s'(x)$, then $\tyC s'(x) : T$, to conclude that $\tyC x \ [s']:T $, that is $\tyC c' : T$. 
+\end{itemize}
+
+
+\item $Case \ TAbs$: $c = \absD \ [s]$. It cannot be the case that $c \tto c'$, because $c$ is a value, then the requirements of the theorem are vacuously satisfied. 
+
+\item $Case \ TCApp$: $c = t_1 \ t_2 \ [s]$, $\tyC t_1 \ [s]: T_2 \to T$ and $\tyC t_2 \ [s]: T_2$. If the last rule in the derivation is $TCApp$, then we know from the form of this rule that $c$ must have the form $t_1 \ t_2 \ [s]$, for some $t_1$ and $t_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are only one rule by which $c \tto c'$ can be derived: $AppSub$. With this rule $c' = t_1[s] \ t_2[s]$, then we can apply the rule $TCCApp$, to conclude that $\tyC t_1[s] \ t_2[s]: T$ , that is $\tyC c' : T$. 
+
+\item $Case \ TCCApp$: $c = c_1 \ c_2$, $\tyC \ c_1 : T_2 \to T$ and $\tyC c_2 : T_2$. If the last rule in the derivation is $TCCApp$, then we know for the form of this rule that $c$ must have the form $c_1 \ c_2$, for some $c_1$ and $c_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $c \tto c'$ can be derived: $\nu$, $\mu$ and $\beta$. We consider each case separately.
+\begin{itemize}
+
+\item $Subcase \ \nu$: $c_1 \tto c_1', \ c' = c_1' \ c_2$. By the induction hypothesis, $\tyC c_1' : T_2 \to T$, then we can apply rule $TCCApp$, to conclude that $\tyC c_1' \ c_2: T$ , that is $\tyC c' : T$.
+
+\item $Subcase \ \mu$: $c_2 \tto c_2', \ c' = c_1 \ c_2'$. By the induction hypothesis, $\tyC c_2' : T_2 $, then we can apply rule $TCCApp$, to conclude that $\tyC c_1 \ c_2' : T$, that is $\tyC c' : T$.
+
+\item $Subcase \ \beta$: $c_1 = \lambda x:T_{1}.t_{12}\ [s]$, $c_2 = v$, $c' = \confxE{t_{12}}$ and $\envEC t_{12}: T$ for the inversion lemma. Since we know that $\envEC \subx$, the resulting configuration $\tyC \confxE {t_{12}}':T$, for the [LEMMA 3], that is $\vdash c' : T$.
+\end{itemize}
+\end{enumerate}
 \end{document}
