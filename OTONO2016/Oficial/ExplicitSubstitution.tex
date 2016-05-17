@@ -1,29 +1,31 @@
 \documentclass {article}
+%\documentclass[preprint,authoryear,sort,9pt,twocolumn,nocopyrightspace]
 
-
-\usepackage{changepage}
-\usepackage{lipsum}
-\usepackage{caption}
-\usepackage{amsmath}
-\usepackage{proof}
-\usepackage[T1]{fontenc}
-\usepackage{ebproof}
-\usepackage{amssymb} % To provide the \varnothing symbol
-\usepackage[latin1]{inputenc} % acentos sin codigo
-\usepackage{verbatim} % comentarios
-\usepackage[spanish]{babel}
+%\usepackage{changepage}
+%\usepackage{lipsum}
+%\usepackage{caption}
+%\usepackage{proof}
+%\usepackage[T1]{fontenc}
+%\usepackage{ebproof}
+%\usepackage[latin1]{inputenc} % acentos sin codigo
+%\usepackage[spanish]{babel}
+%\usepackage{setspace}
+%\usepackage{soul}%sombreado
+%\usepackage[pdftex]{color}
+%\usepackage{float}
+%\usepackage{array}
+%\usepackage{longtable}
+%\usepackage{xcolor,colortbl}
+%\usepackage{semantic}
+%\usepackage{definitions}
+%\usepackage{multirow}
+%\usepackage[letterpaper]{geometry}
 \usepackage{mathtools}
-\usepackage{setspace}
-\usepackage{soul}%sombreado
-\usepackage[pdftex]{color}
-\usepackage{semantic}
-\usepackage{float}
-\usepackage{definitions}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{xcolor,colortbl}
-\usepackage{multirow}
-\usepackage[letterpaper]{geometry}
+\usepackage{verbatim} % comentarios
+%\usepackage{amssymb} % To provide the \varnothing symbol
+%\usepackage{amsmath}
+
+
 
 \newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
 \newcommand{\vect}{(x_1,x_2,\dots,x_n)}
@@ -38,39 +40,52 @@
 \newcommand{\appD}{t_1 \ t_2}
 \newcommand{\abs}[3]{\lambda #1:#2. \ #3}
 \newcommand{\absD}{\lambda x:T_1. \ t_2}
-\newcommand{\conf}[2][s]{#2 \ [#1]}
-\newcommand{\confx}[1]{#1 \ [(x,v):s]}
-\newcommand{\confy}[1]{#1 \ [(y,v):s]}
-\newcommand{\confxE}[1]{#1 \ [(x,v):s']}
-\newcommand{\confyE}[1]{#1 \ [(y,v):s']}
+\newcommand{\conf}[2][s]{(#2)[#1]}
+\newcommand{\confx}[1]{#1 [(x,v):s]}
+\newcommand{\confy}[1]{#1 [(y,v):s]}
+\newcommand{\confxE}[1]{#1 [(x,v):s']}
+\newcommand{\confyE}[1]{#1 [(y,v):s']}
 \newcommand{\subxD}{[(x,v):s]}
 \newcommand{\subx}{[(x,v):s']}
 \newcommand{\suby}{[(y,v):s']}
+\newcommand{\SubxD}{(x,v):s}
+\newcommand{\Subx}{(x,v):s'}
+\newcommand{\Suby}{(y,v):s'}
 \newcommand{\env}{{\Gamma \vdash \ }}
 \newcommand{\envE}{{\Gamma , x:T_1 \vdash \ }}
-\newcommand{\envC}{{\Gamma_s \vdash \ }}
-\newcommand{\envEC}{{\Gamma_s , x:T_1 \vdash \ }}
+\newcommand{\envC}{{\Gamma(s) \vdash \ }}
+\newcommand{\envEC}{{\Gamma(s) , x:T_1 \vdash \ }}
 \newcommand{\tyC}{{\vdash_c \ }}
+
+\usepackage{definitions}
+
+%\input{definitions}
+
+%-\renewcommand{\mynote}[2]{}
+
 \begin{document}
 
-\begin{table}
+\begin{figure}
+\begin{small}
+%\begin{table}
 \begin{center}
 \begin{tabular}{|l c l r|}
 \hline
-$\mathsf {Syntax}:$&&&\\
+%$\mathsf {Syntax}:$&&&\\
 &&&\\
 $t$&$::=$&&$\mathsf {terms}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\abs {x}{T}{t}$&\ $\mathsf {abstraction}$\\
 &&$\app {t_1}{t_2}$&$\mathsf {application}$\\
 &&&\\
-$c$&&&$\mathsf {configurations}$\\
-&&$\conf {x}$&\\
-&&$\conf {\abs {x}{T}{t}}$&\\
-&&$\conf {\app {t_1}{t_2}}$&\\
+$c$&$::=$&&$\mathsf {configurations}$\\
+%&&$\conf {x}$&\\
+%&&$\conf {\abs {x}{T}{t}}$&\\
+%&&$\conf {\app {t_1}{t_2}}$&\\
+&&$t\ [s]$&\\
 &&$c \ c $&\\
 $v$&$::=$&&$\mathsf {values}$\\
-&&$\conf {\abs {x}{T}{t}}$&$\mathsf {clause }$\\
+&&$\conf {\abs {x}{T}{t}}$&$\mathsf {closure}$\\
 &&&\\
 $T$&$::=$&&$\mathsf {types}$\\
 &&$T \to T$&$\mathsf {type \ of \ functions}$\\
@@ -79,25 +94,27 @@ $\Gamma$&$::=$&&$\mathsf {contexts}$\\
 &&$\varnothing$&$\mathsf {empty \ context}$\\
 &&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
 &&&\\
-$[s]$&$::=$&&$\mathsf {explicit \ substitutions}$\\
-&&$[ \ ]$&$\mathsf {empty \ substitutions}$\\
-&&$\subxD$&$\mathsf {not \ empty \ substitutions}$\\
+$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+&&$\cdot$&$\mathsf {empty \ substitution}$\\
+&&$(x,v):s$&$\mathsf {variable \ substitution}$\\
 \hline
 \end{tabular}
 \caption{Syntax of the simply typed lambda-calculus with explicit substitution.}
-\label{tabla:sencilla}
+\label{figure:sencilla}
 \end{center}
-\end{table}
+%\end{table}
+\end{small}
+\end{figure}
 
-\begin{table}
+\begin{figure}
+\begin{small}
 \begin{center}
 \hspace*{-1.8cm}
 \begin{tabular}{|l|l|}
 \hline
 \begin{tabular}{l c r}
-&&\\
-\multicolumn{2}{l}{$\mathsf {Typing \ terms}:$}&$\env t:T$\\
-&&\\
+%\multicolumn{2}{l}{$\mathsf {Term \ typing}$}&$\env t:T$\\
+&&\framebox {$\env t:T$}\\
 &$\inference {x:T \in \Gamma}{\env x:T}$&$\rulename{TVar}$\\
 &&\\
 &$\inference {\envE t_2:T_2}{\env \absD:T_1 \to T_2}$&$\rulename{TAbs}$\\
@@ -110,129 +127,206 @@ $[s]$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 \end{tabular}&
 \begin{tabular}{l c r}
 &&\\
-\multicolumn{2}{l}{$\mathsf {Typing \ configurations}:$}&$\tyC c:T$\\
+%\multicolumn{2}{l}{$\mathsf {Configuration \ typing}$}&$\tyC c:T$\\
+%&&\\
+&&\framebox {$\tyC c:T$}\\
+&$\inference {(x,v) \in s  & \tyC v:T}{\tyC x[s]:T}$&$\rulename{TCVar}$\\
 &&\\
-&$\inference {\tyC s(x):T}{\tyC \conf {x}:T}$&$\rulename{TCVar}$\\
+&$\inference {\envEC t_2:T_2}{\tyC \conf{\absD} :T_1\to T_2}$&$\rulename{TCAbs}$\\
 &&\\
-&$\inference {\envEC t_2:T_2}{\tyC \conf {\absD} :T_1\to T_2}$&$\rulename{TCAbs}$\\
+&$\inference {\tyC  t_1 [s] \ t_2 [s]:T_{12}}{\tyC  \conf{\appD} : T_{12}}$&$\rulename{TCApp}$\\
 &&\\
-&$\inference {\tyC \conf {t_1} : T_{11} \to T_{12} & \tyC \conf {t_2} : T_{11}}{\tyC  \conf {\appD} : T_{12}}$&$\rulename{TCApp}$\\
-&&\\
-&$\inference {\tyC \conf {c_1} : T_{11} \to T_{12} & \tyC \conf {c_2} : T_{11}}{\tyC  \conf {\app {c_1}{c_2}} : T_{12}}$&$\rulename{TCCApp}$\\
+&$\inference {\tyC c_1 : T_{11} \to T_{12} & \tyC c_2 : T_{11}}{\tyC   \app {c_1}{c_2} : T_{12}}$&$\rulename{TCCApp}$\\
 &&\\
 \end{tabular}\\
 \hline
 \end{tabular}
 \hspace*{-1cm}
-\caption{Typing rules for terms and configurations.}
+\caption{Term and configuration typing rules.}
 \label{tabla:sencillaA}
 \end{center}
-\end{table}
 
-\begin{table}
+\end{small}
+\end{figure}
+
+\begin{figure}
+\begin{small}
 \begin{center}
-\begin{tabular}{|c l|}
+\begin{tabular}{|c r|}
 \hline
 &\\
-$\confx {x} \tto v$&$\rulename{VarOk}  $\\
+&\framebox {$c \tto c$}\\
 &\\
-$\confy {x} \tto x \ [s]$&$\rulename{VarFail}  $\\
+$\confx{x} \tto v$&$\rulename{VarOk}  $\\
 &\\
-$\appD \ [s] \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-$\absD \ [s] \ v \tto \confx{t_2}  $&$\rulename{\beta}  $\\
+$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 &\\
-$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{\nu}  $\\
+$\conf{\absD} \ v \tto \confx{t_2}  $&$\rulename{App}  $\\
 &\\
-$ \inference {c \tto c'}{v  \ c \tto v \ c'}$&$\rulename{\mu}  $\\
+$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+&\\
+$ \inference {c \tto c'}{v  \ c \tto v \ c'}$&$\rulename{App2}  $\\
 &\\
 \hline
 \end{tabular}
-\caption{Evaluation Rules.}
+\caption{Configuration reduction rules.}
 \label{tabla:sencilla}
 \end{center}
-\end{table}
-LEMMA [Inversion of the Typing Relation of terms]:
+\end{small}
+\end{figure}
+
+\begin{lemma}[Inversion of term typing]
+\label{lemma:itt}
+\mbox{}
 \begin{enumerate}
 \item If $\env x : R$ , then $x : R \in \Gamma$
 \item If $\env \absD : R$, then $R = T_1 \to R_2$ for some $R_2$, with $\envE t_2 : R_2$.
 \item If $\env t_1 \ t_2 : R$, then there is some type $T_{11}$ such that $\env t_1 : T_{11} \to R$ and $\env t_2 : T_{11}$.
 \end{enumerate}
-$Proof:$ Immediate from the definition of the typing relation.\ \\
+\end{lemma}
+\begin{proof}
+Immediate from the definition of the typing relation.
+\end{proof}
 
-LEMMA [Inversion of the Typing Relation of configurations]:
+\begin{lemma} [Inversion of configuration typing]
+\label{lemma:ict}
+\mbox{}
 \begin{enumerate}
-\item If $\tyC x \ [s] : R$ , then $\tyC s(x) : R$
-\item If $\tyC \absD \ [s]: R$, then $R = T_1 \to R_2$ for some $R_2$, with $\envEC t_2 : R_2$.
-\item If $\tyC  t_1 \ t_2\ [s] : R$, then there is some type $T_{11}$ such that $\tyC t_1 [s] : T_{11} \to R$ and $\tyC t_2 [s] : T_{11}$.
+\item If $\tyC x[s] : R$ , then $(x,v) \in s$, for some $v$, and $\tyC v:R$.
+\item If $\tyC \conf{\absD}: R$, then $R = T_1 \to R_2$ for some $R_2$, with $\envEC t_2 : R_2$.
+\item If $\tyC  \conf{t_1 \ t_2} : R$, then $\tyC  t_1 [s] \ t_2 [s]:R$.
 \item If $\tyC   c_1 \ c_2 : R$, then there is some type $T_{11}$ such that $\tyC c_1 : T_{11} \to R$ and $\tyC c_2: T_{11}$.
 \end{enumerate}
-$Proof:$ Immediate from the definition of the typing relation.\ \\
+\end{lemma}
 
-LEMMA [Canonical Forms]:
+\begin{proof}Immediate from the definition of the typing relation.
+\end{proof}
+
+\begin{lemma} [Canonical Forms]
+\label{lemma:cf}
+\mbox{}
 \begin{enumerate}
-\item If $v$ is a value of type $T_1 \to T_2$, then $v = \absD \ [s]$.
+\item If $v$ is a value of type $T_1 \to T_2$, then $v = \conf{\absD}$.
 \end{enumerate}
-$Proof:$ Straightforward.\ \\
+\end{lemma}
 
-DEFINITION: The typing context built from a substitution $[s]$, writing $\Gamma_s$, it is defined as follows:
-\[ \Gamma_s = \begin{cases} 
-     \varnothing & [s] = [ \ ]\\
-      \Gamma_{s'}, x:typeof(v) & [s] = \subx 
+\begin{proof} Straightforward.
+\end{proof}
+
+\begin{definition}[$\Gamma(s)$]
+\label{definition:tcs}
+\mbox{}
+The typing context built from a substitution $s$, writing $\Gamma(s)$, it is defined as follows:
+\[ \Gamma(s) = \begin{cases} 
+     \varnothing & s = \cdot \\
+      \Gamma(s'), x:T & s = (x,v):s' \ \land \ \tyC v : T 
    \end{cases}
 \]
-where $typeof(v) = T$ if $\tyC v : T$. \ \\
+\end{definition}
 
-THEOREM [Progress]: Suppose $c$ is a well-typed configuration (that is, $ \tyC c : T$ for some $T$). Then either $c$ is a value or else there is some $c'$ with $c \tto c'$. \ \\
-Proof: Straightforward induction on typing derivations.
-\begin{enumerate}
-\item $Case \ TCVar$ : $c = x[s]$, with $\tyC s(x):T$. Since $x \in dom([s])$, if the substitution $[s] = \subx$, then rule $VarOk$, applies, otherwise, rule $VarFail$ applies.
+\begin{theorem}[Progress]
+\label{theorem:progress}
+\mbox{}
+Suppose $c$ is a well-typed configuration (that is, $ \tyC c : T$ for some $T$). Then either $c$ is a value or else there is some $c'$ such that $c \tto c'$.
+\end{theorem}
 
-\item $Case \ TCAbs$: $c = \absD \ [s]$. This case is immediate, since clause are values.
+\begin{proof} By induction on typing derivations.
+\begin{case}[TCVar]
+Then $c = x[s]$, with $(x,v) \in s$, for some $v$,  and $\tyC v:T$. Since $x \in dom(s)$, if the substitution $s = \Subx$, then rule $\textsl {VarOk}$, applies, otherwise, rule $\textsl {VarNext}$ applies.
+\end{case}
 
-\item $Case \ TCApp$: $c = t_1 \ t_2 \ [s]$, so rule $AppSub$ applies to $c$.
+\begin{case}[TCAbs]
+ Then $c = \conf{\absD}$. This case is immediate, since closures are values.
+\end{case}
 
-\item $Case \ TCCApp$: $c = c_1 \ c_2$, with $\tyC c_1 : T_{11} \to T$, for some $T_{11}$ and $\tyC c_2 : T_{11}$, for the inversion lemma. Then, by the induction hypothesis, either $c_1$ is a value or else it can make a step of evaluation, and likewise $c_2$. If $c_1$ can take a step, then rule $\nu$ applies to $c$. If $c_1$ is a value and $c_2$ can take a step, then rule $\mu$ applies. Finally, if both $c_1$ and $c_2$ are values, then the canonical forms lemma tells us that $c_1$ has the form $\lambda x: T_{11}.t_{12} \ [s]$, and so rule $\beta$ applies to $c$.
-\end{enumerate}
+\begin{case}[TCApp] 
+ Then $c = \conf{t_1 \ t_2}$, so rule $\textsl {AppSub}$ applies to $c$.
+\end{case}
 
-DEFINITION: A substitution $[s]$ is said well typed with a typing context $\Gamma$, writing $\env [s]$, if $dom([s]) = dom(\Gamma)$ and $ \tyC s(x):\Gamma(x)$, for every $x \in dom(\Gamma)$. \ \\
+\begin{case}[TCCApp]
+ Then $c = c_1 \ c_2$, with $\tyC c_1 : T_{11} \to T$, for some $T_{11}$ and $\tyC c_2 : T_{11}$, by the Lemma~\ref{lemma:ict}. Then, by the induction hypothesis, either $c_1$ is a value or else it can take a step of evaluation, and likewise $c_2$. If $c_1$ can take a step, then rule $\textsl {App1}$ applies to $c$. If $c_1$ is a value and $c_2$ can take a step, then rule $\textsl {App2}$ applies. Finally, if both $c_1$ and $c_2$ are values, then the Lemma~\ref{lemma:cf} tells us that $c_1$ has the form $\conf{\lambda x: T_{11}.t_{12}}$, and so rule $\textsl {App}$ applies to $c$.
+\end{case}
+\end{proof}
 
-LEMMA[Permutation]: If $\env \ t : T$ and $\Delta$ is a permutation of $\Gamma$, then $\Delta \vdash \ t : T$.\\
-$Proof$: Straightforward induction on typing derivations.\ \\
+\begin{definition}[Well typed substitution]
+\label{definition:wts}
+\mbox{}
+A substitution $s$ is said well typed with a typing context $\Gamma$, writing $\env s$, if $dom(s) = dom(\Gamma)$ and for every $(x,v) \in s$ and $\tyC v:T$, where $x:T \in \Gamma$.
+\end{definition}
 
-LEMMA[1]: If $\env [s]$ then $Gamma$ is a permutation of $\Gamma_s$.\\
-$Proof$: Straightforward by the definition of well typed substitution.\ \\
+\begin{lemma}[Permutation]
+\label{lemma:permutation}
+\mbox{}
+If $\env t : T$ and $\Delta$ is a permutation of $\Gamma$, then $\Delta \vdash t : T$.
+\end{lemma}
 
-LEMMA[2]: If $\env [s]$ and $\tyC v : T$, then $\envE \subx$. \\
-$Proof$: Straightforward by the definition of well typed substitution.\ \\
+\begin{proof}By induction on typing derivations.
+\end{proof}
 
-LEMMA[3]: If $\env [s]$ then $\tyC t \ [s] : T$ if and only if $\env t :T$. \\
-$Proof$: Straightforward induction on typing derivations.\ \\
+\begin{lemma}
+\label{lemma:1}
+\mbox{}
+If $\env s$ then $\Gamma$ is a permutation of $\Gamma(s)$.
+\end{lemma}
 
-THEOREM[Preservation]: If $\tyC c : T$ and $c \tto c'$, then $\tyC t' : T$.\\
-$Proof$: By induction on a derivation of $t : T$.
+\begin{proof}By the definition of well typed substitution.
+\end{proof}
+\begin{lemma}
+\label{lemma:2}
+\mbox{}
+If $\env s$ and $\tyC v : T$, then $\Gamma,x:T \vdash \SubxD$.
+\end{lemma}
 
-\begin{enumerate}
-\item $Case \ TCVar$: $c = x \ [s]$, with $\tyC s(x):T$. If the last rule in the derivation is $TCVar$, then we know from the form of this rule that $c$ must have the form $x \ [s]$, for some $x$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are two rule by which $c \tto c'$ can be derived: $VarOk$ and $VarFail$. We consider each case separately.
+\begin{proof} By the definition of well typed substitution.\end{proof}
+
+\begin{lemma}
+\label{lemma:3}
+\mbox{}
+If $\env s$ then $\tyC t[s] : T$ if and only if $\env t:T$.
+\end{lemma}
+
+\begin{proof}By induction on typing derivations, using Lemma~\ref{lemma:permutation} and Lemma~\ref{lemma:1}.
+\end{proof}
+
+
+\begin{theorem}[Preservation]
+\label{theorem:preservation}
+\mbox{}
+If $\tyC c : T$ and $c \tto c'$, then $\tyC c	' : T$.
+\end{theorem}
+
+\begin{proof} By induction on a derivation of $t : T$.
+
+
+\begin{case}[TCVar]
+Then $c = x[s]$, with $\tyC (x,v) \in s$, for some $v$, and $\tyC v:T$. We find that there are two rule by which $c \tto c'$ can be derived: $\textsl {VarOk}$ and $\textsl {VarNext}$. We consider each case separately.
 \begin{itemize}
-\item $Subcase \ VarOk$: $[s] = \subx$ and $c' = v$. Since $s(x) = v$, then  $\tyC v : T$, to conclude that $\tyC c' : T$.
+\item $\textsl{Subcase}$ (VarOk). Then $[s] = \subx$ and $c' = v$. Since $(x,v) \in s$ and $\tyC v:T$, then $\tyC c' : T$.
 
-\item $Subcase \ VarFail$: $[s] = \suby$ and $c' = x \ [s']$. Since $s(x) = s'(x)$, then $\tyC s'(x) : T$, to conclude that $\tyC x \ [s']:T $, that is $\tyC c' : T$. 
+\item $\textsl{Subcase}$ (VarNext). Then $[s] = \suby$, $x \neq y$ and $c' = x[s']$. Since $(x,v) \in s'$ too, and $\tyC v:T$ then $\tyC x[s']:T $, that is $\tyC c' : T$. 
 \end{itemize}
+\end{case}
 
+\begin{case} [TAbs]
+Then $c = \conf{\absD}$. It cannot be the case that $c \tto c'$, because $c$ is a value, then the requirements of the theorem are vacuously satisfied. 
+\end{case}
 
-\item $Case \ TAbs$: $c = \absD \ [s]$. It cannot be the case that $c \tto c'$, because $c$ is a value, then the requirements of the theorem are vacuously satisfied. 
+\begin{case}[TCApp]
+Then $c = \conf{t_1 \ t_2}$ and $\tyC t_1[s] \ t_2[s]: T$. We find that there are only one rule by which $c \tto c'$ can be derived: $\textsl {AppSub}$. With this rule $c' = t_1[s] \ t_2[s]$, then we can conclude that $\tyC c' : T$. 
+\end{case}
 
-\item $Case \ TCApp$: $c = t_1 \ t_2 \ [s]$, $\tyC t_1 \ [s]: T_2 \to T$ and $\tyC t_2 \ [s]: T_2$. If the last rule in the derivation is $TCApp$, then we know from the form of this rule that $c$ must have the form $t_1 \ t_2 \ [s]$, for some $t_1$ and $t_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are only one rule by which $c \tto c'$ can be derived: $AppSub$. With this rule $c' = t_1[s] \ t_2[s]$, then we can apply the rule $TCCApp$, to conclude that $\tyC t_1[s] \ t_2[s]: T$ , that is $\tyC c' : T$. 
-
-\item $Case \ TCCApp$: $c = c_1 \ c_2$, $\tyC \ c_1 : T_2 \to T$ and $\tyC c_2 : T_2$. If the last rule in the derivation is $TCCApp$, then we know for the form of this rule that $c$ must have the form $c_1 \ c_2$, for some $c_1$ and $c_2$. Now, looking at the evaluation rules with this form on the left-hand side, we find that there are three rules by which $c \tto c'$ can be derived: $\nu$, $\mu$ and $\beta$. We consider each case separately.
+\begin{case} [TCCApp]
+Then $c = c_1 \ c_2$, $\tyC \ c_1 : T_2 \to T$ and $\tyC c_2 : T_2$. We find that there are three rules by which $c \tto c'$ can be derived: $\textsl {App1}$, $\textsl {App2}$ and $\textsl {App}$. We consider each case separately.
 \begin{itemize}
 
-\item $Subcase \ \nu$: $c_1 \tto c_1', \ c' = c_1' \ c_2$. By the induction hypothesis, $\tyC c_1' : T_2 \to T$, then we can apply rule $TCCApp$, to conclude that $\tyC c_1' \ c_2: T$ , that is $\tyC c' : T$.
+\item $\textsl{Subcase}$ (App1). Then $c_1 \tto c_1', \ c' = c_1' \ c_2$. By the induction hypothesis, $\tyC c_1' : T_2 \to T$, then we can apply rule $TCCApp$, to conclude that $\tyC c_1' \ c_2: T$ , that is $\tyC c' : T$.
 
-\item $Subcase \ \mu$: $c_2 \tto c_2', \ c' = c_1 \ c_2'$. By the induction hypothesis, $\tyC c_2' : T_2 $, then we can apply rule $TCCApp$, to conclude that $\tyC c_1 \ c_2' : T$, that is $\tyC c' : T$.
+\item $\textsl{Subcase}$ (App2). Then $c_2 \tto c_2', \ c' = c_1 \ c_2'$. By the induction hypothesis, $\tyC c_2' : T_2 $, then we can apply rule $\textsl TCCApp$, to conclude that $\tyC c_1 \ c_2' : T$, that is $\tyC c' : T$.
 
-\item $Subcase \ \beta$: $c_1 = \lambda x:T_{1}.t_{12}\ [s]$, $c_2 = v$, $c' = \confxE{t_{12}}$ and $\envEC t_{12}: T$ for the inversion lemma. Since we know that $\envEC \subx$, the resulting configuration $\tyC \confxE {t_{12}}':T$, for the [LEMMA 3], that is $\vdash c' : T$.
+\item $\textsl{Subcase}$ (App): Then $c_1 = \conf{\lambda x:T_{1}.t_{12}}$, $c_2 = v$, $c' = \confx{t_{12}}$ and $\envEC t_{12}: T$ by the Lemma~\ref{lemma:ict}. Since we know that $\envEC \subxD$ by the Lemma~\ref{lemma:2}, the resulting configuration $\tyC \confx{t_{12}}:T$, by the Lemma~\ref{lemma:3}, that is $\vdash c' : T$.
 \end{itemize}
-\end{enumerate}
+\end{case}
+\end{proof}
 \end{document}
