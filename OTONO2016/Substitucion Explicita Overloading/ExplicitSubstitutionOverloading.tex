@@ -1,5 +1,8 @@
-\documentclass {article}
+%\documentclass
 %\documentclass[preprint,authoryear,sort,9pt,twocolumn,nocopyrightspace]
+%\documentclass[preprint,authoryear,sort&compress,9pt,nocopyrightspace]{sigplanconf}
+\documentclass[preprint,authoryear,sort&compress,9pt,nocopyrightspace]{article}
+
 
 %\usepackage{changepage}
 %\usepackage{lipsum}
@@ -22,6 +25,7 @@
 %\usepackage[letterpaper]{geometry}
 \usepackage{mathtools}
 \usepackage{verbatim} % comentarios
+%\usepackage{sansmath}
 %\usepackage{amssymb} % To provide the \varnothing symbol
 %\usepackage{amsmath}
 
@@ -33,13 +37,11 @@
 \newcommand\rulename[1]{\mathrm{(#1)}}
 \newcommand{\nothing}{\varnothing} % different from \emptyset
 \newcommand{\tto}{\longrightarrow}
+\newcommand{\lto}{\leftarrow}
 \newcommand{\lambdax}{\lambda x}
-\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 
-\newcommand{\app}[2]{#1 \ #2}
-\newcommand{\appD}{t_1 \ t_2}
-\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
-\newcommand{\absD}{\lambda x:T_1. \ t_2}
+
+
 \newcommand{\conf}[2][s]{(#2)[#1]}
 \newcommand{\confx}[1]{#1 [(x,v):s]}
 \newcommand{\confy}[1]{#1 [(y,v):s]}
@@ -51,12 +53,40 @@
 \newcommand{\SubxD}{(x,v):s}
 \newcommand{\Subx}{(x,v):s'}
 \newcommand{\Suby}{(y,v):s'}
-\newcommand{\env}{{\Gamma \vdash \ }}
-\newcommand{\envE}{{\Gamma , x:T_1 \vdash \ }}
-\newcommand{\envC}{{\Gamma(s) \vdash \ }}
-\newcommand{\envEC}{{\Gamma(s) , x:T_1 \vdash \ }}
+
+\newcommand{\env}{{\emt,\Gamma \vdash \ }}
+\newcommand{\envE}{{\emt, \Gamma , x:T_1 \vdash \ }}
+\newcommand{\enve}{{\emt  , x \conc T_1   \Gamma\vdash \ }}
+\newcommand{\envC}{{\emt, \Gamma(s) \vdash \ }}
+\newcommand{\envEC}{{\emt, \Gamma(s) , x:T_1 \vdash \ }}
 \newcommand{\tyC}{{\vdash_c \ }}
 
+\newcommand{\ascrip}[1]{#1::T}
+\newcommand{\oletD}{\mathsf{let} \ x : T = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{let} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{let} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\app}[2]{#1 \ #2}
+\newcommand{\appD}{t_1 \ t_2}
+\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
+\newcommand{\absD}{\lambda x:T_1. \ t_2}
+
+\newcommand{\truet}{\mathsf{true}}
+\newcommand{\falset}{\mathsf{false}}
+\newcommand{\boolt}{\mathsf{Bool}}
+\newcommand{\intt}{\mathsf{Int}}
+\newcommand{\nvt}{\mathsf{nv}}
+
+\newcommand{\mtD}{T^{*}}
+\newcommand{\mtP}[1]{#1^{*}}
+\newcommand{\mtC}[1]{\{\overline {#1}\}}
+\newcommand{\mtCu}[1]{\{ #1 \}}
+
+\newcommand{\emt}{\varphi}
+\newcommand{\conc}{:^{*}}
+\newcommand\inferir{\stackrel{\mathclap{\normalfont\mbox{$\to$}}}{\in}}
+\newcommand\chequear{\stackrel{\mathclap{\normalfont\mbox{$\lto$}}}{\in}}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\providecommand{\norm}[1]{\lVert#1\rVert}
 \usepackage{definitions}
 
 %\input{definitions}
@@ -69,37 +99,59 @@
 \begin{small}
 %\begin{table}
 \begin{center}
-\begin{tabular}{|l c l r|}
+\begin{tabular}{|l|l|}
 \hline
+\begin{tabular}{l c l r}
 %$\mathsf {Syntax}:$&&&\\
 &&&\\
 $t$&$::=$&&$\mathsf {terms}$\\
+&&$\truet$&$\mathsf {constant \ true}$\\
+&&$\falset$&$\mathsf {constant \ false}$\\
+&&$\nvt$&$\mathsf {numeric \ value}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\abs {x}{T}{t}$&\ $\mathsf {abstraction}$\\
 &&$\app {t_1}{t_2}$&$\mathsf {application}$\\
+&&$\oletD$&$\mathsf {overloading \ let}$\\
+&&$\ascrip {t}$&$\mathsf {ascription}$\\
 &&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
 %&&$\conf {x}$&\\
 %&&$\conf {\abs {x}{T}{t}}$&\\
 %&&$\conf {\app {t_1}{t_2}}$&\\
-&&$t\ [s]$&\\
+&&$t[s]$&\\
 &&$c \ c $&\\
 $v$&$::=$&&$\mathsf {values}$\\
+&&$\truet[s]$&$\mathsf {true \ value}$\\
+&&$\falset[s]$&$\mathsf {false \ value}$\\
+&&$\nvt[s]$&$\mathsf {numeric \ value}$\\
 &&$\conf {\abs {x}{T}{t}}$&$\mathsf {closure}$\\
 &&&\\
+&&&\\
+\end{tabular}
+& \begin{tabular}{l c l r}
 $T$&$::=$&&$\mathsf {types}$\\
+&&$\intt$&$\mathsf {type \ of \ integers}$\\
+&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
 &&$T \to T$&$\mathsf {type \ of \ functions}$\\
 &&&\\
-$\Gamma$&$::=$&&$\mathsf {contexts}$\\
+$\mtP{T}$&$::=$&&$\mathsf {multi-types}$\\
+&&$\mtC{T}$&$\mathsf {multi-type}$\\
+&&&\\
+$\Gamma$&$::=$&&$\mathsf {typing \ contexts}$\\
 &&$\varnothing$&$\mathsf {empty \ context}$\\
 &&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
 &&&\\
+$\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\emt,x \conc T$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
-&&$\cdot$&$\mathsf {empty \ substitution}$\\
+&&$ \bullet$&$\mathsf {empty \ substitution}$\\
 &&$(x,v):s$&$\mathsf {variable \ substitution}$\\
+\end{tabular}\\
 \hline
 \end{tabular}
-\caption{Syntax of the simply typed lambda-calculus with explicit substitution.}
+\caption{Syntax of the simply typed lambda-calculus with overloading.}
 \label{figure:sencilla}
 \end{center}
 %\end{table}
@@ -115,14 +167,29 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 \begin{tabular}{l c r}
 %\multicolumn{2}{l}{$\mathsf {Term \ typing}$}&$\env t:T$\\
 &&\framebox {$\env t:T$}\\
-&$\inference {x:T \in \Gamma}{\env x:T}$&$\rulename{TVar}$\\
+&$\inference {x:T \in \Gamma}{\env x \inferir \mtCu{T}}$&$\rulename{STVar\Gamma}$\\
 &&\\
-&$\inference {\envE t_2:T_2}{\env \absD:T_1 \to T_2}$&$\rulename{TAbs}$\\
+&$\inference {x:T \in \Gamma}{\env x \chequear T}$&$\rulename{CTVar\Gamma}$\\
 &&\\
-&$\inference {\env t_1 : T_{11} \to T_{12} & \env t_2 : T_{11}}{\env \appD : T_{12}}$&$\rulename{TApp}$\\
+&$\inference {x:\mtD \in \emt}{\env x \inferir \mtD}$&$\rulename{STVar\emt}$\\
 &&\\
+&$\inference {x:\mtD \in \emt & T \in \mtD}{\env x \chequear T}$&$\rulename{CTVar\emt}$\\
 &&\\
+&$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \inferir\mtP{T_2}}{\env \absD \inferir \norm{T_1 \to T_2}}$&$\rulename{STAbs}$\\
 &&\\
+&$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \chequear T_2}{\env \absD \chequear T_1 \to T_2}$&$\rulename{CTAbs}$\\
+&&\\
+&$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \inferir \mtCu{T_{2}}}$&$\rulename{STApp}$\\
+&&\\
+&$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \chequear T_{2}}$&$\rulename{CTApp}$\\
+&&\\
+&$\inference{}{}$&$\rulename{STAsc}$\\
+&&\\
+&$\inference{}{}$&$\rulename{CTAsc}$\\
+&&\\
+&$\inference{}{}$&$\rulename{STOLet}$\\
+&&\\
+&$\inference{}{}$&$\rulename{CTOLet}$\\
 &&\\
 \end{tabular}&
 \begin{tabular}{l c r}
@@ -220,7 +287,7 @@ Immediate from the definition of the typing relation.
 \mbox{}
 The typing context built from a substitution $s$, writing $\Gamma(s)$, it is defined as follows:
 \[ \Gamma(s) = \begin{cases} 
-     \varnothing & s = \cdot \\
+     \varnothing & s =  \bullet \\
       \Gamma(s'), x:T & s = (x,v):s' \ \land \ \tyC v : T 
    \end{cases}
 \]
@@ -232,7 +299,7 @@ The typing context built from a substitution $s$, writing $\Gamma(s)$, it is def
 Suppose $c$ is a well-typed configuration (that is, $ \tyC c : T$ for some $T$). Then either $c$ is a value or else there is some $c'$ such that $c \tto c'$.
 \end{theorem}
 
-\begin{proof} By induction on typing derivations.
+\begin{proof} By induction on a derivation of $\tyC c : T$.
 \begin{case}[TCVar]
 Then $c = x[s]$, with $(x,v) \in s$, for some $v$,  and $\tyC v:T$. Since $x \in dom(s)$, if the substitution $s = \Subx$, then rule $\textsl {VarOk}$, applies, otherwise, rule $\textsl {VarNext}$ applies.
 \end{case}
@@ -297,15 +364,15 @@ If $\env s$ then $\tyC t[s] : T$ if and only if $\env t:T$.
 If $\tyC c : T$ and $c \tto c'$, then $\tyC c	' : T$.
 \end{theorem}
 
-\begin{proof} By induction on a derivation of $t : T$.
+\begin{proof} By induction on a derivation of $\tyC c : T$.
 
 
 \begin{case}[TCVar]
 Then $c = x[s]$, with $\tyC (x,v) \in s$, for some $v$, and $\tyC v:T$. We find that there are two rule by which $c \tto c'$ can be derived: $\textsl {VarOk}$ and $\textsl {VarNext}$. We consider each case separately.
 \begin{itemize}
-\item $\textsl{Subcase}$ (VarOk). Then $[s] = \subx$ and $c' = v$. Since $(x,v) \in s$ and $\tyC v:T$, then $\tyC c' : T$.
+\item $\textsl{Subcase}$ (VarOk). Then $s = \Subx$ and $c' = v$. Since $(x,v) \in s$ and $\tyC v:T$, then $\tyC c' : T$.
 
-\item $\textsl{Subcase}$ (VarNext). Then $[s] = \suby$, $x \neq y$ and $c' = x[s']$. Since $(x,v) \in s'$ too, and $\tyC v:T$ then $\tyC x[s']:T $, that is $\tyC c' : T$. 
+\item $\textsl{Subcase}$ (VarNext). Then $s = \Suby$, $x \neq y$ and $c' = x[s']$. Since $(x,v) \in s'$ too, and $\tyC v:T$ then $\tyC x[s']:T $, that is $\tyC c' : T$. 
 \end{itemize}
 \end{case}
 
@@ -325,7 +392,7 @@ Then $c = c_1 \ c_2$, $\tyC \ c_1 : T_2 \to T$ and $\tyC c_2 : T_2$. We find tha
 
 \item $\textsl{Subcase}$ (App2). Then $c_2 \tto c_2', \ c' = c_1 \ c_2'$. By the induction hypothesis, $\tyC c_2' : T_2 $, then we can apply rule $\textsl TCCApp$, to conclude that $\tyC c_1 \ c_2' : T$, that is $\tyC c' : T$.
 
-\item $\textsl{Subcase}$ (App): Then $c_1 = \conf{\lambda x:T_{1}.t_{12}}$, $c_2 = v$, $c' = \confx{t_{12}}$ and $\envEC t_{12}: T$ by the Lemma~\ref{lemma:ict}. Since we know that $\envEC \subxD$ by the Lemma~\ref{lemma:2}, the resulting configuration $\tyC \confx{t_{12}}:T$, by the Lemma~\ref{lemma:3}, that is $\vdash c' : T$.
+\item $\textsl{Subcase}$ (App): Then $c_1 = \conf{\lambda x:T_{1}.t_{12}}$, $c_2 = v$, $c' = \confx{t_{12}}$ and $\envEC t_{12}: T$ by the Lemma~\ref{lemma:ict}. Since we know that $\envEC \SubxD$ by the Lemma~\ref{lemma:2}, the resulting configuration $\tyC \confx{t_{12}}:T$, by the Lemma~\ref{lemma:3}, that is $\vdash c' : T$.
 \end{itemize}
 \end{case}
 \end{proof}
