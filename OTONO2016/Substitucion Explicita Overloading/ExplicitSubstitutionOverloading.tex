@@ -45,13 +45,14 @@
 
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confxu}[1]{#1 [x,(v:T_1):s]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
 \newcommand{\confxD}[1]{#1 [x,\{(\overline{v:T})\}:s]}
 \newcommand{\confx}[1]{#1 [x,\{(\overline{v:T_1})\}:s]}
 \newcommand{\confy}[1]{#1 [y, \{(\overline{v:T_1})\}:s]}
+\newcommand{\confext}[1]{#1 [x,(v:T_1) \conc s]}
 \newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
 \newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
-\newcommand{\subxD}{[x,(v:T_1):s]}
+\newcommand{\subxD}{x,\{(\overline{v:T})\}:s}
 \newcommand{\subx}{[x,(v:T_1):s']}
 \newcommand{\suby}{[y,(v:T_1):s']}
 \newcommand{\SubxD}{x,(v:T_1):s}
@@ -247,7 +248,8 @@ $\tyC \falset[s] \inferir \boolt$&$\rulename{STCFalse}$\\
 &\\
 $\inference {x:T \in \Gamma}{\tyC x[s] \inferir \mtCu{T}}$&$\rulename{STCVar\Gamma}$\\
 &\\
-$\inference {(x,v) \in s & \tyC v \inferir \mtP{T}}{\tyC x[s] \inferir \mtD}$&$\rulename{STCVar\emt}$\\
+%$\inference {x,\{(\overline{v:T})\} \in s & \tyC v \inferir \mtC{T}}{\tyC x[s] \inferir \mtC{T}}$&$\rulename{STCVar\emt}$\\
+$\inference {x,\{(\overline{v:T})\} \in s}{\tyC x[s] \inferir \mtC{T}}$&$\rulename{STCVar\emt}$\\
 &\\
 $\inference{\tyC \ascrip{t[s]} \inferir \mtP{T}}{\tyC \conf{\ascrip{t}} \inferir \mtP{T}}$&$\rulename{STCAsc}$\\
 &\\
@@ -274,7 +276,8 @@ $\tyC \falset[s] \chequear \boolt$&$\rulename{CTCFalse}$\\
 &\\
 $\inference {x:T \in \Gamma}{\tyC x[s] \chequear T}$&$\rulename{CTCVar\Gamma}$\\
 &\\
-$\inference {(x,v) \in s & \tyC v \inferir \mtP{T} & T \in \mtP{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
+%$\inference {x,\{(\overline{v:T})\} \in s & \tyC v \inferir \mtP{T} & T \in \mtP{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
+$\inference {x,\{(\overline{v:T})\} \in s & T \in \mtC{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
 &\\
 $\inference{\tyC \ascrip{t[s]} \chequear T}{\tyC \conf{\ascrip{t}} \chequear T}$&$\rulename{CTCAsc}$\\
 &\\
@@ -313,19 +316,19 @@ $\confxu{x} \tto v$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-$\inference {(v_i, T_{1i}) \in \{(\overline{v:T_1})\}}{\ascrip{\confx{x}} \tto v_i}$&$\rulename{VarAscOk}  $\\
+$\inference {(v_i, T_i) \in \{(\overline{v:T})\}}{\ascripP{\confx{x}}{T_i} \tto v_i}$&$\rulename{VarAscOk}  $\\
 &\\
 $\inference {x \neq y}{\ascrip{\confy{x}} \tto \ascrip{x[s]}}$&$\rulename{VarAscNext}  $\\
 &\\
 $ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
 &\\
-$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc} $\\
+$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
 &\\
-$ \ascrip{v} \tto v $&$\rulename{AscV} $\\
+$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 &\\
 $ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
 &\\
-${\oletP{T_1}{v}{t_2[s]} \tto \confx{t_2}}$&$\rulename{Let} $\\
+${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
 $ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{t_2[s]} \tto \oletP{T_1}{c_1'}{t_2[s]} }$&$\rulename{Let1} $\\
 &\\
