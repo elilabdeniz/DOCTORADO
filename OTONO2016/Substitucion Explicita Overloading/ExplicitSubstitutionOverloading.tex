@@ -34,6 +34,8 @@
 \newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
 \newcommand{\vect}{(x_1,x_2,\dots,x_n)}
 \newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
+
+
 \newcommand\rulename[1]{\mathrm{(#1)}}
 \newcommand{\nothing}{\varnothing} % different from \emptyset
 \newcommand{\tto}{\longrightarrow}
@@ -43,28 +45,33 @@
 
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confx}[1]{#1 [(x,v):s]}
-\newcommand{\confy}[1]{#1 [(y,v):s]}
-\newcommand{\confxE}[1]{#1 [(x,v):s']}
-\newcommand{\confyE}[1]{#1 [(y,v):s']}
-\newcommand{\subxD}{[(x,v):s]}
-\newcommand{\subx}{[(x,v):s']}
-\newcommand{\suby}{[(y,v):s']}
-\newcommand{\SubxD}{(x,v):s}
-\newcommand{\Subx}{(x,v):s'}
-\newcommand{\Suby}{(y,v):s'}
+\newcommand{\confxu}[1]{#1 [x,(v:T_1):s]}
+\newcommand{\confxD}[1]{#1 [x,\{(\overline{v:T})\}:s]}
+\newcommand{\confx}[1]{#1 [x,\{(\overline{v:T_1})\}:s]}
+\newcommand{\confy}[1]{#1 [y, \{(\overline{v:T_1})\}:s]}
+\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
+\newcommand{\subxD}{[x,(v:T_1):s]}
+\newcommand{\subx}{[x,(v:T_1):s']}
+\newcommand{\suby}{[y,(v:T_1):s']}
+\newcommand{\SubxD}{x,(v:T_1):s}
+\newcommand{\Subx}{x,(v:T_1):s'}
+\newcommand{\Suby}{y,(v:T_1):s'}
 
 \newcommand{\env}{{\emt,\Gamma \vdash \ }}
 \newcommand{\envE}{{\emt, \Gamma , x:T_1 \vdash \ }}
-\newcommand{\enve}{{\emt  , x \conc T_1   \Gamma\vdash \ }}
-\newcommand{\envC}{{\emt, \Gamma(s) \vdash \ }}
-\newcommand{\envEC}{{\emt, \Gamma(s) , x:T_1 \vdash \ }}
-\newcommand{\tyC}{{\vdash_c \ }}
+\newcommand{\tyC}{{\Gamma \vdash_c \ }}
+\newcommand{\enve}{{\emt  , x \conc T_1, \Gamma\vdash \ }}
+\newcommand{\envC}{{\emt(s), \Gamma \vdash \ }}
+\newcommand{\envEC}{{\emt(s), \Gamma , x:T_1 \vdash \ }}
+\newcommand{\enveC}{{\emt(s), x \conc T_1, \Gamma \vdash \ }}
+
 
 \newcommand{\ascrip}[1]{#1::T}
-\newcommand{\oletD}{\mathsf{let} \ x : T = t \ \mathsf{in}  \ t}
-\newcommand{\olet}{\mathsf{let} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
-\newcommand{\oletP}[3]{\mathsf{let} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\ascripP}[2]{#1::#2}
+\newcommand{\oletD}{\mathsf{olet} \ x : T = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{olet} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{olet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
 \newcommand{\app}[2]{#1 \ #2}
 \newcommand{\appD}{t_1 \ t_2}
 \newcommand{\abs}[3]{\lambda #1:#2. \ #3}
@@ -119,6 +126,8 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 %&&$\conf {\abs {x}{T}{t}}$&\\
 %&&$\conf {\app {t_1}{t_2}}$&\\
 &&$t[s]$&\\
+&&$\ascrip{c}$&\\
+&&$\oletP {T}{c}{c}$&\\
 &&$c \ c $&\\
 $v$&$::=$&&$\mathsf {values}$\\
 &&$\truet[s]$&$\mathsf {true \ value}$\\
@@ -143,11 +152,11 @@ $\Gamma$&$::=$&&$\mathsf {typing \ contexts}$\\
 &&&\\
 $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&$\varnothing$&$\mathsf {empty \ context}$\\
-&&$\emt,x \conc T$&$\mathsf {term \ variable \ binding}$\\
+&&$\emt,x: \mtP{T}$&$\mathsf {term \ variable \ binding}$\\
 &&&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$(x,v):s$&$\mathsf {variable \ substitution}$\\
+&&$x,\{(\overline {v:T})\}:s$&$\mathsf {variable \ substitution}$\\
 \end{tabular}\\
 \hline
 \end{tabular}
@@ -161,55 +170,131 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 \begin{figure}
 \begin{small}
 \begin{center}
-\hspace*{-1.8cm}
+\setlength{\tabcolsep}{1pt}
+%\setlength{\extrarowheight}{20pt}
+\hspace*{-4cm}
 \begin{tabular}{|l|l|}
+
 \hline
-\begin{tabular}{l c r}
-%\multicolumn{2}{l}{$\mathsf {Term \ typing}$}&$\env t:T$\\
-&&\framebox {$\env t:T$}\\
-&$\inference {x:T \in \Gamma}{\env x \inferir \mtCu{T}}$&$\rulename{STVar\Gamma}$\\
-&&\\
-&$\inference {x:T \in \Gamma}{\env x \chequear T}$&$\rulename{CTVar\Gamma}$\\
-&&\\
-&$\inference {x:\mtD \in \emt}{\env x \inferir \mtD}$&$\rulename{STVar\emt}$\\
-&&\\
-&$\inference {x:\mtD \in \emt & T \in \mtD}{\env x \chequear T}$&$\rulename{CTVar\emt}$\\
-&&\\
-&$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \inferir\mtP{T_2}}{\env \absD \inferir \norm{T_1 \to T_2}}$&$\rulename{STAbs}$\\
-&&\\
-&$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \chequear T_2}{\env \absD \chequear T_1 \to T_2}$&$\rulename{CTAbs}$\\
-&&\\
-&$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \inferir \mtCu{T_{2}}}$&$\rulename{STApp}$\\
-&&\\
-&$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \chequear T_{2}}$&$\rulename{CTApp}$\\
-&&\\
-&$\inference{}{}$&$\rulename{STAsc}$\\
-&&\\
-&$\inference{}{}$&$\rulename{CTAsc}$\\
-&&\\
-&$\inference{}{}$&$\rulename{STOLet}$\\
-&&\\
-&$\inference{}{}$&$\rulename{CTOLet}$\\
-&&\\
+\begin{tabular}{c r}
+&\\
+\multicolumn{2}{r}{\framebox{$\env t \inferir \mtCu{T} \Rightarrow t$}}\\
+&\\
+$\env  \truet\inferir \boolt$&$\rulename{STTrue}$\\
+&\\
+$\env  \falset\inferir \boolt$&$\rulename{STFalse}$\\
+&\\
+$\inference {x:T \in \Gamma}{\env x \inferir \mtCu{T}}$&$\rulename{STVar\Gamma}$\\
+&\\
+$\inference {x:\mtD \in \emt}{\env x \inferir \mtD}$&$\rulename{STVar\emt}$\\
+&\\
+$\inference{\env t \chequear T}{\env \ascrip{t} \inferir \mtCu{T}}$&$\rulename{STAsc}$\\
+&\\
+$\inference{\env t_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}& \enve t_2 \inferir \mtP{T_2}}{\env \olet \inferir \mtP{T_2}}$&$\rulename{STOLet}$\\
+&\\
+$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \inferir\mtP{T_2}}{\env \absD \inferir \norm{T_1 \to T_2}}$&$\rulename{STAbs}$\\
+&\\
+$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{t_1}{T_1}) \ (\ascripP{t_2}{T_2})}$&$\rulename{STApp}$\\
+&\\
 \end{tabular}&
-\begin{tabular}{l c r}
-&&\\
-%\multicolumn{2}{l}{$\mathsf {Configuration \ typing}$}&$\tyC c:T$\\
-%&&\\
-&&\framebox {$\tyC c:T$}\\
-&$\inference {(x,v) \in s  & \tyC v:T}{\tyC x[s]:T}$&$\rulename{TCVar}$\\
-&&\\
-&$\inference {\envEC t_2:T_2}{\tyC \conf{\absD} :T_1\to T_2}$&$\rulename{TCAbs}$\\
-&&\\
-&$\inference {\tyC  t_1 [s] \ t_2 [s]:T_{12}}{\tyC  \conf{\appD} : T_{12}}$&$\rulename{TCApp}$\\
-&&\\
-&$\inference {\tyC c_1 : T_{11} \to T_{12} & \tyC c_2 : T_{11}}{\tyC   \app {c_1}{c_2} : T_{12}}$&$\rulename{TCCApp}$\\
-&&\\
+\begin{tabular}{c r}
+&\\
+\multicolumn{2}{r}{\framebox{$\env t \chequear T   \Rightarrow t$}}\\
+&\\
+$\env \truet \chequear \boolt$&$\rulename{CTTrue}$\\
+&\\
+$\env \falset \chequear \boolt$&$\rulename{CTFalse}$\\
+&\\
+$\inference {x:T \in \Gamma}{\env x \chequear T}$&$\rulename{CTVar\Gamma}$\\
+&\\
+$\inference {x:\mtD \in \emt & T \in \mtD}{\env x \chequear T \Rightarrow \ascrip{x}}$&$\rulename{CTVar\emt}$\\
+&\\
+$\inference{\env t \chequear T}{\env \ascrip{t} \chequear T}$&$\rulename{CTAsc}$\\
+&\\
+$\inference{\env t_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}& \enve t_2 \chequear T_2}{\env \olet \chequear T_2}$&$\rulename{CTOLet}$\\
+&\\
+$\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \chequear T_2}{\env \absD \chequear T_1 \to T_2}$&$\rulename{CTAbs}$\\
+&\\
+$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \chequear T_{2}\Rightarrow (\ascripP{t_1}{T_1}) \ (\ascripP{t_2}{T_2})}$&$\rulename{CTApp}$\\
+&\\
 \end{tabular}\\
 \hline
 \end{tabular}
-\hspace*{-1cm}
-\caption{Term and configuration typing rules.}
+\hspace*{-4cm}
+\caption{Term synthesis and checking.}
+\label{tabla:sencillaA}
+\end{center}
+
+\end{small}
+\end{figure}
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\setlength{\tabcolsep}{1pt}
+%\setlength{\extrarowheight}{20pt}
+\hspace*{-4cm}
+\begin{tabular}{|l|l|}
+
+\hline
+\begin{tabular}{c r}
+&\\
+\multicolumn{2}{r}{\framebox{$\tyC c \inferir \mtCu{T} \Rightarrow c$}}\\
+&\\
+$\tyC \truet[s] \inferir \boolt$&$\rulename{STCTrue}$\\
+&\\
+$\tyC \falset[s] \inferir \boolt$&$\rulename{STCFalse}$\\
+&\\
+$\inference {x:T \in \Gamma}{\tyC x[s] \inferir \mtCu{T}}$&$\rulename{STCVar\Gamma}$\\
+&\\
+$\inference {(x,v) \in s & \tyC v \inferir \mtP{T}}{\tyC x[s] \inferir \mtD}$&$\rulename{STCVar\emt}$\\
+&\\
+$\inference{\tyC \ascrip{t[s]} \inferir \mtP{T}}{\tyC \conf{\ascrip{t}} \inferir \mtP{T}}$&$\rulename{STCAsc}$\\
+&\\
+$\inference{\tyC c \chequear T}{\tyC \ascrip{c} \inferir \mtCu{T}}$&$\rulename{STCCAsc}$\\
+&\\
+$\inference{\tyC \oletP{T_1}{t_1[s]}{t_2[s] \inferir \mtP{T}}}{\tyC \conf{\olet} \inferir \mtP{T}}$&$\rulename{STCOLet}$\\
+&\\
+$\inference{\tyC c_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}&  \enve  t_2  \inferir \mtP{T_2} }{\tyC \oletP{T_1}{c_1}{t_2[s]} \inferir \mtP{T_2}}$&$\rulename{STCCOLet}$\\
+&\\
+$\inference {x \not \in dom(\Gamma \cup \emt(s)) & \envEC t_2 \inferir\mtP{T_2}}{\tyC \conf {\absD} \inferir \norm{T_1 \to \mtP{T_2}}}$&$\rulename{STCAbs}$\\
+&\\
+$\inference {\tyC t_1[s] \ t_2[s] \inferir \mtP{T}}{\tyC \conf{\appD}\inferir \mtP{T}}$&$\rulename{STCApp}$\\
+&\\
+$\inference {\tyC c_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{c_1}{T_1}) \ (\ascripP{c_2}{T_2})}$&$\rulename{STCCApp}$\\
+&\\
+\end{tabular}&
+\begin{tabular}{c r}
+&\\
+\multicolumn{2}{r}{\framebox{$\tyC c \chequear T \Rightarrow c$}}\\
+&\\
+$\tyC \truet[s] \chequear \boolt$&$\rulename{CTCTrue}$\\
+&\\
+$\tyC \falset[s] \chequear \boolt$&$\rulename{CTCFalse}$\\
+&\\
+$\inference {x:T \in \Gamma}{\tyC x[s] \chequear T}$&$\rulename{CTCVar\Gamma}$\\
+&\\
+$\inference {(x,v) \in s & \tyC v \inferir \mtP{T} & T \in \mtP{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
+&\\
+$\inference{\tyC \ascrip{t[s]} \chequear T}{\tyC \conf{\ascrip{t}} \chequear T}$&$\rulename{CTCAsc}$\\
+&\\
+$\inference{\tyC c \chequear T}{\tyC \ascrip{c} \chequear \mtCu{T}}$&$\rulename{CTCCAsc}$\\
+&\\
+$\inference{\tyC \oletP{T_1}{t_1[s]}{t_2[s] \chequear T}}{\tyC \conf{\olet} \chequear \mtP{T}}$&$\rulename{CTCOLet}$\\
+&\\
+$\inference{\tyC c_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}&  \enve  t_2 \chequear T_2}{\tyC \oletP{T_1}{c_1}{t_2[s]} \chequear T_2}$&$\rulename{CTCCOLet}$\\
+&\\
+$\inference {x \not \in dom(\Gamma \cup \emt(s)) & \envEC t_2 \chequear T_2}{\tyC \conf {\absD} \chequear T_1 \to T_2}$&$\rulename{CTCAbs}$\\
+&\\
+$\inference {\tyC t_1[s] \ t_2[s] \chequear T}{\tyC \conf{\appD}\chequear T}$&$\rulename{CTCApp}$\\
+&\\
+$\inference {\tyC c_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \chequear T_{2} \Rightarrow (\ascripP{c_1}{T_1}) \ (\ascripP{c_2}{T_2})}$&$\rulename{CTCCApp}$\\
+&\\
+\end{tabular}\\
+\hline
+\end{tabular}
+\hspace*{-4cm}
+\caption{Configuration synthesis and checking.}
 \label{tabla:sencillaA}
 \end{center}
 
@@ -224,13 +309,29 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &\\
 &\framebox {$c \tto c$}\\
 &\\
-$\confx{x} \tto v$&$\rulename{VarOk}  $\\
+$\confxu{x} \tto v$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
+$\inference {(v_i, T_{1i}) \in \{(\overline{v:T_1})\}}{\ascrip{\confx{x}} \tto v_i}$&$\rulename{VarAscOk}  $\\
+&\\
+$\inference {x \neq y}{\ascrip{\confy{x}} \tto \ascrip{x[s]}}$&$\rulename{VarAscNext}  $\\
+&\\
+$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
+&\\
+$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc} $\\
+&\\
+$ \ascrip{v} \tto v $&$\rulename{AscV} $\\
+&\\
+$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+&\\
+${\oletP{T_1}{v}{t_2[s]} \tto \confx{t_2}}$&$\rulename{Let} $\\
+&\\
+$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{t_2[s]} \tto \oletP{T_1}{c_1'}{t_2[s]} }$&$\rulename{Let1} $\\
+&\\
 $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 &\\
-$\conf{\absD} \ v \tto \confx{t_2}  $&$\rulename{App}  $\\
+$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}  $\\
 &\\
 $\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
 &\\
