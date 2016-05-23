@@ -1,71 +1,41 @@
-%\documentclass
-%\documentclass[preprint,authoryear,sort,9pt,twocolumn,nocopyrightspace]
-%\documentclass[preprint,authoryear,sort&compress,9pt,nocopyrightspace]{sigplanconf}
 \documentclass[preprint,authoryear,sort&compress,9pt,nocopyrightspace]{article}
 
-
-%\usepackage{changepage}
-%\usepackage{lipsum}
-%\usepackage{caption}
-%\usepackage{proof}
-%\usepackage[T1]{fontenc}
-%\usepackage{ebproof}
-%\usepackage[latin1]{inputenc} % acentos sin codigo
-%\usepackage[spanish]{babel}
-%\usepackage{setspace}
-%\usepackage{soul}%sombreado
-%\usepackage[pdftex]{color}
-%\usepackage{float}
-%\usepackage{array}
-%\usepackage{longtable}
-%\usepackage{xcolor,colortbl}
-%\usepackage{semantic}
-%\usepackage{definitions}
-%\usepackage{multirow}
-%\usepackage[letterpaper]{geometry}
 \usepackage{mathtools}
 \usepackage{verbatim} % comentarios
-%\usepackage{sansmath}
-%\usepackage{amssymb} % To provide the \varnothing symbol
-%\usepackage{amsmath}
-
-
-
-\newcommand{\nvector}[2][a]{#1_{1},#1_{2},#1_{3},\cdots #1_{#2}}
-\newcommand{\vect}{(x_1,x_2,\dots,x_n)}
-\newcommand\gij[3]{\Gamma \vdash #1 \Rightarrow #2 : #3 }
-
+\usepackage{definitions}
 
 \newcommand\rulename[1]{\mathrm{(#1)}}
 \newcommand{\nothing}{\varnothing} % different from \emptyset
 \newcommand{\tto}{\longrightarrow}
 \newcommand{\lto}{\leftarrow}
-\newcommand{\lambdax}{\lambda x}
-
-
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
 \newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
-\newcommand{\confxD}[1]{#1 [x,\{(\overline{v:T})\}:s]}
-\newcommand{\confx}[1]{#1 [x,\{(\overline{v:T_1})\}:s]}
-\newcommand{\confy}[1]{#1 [y, \{(\overline{v:T_1})\}:s]}
+\newcommand{\confxD}[1]{#1 [\subxD]}
+\newcommand{\confx}[1]{#1 [\SubxD}
+\newcommand{\confy}[1]{#1 [\SubyD]}
 \newcommand{\confext}[1]{#1 [x,(v:T_1) \conc s]}
-\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
-\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
-\newcommand{\subxD}{x,\{(\overline{v:T})\}:s}
-\newcommand{\subx}{[x,(v:T_1):s']}
-\newcommand{\suby}{[y,(v:T_1):s']}
-\newcommand{\SubxD}{x,(v:T_1):s}
-\newcommand{\Subx}{x,(v:T_1):s'}
-\newcommand{\Suby}{y,(v:T_1):s'}
+%\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+%\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
-\newcommand{\env}{{\emt,\Gamma \vdash \ }}
-\newcommand{\envE}{{\emt, \Gamma , x:T_1 \vdash \ }}
+
+\newcommand{\subxD}{x \mapsto \{(\overline{v:T})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{v:T_1})\},s}
+\newcommand{\SubyD}{y \mapsto \{(\overline{v:T_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+%\newcommand{\subx}{[x,(v:T_1):s']}
+%\newcommand{\suby}{[y,(v:T_1):s']}
+
 \newcommand{\tyC}{{\Gamma \vdash_c \ }}
-\newcommand{\enve}{{\emt  , x \conc T_1, \Gamma\vdash \ }}
-\newcommand{\envC}{{\emt(s), \Gamma \vdash \ }}
-\newcommand{\envEC}{{\emt(s), \Gamma , x:T_1 \vdash \ }}
-\newcommand{\enveC}{{\emt(s), x \conc T_1, \Gamma \vdash \ }}
+\newcommand{\env}{{\Gamma ; \emt   \vdash \ }}
+
+\newcommand{\envE}{{\Gamma , x:T_1  ; \emt \vdash \ }}
+\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : T_1)  \vdash \ }}
+
+\newcommand{\envC}{{\Gamma ; \emt(s) \vdash \ }}
+\newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
+\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
 
 
 \newcommand{\ascrip}[1]{#1::T}
@@ -82,24 +52,21 @@
 \newcommand{\falset}{\mathsf{false}}
 \newcommand{\boolt}{\mathsf{Bool}}
 \newcommand{\intt}{\mathsf{Int}}
-\newcommand{\nvt}{\mathsf{nv}}
 
 \newcommand{\mtD}{T^{*}}
 \newcommand{\mtP}[1]{#1^{*}}
 \newcommand{\mtC}[1]{\{\overline {#1}\}}
 \newcommand{\mtCu}[1]{\{ #1 \}}
 
-\newcommand{\emt}{\varphi}
+\newcommand{\emt}{\phi}
 \newcommand{\conc}{:^{*}}
+
+
 \newcommand\inferir{\stackrel{\mathclap{\normalfont\mbox{$\to$}}}{\in}}
 \newcommand\chequear{\stackrel{\mathclap{\normalfont\mbox{$\lto$}}}{\in}}
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \providecommand{\norm}[1]{\lVert#1\rVert}
-\usepackage{definitions}
 
-%\input{definitions}
-
-%-\renewcommand{\mynote}[2]{}
 
 \begin{document}
 
@@ -110,33 +77,29 @@
 \begin{tabular}{|l|l|}
 \hline
 \begin{tabular}{l c l r}
-%$\mathsf {Syntax}:$&&&\\
 &&&\\
 $t$&$::=$&&$\mathsf {terms}$\\
 &&$\truet$&$\mathsf {constant \ true}$\\
 &&$\falset$&$\mathsf {constant \ false}$\\
-&&$\nvt$&$\mathsf {numeric \ value}$\\
+&&$n$&$\mathsf {numeric \ value}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\abs {x}{T}{t}$&\ $\mathsf {abstraction}$\\
 &&$\app {t_1}{t_2}$&$\mathsf {application}$\\
 &&$\oletD$&$\mathsf {overloading \ let}$\\
 &&$\ascrip {t}$&$\mathsf {ascription}$\\
 &&&\\
+$v$&$::=$&&$\mathsf {values}$\\
+&&$\truet$&$\mathsf {true \ value}$\\
+&&$\falset$&$\mathsf {false \ value}$\\
+&&$n$&$\mathsf {numeric \ value}$\\
+&&$\conf {\abs {x}{T}{t}}$&$\mathsf {closure}$\\
+&&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
-%&&$\conf {x}$&\\
-%&&$\conf {\abs {x}{T}{t}}$&\\
-%&&$\conf {\app {t_1}{t_2}}$&\\
+&&$v$&\\
 &&$t[s]$&\\
 &&$\ascrip{c}$&\\
 &&$\oletP {T}{c}{c}$&\\
 &&$c \ c $&\\
-$v$&$::=$&&$\mathsf {values}$\\
-&&$\truet[s]$&$\mathsf {true \ value}$\\
-&&$\falset[s]$&$\mathsf {false \ value}$\\
-&&$\nvt[s]$&$\mathsf {numeric \ value}$\\
-&&$\conf {\abs {x}{T}{t}}$&$\mathsf {closure}$\\
-&&&\\
-&&&\\
 \end{tabular}
 & \begin{tabular}{l c l r}
 $T$&$::=$&&$\mathsf {types}$\\
@@ -157,7 +120,9 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$x,\{(\overline {v:T})\}:s$&$\mathsf {variable \ substitution}$\\
+&&$\subxD$&$\mathsf {variable \ substitution}$\\
+&&&\\
+&&&\\
 \end{tabular}\\
 \hline
 \end{tabular}
@@ -173,17 +138,19 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 \begin{center}
 \setlength{\tabcolsep}{1pt}
 %\setlength{\extrarowheight}{20pt}
-\hspace*{-4cm}
+\hspace*{-2cm}
 \begin{tabular}{|l|l|}
 
 \hline
 \begin{tabular}{c r}
 &\\
-\multicolumn{2}{r}{\framebox{$\env t \inferir \mtCu{T} \Rightarrow t$}}\\
+\multicolumn{2}{r}{\framebox{$\env t \inferir \mtD \Rightarrow t$}}\\
 &\\
-$\env  \truet\inferir \boolt$&$\rulename{STTrue}$\\
+$\env  \truet\inferir \mtCu {\boolt}$&$\rulename{STTrue}$\\
 &\\
-$\env  \falset\inferir \boolt$&$\rulename{STFalse}$\\
+$\env  \falset\inferir \mtCu{\boolt}$&$\rulename{STFalse}$\\
+&\\
+$\env  n \inferir \mtCu {\intt}$&$\rulename{STNum}$\\
 &\\
 $\inference {x:T \in \Gamma}{\env x \inferir \mtCu{T}}$&$\rulename{STVar\Gamma}$\\
 &\\
@@ -191,11 +158,11 @@ $\inference {x:\mtD \in \emt}{\env x \inferir \mtD}$&$\rulename{STVar\emt}$\\
 &\\
 $\inference{\env t \chequear T}{\env \ascrip{t} \inferir \mtCu{T}}$&$\rulename{STAsc}$\\
 &\\
-$\inference{\env t_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}& \enve t_2 \inferir \mtP{T_2}}{\env \olet \inferir \mtP{T_2}}$&$\rulename{STOLet}$\\
+$\inference{x \not \in dom(\Gamma) & \env t_1 \inferir \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enve t_2 \inferir \mtP{T_2}}{\env \olet \inferir \mtP{T_2}}$&$\rulename{STOLet}$\\
 &\\
 $\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \inferir\mtP{T_2}}{\env \absD \inferir \norm{T_1 \to T_2}}$&$\rulename{STAbs}$\\
 &\\
-$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{t_1}{T_1}) \ (\ascripP{t_2}{T_2})}$&$\rulename{STApp}$\\
+$\inference {\env t_1 \inferir \mtP{T} \\ &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{t_1}{T_1 \to T_2}) \ (\ascripP{t_2}{T_1})}$&$\rulename{STApp}$\\
 &\\
 \end{tabular}&
 \begin{tabular}{c r}
@@ -206,23 +173,26 @@ $\env \truet \chequear \boolt$&$\rulename{CTTrue}$\\
 &\\
 $\env \falset \chequear \boolt$&$\rulename{CTFalse}$\\
 &\\
-$\inference {x:T \in \Gamma}{\env x \chequear T}$&$\rulename{CTVar\Gamma}$\\
+$\env  n \chequear \intt$&$\rulename{CTNum}$\\
 &\\
-$\inference {x:\mtD \in \emt & T \in \mtD}{\env x \chequear T \Rightarrow \ascrip{x}}$&$\rulename{CTVar\emt}$\\
+$\inference {\env x \inferir \mtCu{T}}{\env x \chequear T}$&$\rulename{CTVar\Gamma}$\\
+&\\
+$\inference {\env x \inferir \mtD & T \in \mtD}{\env x \chequear T \Rightarrow \ascrip{x}}$&$\rulename{CTVar\emt}$\\
 &\\
 $\inference{\env t \chequear T}{\env \ascrip{t} \chequear T}$&$\rulename{CTAsc}$\\
 &\\
-$\inference{\env t_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}& \enve t_2 \chequear T_2}{\env \olet \chequear T_2}$&$\rulename{CTOLet}$\\
+$\inference{x \not \in dom(\Gamma) & \env t_1 \inferir \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enve t_2 \chequear T_2}{\env \olet \chequear T_2}$&$\rulename{CTOLet}$\\
 &\\
 $\inference {x \not \in dom(\Gamma \cup \emt) & \envE t_2 \chequear T_2}{\env \absD \chequear T_1 \to T_2}$&$\rulename{CTAbs}$\\
 &\\
-$\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \chequear T_{2}\Rightarrow (\ascripP{t_1}{T_1}) \ (\ascripP{t_2}{T_2})}$&$\rulename{CTApp}$\\
+$\inference {\env t_1 \inferir \mtP{T} \\ &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \env t_2 \chequear T_{1}}{\env \appD \chequear T_{2}\Rightarrow (\ascripP{t_1}{T_1 \to T_2}) \ (\ascripP{t_2}{T_1})}$&$\rulename{CTApp}$\\
 &\\
 \end{tabular}\\
 \hline
 \end{tabular}
-\hspace*{-4cm}
-\caption{Term synthesis and checking.}
+\hspace*{-2cm}
+\caption{Type synthesis and checking.}
+%\caption{Term synthesis and checking.}
 \label{tabla:sencillaA}
 \end{center}
 
@@ -234,17 +204,25 @@ $\inference {\env t_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}|
 \begin{center}
 \setlength{\tabcolsep}{1pt}
 %\setlength{\extrarowheight}{20pt}
-\hspace*{-4cm}
+\hspace*{-3cm}
 \begin{tabular}{|l|l|}
 
 \hline
 \begin{tabular}{c r}
 &\\
-\multicolumn{2}{r}{\framebox{$\tyC c \inferir \mtCu{T} \Rightarrow c$}}\\
+\multicolumn{2}{r}{\framebox{$\tyC c \inferir \mtD \Rightarrow c$}}\\
 &\\
-$\tyC \truet[s] \inferir \boolt$&$\rulename{STCTrue}$\\
+$\tyC \truet \inferir \mtCu{\boolt}$&$\rulename{STCTrue}$\\
 &\\
-$\tyC \falset[s] \inferir \boolt$&$\rulename{STCFalse}$\\
+$\tyC \falset \inferir \mtCu{\boolt}$&$\rulename{STCFalse}$\\
+&\\
+$\tyC \truet[s] \inferir \mtCu{\boolt}$&$\rulename{STCCTrue}$\\
+&\\
+$\tyC \falset[s] \inferir \mtCu{\boolt}$&$\rulename{STCCFalse}$\\
+&\\
+$\tyC n \inferir \mtCu{\intt}$&$\rulename{STCNum}$\\
+&\\
+$\tyC n[s] \inferir \mtCu{\intt}$&$\rulename{STCCNum}$\\
 &\\
 $\inference {x:T \in \Gamma}{\tyC x[s] \inferir \mtCu{T}}$&$\rulename{STCVar\Gamma}$\\
 &\\
@@ -257,24 +235,32 @@ $\inference{\tyC c \chequear T}{\tyC \ascrip{c} \inferir \mtCu{T}}$&$\rulename{S
 &\\
 $\inference{\tyC \oletP{T_1}{t_1[s]}{t_2[s] \inferir \mtP{T}}}{\tyC \conf{\olet} \inferir \mtP{T}}$&$\rulename{STCOLet}$\\
 &\\
-$\inference{\tyC c_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}&  \enve  t_2  \inferir \mtP{T_2} }{\tyC \oletP{T_1}{c_1}{t_2[s]} \inferir \mtP{T_2}}$&$\rulename{STCCOLet}$\\
+$\inference{x \not \in dom(\Gamma) & \tyC c_1 \inferir \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}  &   \enveC  t_2  \inferir \mtP{T_2} }{\tyC \oletP{T_1}{c_1}{t_2[s]} \inferir \mtP{T_2}}$&$\rulename{STCCOLet}$\\
 &\\
 $\inference {x \not \in dom(\Gamma \cup \emt(s)) & \envEC t_2 \inferir\mtP{T_2}}{\tyC \conf {\absD} \inferir \norm{T_1 \to \mtP{T_2}}}$&$\rulename{STCAbs}$\\
 &\\
 $\inference {\tyC t_1[s] \ t_2[s] \inferir \mtP{T}}{\tyC \conf{\appD}\inferir \mtP{T}}$&$\rulename{STCApp}$\\
 &\\
-$\inference {\tyC c_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{c_1}{T_1}) \ (\ascripP{c_2}{T_2})}$&$\rulename{STCCApp}$\\
+$\inference {\tyC c_1 \inferir \mtP{T}  \\ &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \inferir \mtCu{T_{2}}\Rightarrow (\ascripP{c_1}{T_1 \to T_2}) \ (\ascripP{c_2}{T_1})}$&$\rulename{STCCApp}$\\
 &\\
 \end{tabular}&
 \begin{tabular}{c r}
 &\\
 \multicolumn{2}{r}{\framebox{$\tyC c \chequear T \Rightarrow c$}}\\
 &\\
+$\tyC \truet \chequear \boolt$&$\rulename{CTCTrue}$\\
+&\\
+$\tyC \falset \chequear \boolt$&$\rulename{CTCFalse}$\\
+&\\
 $\tyC \truet[s] \chequear \boolt$&$\rulename{CTCTrue}$\\
 &\\
 $\tyC \falset[s] \chequear \boolt$&$\rulename{CTCFalse}$\\
 &\\
-$\inference {x:T \in \Gamma}{\tyC x[s] \chequear T}$&$\rulename{CTCVar\Gamma}$\\
+$\tyC n \chequear \intt$&$\rulename{CTCNum}$\\
+&\\
+$\tyC n[s] \chequear \intt$&$\rulename{CTCCNum}$\\
+&\\
+$\inference {\tyC x[s] \inferir \mtCu{T}}{\tyC x[s] \chequear T}$&$\rulename{CTCVar\Gamma}$\\
 &\\
 %$\inference {x,\{(\overline{v:T})\} \in s & \tyC v \inferir \mtP{T} & T \in \mtP{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
 $\inference {x,\{(\overline{v:T})\} \in s & T \in \mtC{T}}{\tyC x[s] \chequear T \Rightarrow  \conf{\ascrip{x}}}$&$\rulename{CTCVar\emt}$\\
@@ -285,18 +271,18 @@ $\inference{\tyC c \chequear T}{\tyC \ascrip{c} \chequear \mtCu{T}}$&$\rulename{
 &\\
 $\inference{\tyC \oletP{T_1}{t_1[s]}{t_2[s] \chequear T}}{\tyC \conf{\olet} \chequear \mtP{T}}$&$\rulename{CTCOLet}$\\
 &\\
-$\inference{\tyC c_1 \inferir \mtP{T_1} &T_1 \in  \mtP{T_1}&  \enve  t_2 \chequear T_2}{\tyC \oletP{T_1}{c_1}{t_2[s]} \chequear T_2}$&$\rulename{CTCCOLet}$\\
+$\inference{x \not \in dom(\Gamma) & \tyC c_1 \inferir \mtP{T_1} & \\T_1 \in  \mtP{T_1}&  \enveC  t_2 \chequear T_2}{\tyC \oletP{T_1}{c_1}{t_2[s]} \chequear T_2}$&$\rulename{CTCCOLet}$\\
 &\\
 $\inference {x \not \in dom(\Gamma \cup \emt(s)) & \envEC t_2 \chequear T_2}{\tyC \conf {\absD} \chequear T_1 \to T_2}$&$\rulename{CTCAbs}$\\
 &\\
 $\inference {\tyC t_1[s] \ t_2[s] \chequear T}{\tyC \conf{\appD}\chequear T}$&$\rulename{CTCApp}$\\
 &\\
-$\inference {\tyC c_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \chequear T_{2} \Rightarrow (\ascripP{c_1}{T_1}) \ (\ascripP{c_2}{T_2})}$&$\rulename{CTCCApp}$\\
+$\inference {\tyC c_1 \inferir \mtP{T} \\ &  \exists! \ T_{1}\to T_{2} \in \mtP{T}| \tyC c_2 \chequear T_{1}}{\tyC c_1 \ c_2 \chequear T_{2} \Rightarrow (\ascripP{c_1}{T_1 \to T_2}) \ (\ascripP{c_2}{T_1})}$&$\rulename{CTCCApp}$\\
 &\\
 \end{tabular}\\
 \hline
 \end{tabular}
-\hspace*{-4cm}
+\hspace*{-3cm}
 \caption{Configuration synthesis and checking.}
 \label{tabla:sencillaA}
 \end{center}
@@ -312,11 +298,17 @@ $\inference {\tyC c_1 \inferir \mtP{T} &  \exists! \ T_{1}\to T_{2} \in \mtP{T}|
 &\\
 &\framebox {$c \tto c$}\\
 &\\
+$\truet[s] \tto \truet$&$\rulename{True}  $\\
+&\\
+$\falset[s] \tto \falset$&$\rulename{False}  $\\
+&\\
+$n[s] \tto n$&$\rulename{Num}  $\\
+&\\
 $\confxu{x} \tto v$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-$\inference {(v_i, T_i) \in \{(\overline{v:T})\}}{\ascripP{\confx{x}}{T_i} \tto v_i}$&$\rulename{VarAscOk}  $\\
+$\inference {(v_i, T_i) \in \{(\overline{v:T})\}}{\ascripP{\confxD{x}}{T_i} \tto v_i}$&$\rulename{VarAscOk}  $\\
 &\\
 $\inference {x \neq y}{\ascrip{\confy{x}} \tto \ascrip{x[s]}}$&$\rulename{VarAscNext}  $\\
 &\\
@@ -394,6 +386,26 @@ The typing context built from a substitution $s$, writing $\Gamma(s)$, it is def
      \varnothing & s =  \bullet \\
       \Gamma(s'), x:T & s = (x,v):s' \ \land \ \tyC v : T 
    \end{cases}
+\]
+\end{definition}
+
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given a multi-type context $\emt$ and a pair $(x:T)$, the operator $\oplus$ is defined  as follows:
+\[ \emt \oplus (x:T) = \begin{cases} 
+      x:\mtCu{T}& \emt =  \varnothing \\
+      \emt',x:(\mtD \cup \mtCu{T}) & \emt = \emt',x:\mtD\\
+      \emt' \oplus (x:T),y:\mtD & \emt = \emt',y:\mtD\\
+   \end{cases}
+\]
+\end{definition}
+
+\begin{definition}[$\norm{\cdotp}$]
+\label{definition:tcs}
+\mbox{}
+Given $T_1 \to \mtP{T_2}$, the operator $\norm{\cdotp}$ is defined  as follows:
+\[ \norm{T_1 \to \mtP{T_2}} = \{T_1 \to T_2|T_2 \in \mtP{T_2}\}
 \]
 \end{definition}
 
