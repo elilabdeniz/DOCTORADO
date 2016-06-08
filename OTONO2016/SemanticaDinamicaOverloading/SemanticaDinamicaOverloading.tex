@@ -1,0 +1,242 @@
+\documentclass[preprint,authoryear,sort&compress,9pt,nocopyrightspace]{article}
+
+\usepackage{mathtools}
+\usepackage{verbatim} % comentarios
+\usepackage{definitions}
+\usepackage{comment}
+
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\lto}{\leftarrow}
+
+\newcommand{\conf}[2][s]{(#2)[#1]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
+\newcommand{\confxD}[1]{#1 [\subxD]}
+\newcommand{\confx}[1]{#1 [\SubxD}
+\newcommand{\confy}[1]{#1 [\SubyD]}
+\newcommand{\confext}[1]{#1 [x \mapsto(w:T_1) \oplus s]}
+%\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+%\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
+
+
+\newcommand{\subxD}{x \mapsto \{(\overline{w:T})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{w:T_1})\},s}
+\newcommand{\SubyD}{y \mapsto \{(\overline{w:T_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+%\newcommand{\subx}{[x,(v:T_1):s']}
+%\newcommand{\suby}{[y,(v:T_1):s']}
+
+\newcommand{\tyC}{{\Gamma \vdash_c \ }}
+\newcommand{\env}{{\Gamma ; \emt   \vdash \ }}
+
+\newcommand{\envE}{{\Gamma , x:T_1  ; \emt \vdash \ }}
+\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : T_1)  \vdash \ }}
+
+\newcommand{\envC}{{\Gamma ; \emt(s) \vdash \ }}
+\newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
+\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
+
+
+\newcommand{\ascrip}[1]{#1::T}
+\newcommand{\ascripP}[2]{#1::#2}
+\newcommand{\oletD}{\mathsf{olet} \ x : T = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{olet} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{olet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\app}[2]{#1 \ #2}
+\newcommand{\appD}{t_1 \ t_2}
+\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
+\newcommand{\absD}{\lambda x:T_1. \ t_2}
+
+\newcommand{\lab}{\mathsf{tag}}
+\newcommand{\undefmy}{\mathsf{undef}}
+\newcommand{\truet}{\mathsf{true}}
+\newcommand{\falset}{\mathsf{false}}
+\newcommand{\boolt}{\mathsf{Bool}}
+\newcommand{\intt}{\mathsf{Int}}
+\newcommand{\funt}{\mathsf{Fun}}
+\newcommand{\selvt}{\mathsf{selvt}}
+\newcommand{\selvv}{\mathsf{selvv}}
+
+\newcommand{\mtD}{T^{*}}
+\newcommand{\mtP}[1]{#1^{*}}
+\newcommand{\mtC}[1]{\{\overline {#1}\}}
+\newcommand{\mtCu}[1]{\{ #1 \}}
+
+\newcommand{\emt}{\phi}
+\newcommand{\conc}{:^{*}}
+
+\newcommand{\tagi}[2]{<#1, #2>}
+
+
+\newcommand{\errorA}{\mathsf{Error1}}
+\newcommand{\errorB}{\mathsf{Error2}}
+\newcommand{\errorC}{\mathsf{Error3}}
+\newcommand{\errorD}{\mathsf{Error4}}
+\newcommand{\errorE}{\mathsf{Error5}}
+
+\newcommand\inferir{\stackrel{\mathclap{\normalfont\mbox{$\to$}}}{\in}}
+\newcommand\chequear{\stackrel{\mathclap{\normalfont\mbox{$\lto$}}}{\in}}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+
+
+
+\begin{document}
+
+\begin{figure}
+\begin{small}
+%\begin{table}
+\begin{center}
+\hspace*{-2cm}
+\begin{tabular}{|l|l|}
+\hline
+\begin{tabular}{l c l r}
+$v$&$::=$&&$\mathsf {values}$\\
+&&$\truet$&$\mathsf {true \ value}$\\
+&&$\falset$&$\mathsf {false \ value}$\\
+&&$n$&$\mathsf {numeric \ value}$\\
+&&$\abs {x}{T}{t}$&\ $\mathsf {abstraction}$\\
+&&&\\
+$nv$&$::=$&&$\mathsf {non-values}$\\
+&&$x$&$\mathsf {variable}$\\
+&&$\app {t_1}{t_2}$&$\mathsf {application}$\\
+&&$\oletD$&$\mathsf {overloading \ let}$\\
+&&$\ascrip {t}$&$\mathsf {ascription}$\\
+&&&\\
+$t$&$::=$&&$\mathsf {terms}$\\
+&&$v$&$\mathsf {values}$\\
+&&$nv$&$\mathsf {non-values}$\\
+&&&\\
+$w$&$::=$&&$\mathsf {labeled-values}$\\
+&&$\tagi{\truet}{\boolt}$&$\mathsf{labeled-true \ value} $\\
+&&$\tagi{\falset}{\boolt}$&$\mathsf{labeled-false \ value}$\\
+&&$\tagi{n}{\intt}$&$\mathsf{labeled-numeric \ value} $\\
+&&$\tagi{\abs {x}{T}{t}}{\funt}[s]$&$\mathsf{labeled-abstraction}$\\
+&&&\\
+$\mtP{w}$&$::=$&&$\mathsf {labeled-multi-values}$\\
+&&$\mtC{w}$&\\
+%&&$\mtC{(v:T)}$&\\
+%&&$v$&\\
+&&&\\
+&&&\\
+\end{tabular}
+& \begin{tabular}{l c l r}
+&&&\\
+$c$&$::=$&&$\mathsf {configurations}$\\
+&&$\mtP{w}$&\\
+&&$nv[s]$&\\
+&&$\ascrip{c}$&\\
+&&$\oletP {T}{c}{c}$&\\
+&&$c \ c $&\\
+&&$\mathsf{error}$&\\
+$T$&$::=$&&$\mathsf {types}$\\
+&&$\intt$&$\mathsf {type \ of \ integers}$\\
+&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
+&&$T \to T$&$\mathsf {type \ of \ functions}$\\
+&&&\\
+$\mtP{T}$&$::=$&&$\mathsf {multi-types}$\\
+&&$\mtC{T}$&$\mathsf {multi-type}$\\
+&&&\\
+$\Gamma$&$::=$&&$\mathsf {typing \ contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
+$\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\emt,x: \mtP{T}$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
+$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+&&$ \bullet$&$\mathsf {empty \ substitution}$\\
+&&$\subxD$&$\mathsf {variable \ substitution}$\\
+&&&\\
+&&&\\
+\end{tabular}\\
+\hline
+\end{tabular}
+\hspace*{-2cm}
+\caption{Syntax of the simply typed lambda-calculus with overloading.}
+\label{figure:sencilla}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+$\mtP{w}[s] \tto \mtP{w}$&$\rulename{Multi-Values}  $\\
+%$\mtC {v}[s] \tto \mtC{v}$&$\rulename{Values}  $\\
+&\\
+$\confx{x} \tto \mtC{w}$&$\rulename{VarOk}  $\\
+&\\
+$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
+&\\
+$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
+&\\
+$ \inference {\selvt(\mtP{w}, T) = w} {\ascrip{\mtP{w}} \tto w }$&$\rulename{Asc} $\\
+&\\
+$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+&\\
+$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+&\\
+$\inference{\selvt(\mtP{w}, T_1) = w}{\oletP{T_1}{\mtP{w}}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+&\\
+$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{t_2[s]} \tto \oletP{T_1}{c_1'}{t_2[s]} }$&$\rulename{Let1} $\\
+&\\
+$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+&\\
+$\inference{T_1 = \lab(w)}{\tagi{\conf{\absD}}{\funt} \ w \tto \conf{[x \mapsto w]{t_2}}}$&$\rulename{App}  $\\
+&\\
+%$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}  $\\
+$\inference { \tagi{\conf{\absD}}{\funt} \ \in \mtP{w_1} & w_{2j}\in \mtP{w_2}}{\mtP{w_1} \ \mtP{w_2} \tto \ \tagi{\conf{\absD}}{\funt} \ w_{2j}}$&$\rulename{App1}  $\\
+&\\
+$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App2}  $\\
+&\\
+$ \inference {c \tto c'}{\mtP{w} \ c \tto \mtP{w} \ c'}$&$\rulename{App3}  $\\
+&\\
+\hline
+\end{tabular}
+\caption{Configuration reduction rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+$x[ \ ] \tto \errorA$&$\rulename{ErrVarFail}$\\
+&\\
+$ \inference {\selvt(\mtP{w}, T) = \undefmy} {\ascrip{\mtP{w}} \tto \errorB }$&$\rulename{ErrAsc} $\\
+&\\
+$\inference{\selvt(\mtP{w}, T_1) = \undefmy}{\oletP{T_1}{\mtP{w}}{t_2[s]} \tto \errorC}$&$\rulename{ErrLet} $\\
+&\\
+$\inference{T_1 \neq \lab(w)}{\tagi{\conf{\absD}}{\funt} \ w \tto \errorD}$&$\rulename{ErrApp}  $\\
+&\\
+%$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}  $\\
+$\inference { \not\exists \tagi{\conf{\absD}}{\funt} \ \in \mtP{w_1} & w_{2j}\in \mtP{w_2}}{\mtP{w_1} \ \mtP{w_2} \tto \errorE}$&$\rulename{ErrApp1}  $\\
+&\\
+$\mathsf{error} \ c \tto \mathsf{error}$&$\rulename{Error1}$\\
+&\\
+$\mtP{w} \ \mathsf{error} \tto \mathsf{error}$&$\rulename{Error2}$\\
+\hline
+\end{tabular}
+\caption{Configuration reduction rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+\end{document}
