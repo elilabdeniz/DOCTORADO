@@ -1,8 +1,9 @@
 #lang racket 
-(require redex) 
+(require redex)
 (require pict)
+(require "subst.rkt")
 
-(define-language PCF
+#|(define-language PCF
     (M ::=
        N O X L
        (μ (X : T) L)
@@ -43,10 +44,10 @@
     [(ext any any_0 any_1 ...)
      (ext1 (ext any any_1 ...) any_0)])
 
-(define-metafunction REDEX
+#|(define-metafunction REDEX
     unique : any ... -> boolean
     [(unique any_!_1 ...) #t]
-    [(unique _ ...) #f])
+    [(unique _ ...) #f])|#
 
 (define-relation REDEX
     unique ⊆ any × ...
@@ -116,12 +117,14 @@
   (E ::= hole
      (V ... E M ...)
      (if0 E M M)))
+
 (define v
   (extend-reduction-relation
    r PCF #:domain M
    (--> ((λ ([X : T] ...) M_0) V ...)
         (subst (X V) ... M_0)
         β)))
+
 (define -->v
   (context-closure v PCFv E))
 
@@ -170,156 +173,118 @@
      ...
      (⇓ M (ext ρ_1 (X_f f) (X_1 V_1) ...) : V)
      -----------------------------------------
-     (⇓ (M_0 M_1 ...) ρ : V)])
+     (⇓ (M_0 M_1 ...) ρ : V)])|#
 
-
-(define-language OverloadingLambda
-  (t ::= nv
-         v)
-  (nv ::=
-         x
-         (t t)
-         (+ t t) 
-         (olet (x T) = t in t)
-         (t :: T))
-  (v ::= true
-         flase
-         number
-        (λ (x T) t))
+;--------------------------------------------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------
+(define-language OL
+  (M ::= NV
+         V)
+  (NV ::=
+         X
+         (M M)
+         (mlet (X T) = M in M)
+         (M :: T)
+         ;(add1 t)
+         ;(not t)
+         )
+  (V ::= B N L O) 
+  (B ::= true false)
+  (N ::= number)
+  (L ::= (λ (X T) M))
+  (O ::= OB ON)
+  (OB ::= OB1)
+  (ON ::= ON1)
+  (OB1 ::= not)
+  (ON1 ::= add1)
   (T (→ T T) num bool)
-  (x ::= variable-not-otherwise-mentioned))
+  (X ::= variable-not-otherwise-mentioned))
+;--------------------------------------------------------------------------------------------------------------------
+(define-extended-language OL⇓ OL
+    (V ::= B N O (L ρ))
+    (ρ ::= ((X (V ...)) ...)))
+;--------------------------------------------------------------------------------------------------------------------
+(define-extended-language OLρ OL⇓
+    (C ::=
+       V
+       (M ρ)
+       (C :: T)
+       (mlet (X T) = C in C)
+       (C C))
+    (E ::= hole (V E)))
+;--------------------------------------------------------------------------------------------------------------------
+(define vρ
+    (reduction-relation
+     OLρ #:domain C
+     (--> (B ρ) B ρ-bool)
+     (--> (N ρ) N ρ-num)
+     (--> (O ρ) O ρ-op)
+     ;-------------------------------------
+     (--> ((M1 M2) ρ) ((M1 ρ) (M2 ρ)) ρ-app)
+     (--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     (--> ((mlet (X T) = M1 in M2) ρ) (mlet (X T) = (M1 ρ) in (M2 ρ)) ρ-let)
+     (--> (X ρ) V
+          (judgment-holds (lookup ρ X V))
+          ρ-x)
+     ;-------------------------------------
+     (--> (((λ (X : T) M) ρ) V)
+          ((subst (X V) M ) ρ)
+          app)
+     
+     (--> (OB V ...) V_1
+          (judgment-holds (δB (O V ...) V_1))
+          δB)
+     
+     (--> (ON V ...) V_1
+          (judgment-holds (δN (O V ...) V_1))
+          δN)
+     
+     (--> (V :: T) V asc)
+     
+     (--> (mlet (X T) = V in (M  ρ))
+          (M (ext ρ (X V)))
+          let)
+     ;-------------------------------------
+     ))
 
-(define-extended-language OverloadingLambdaT OverloadingLambda
-    (Γ ::= ((x T) ...)))
+(define-judgment-form OL
+    #:mode (δN I O)
+    #:contract (δN (O N ...) N)
+    [(δN (add1 N) ,(add1 (term N)))])
 
-#|(define-language L 
-  (e (e e) 
-     (λ (x t) e) 
-     x 
-     (amb e ...) 
-     number 
-     (+ e ...) 
-     (if0 e e e) 
-     (fix e)) 
-  (t (→ t t) num) 
-  (x variable-not-otherwise-mentioned))
+(define-judgment-form OL
+    #:mode (δB I O)
+    #:contract (δB (O B ...) B)
+    [(δB (not B) ,(not (term B)))])
 
-(define-extended-language L+Γ L 
-  [Γ · (x : t Γ)]) 
-
-
-(define-judgment-form 
- L+Γ
-  #:mode (types I I O) 
-  #:contract (types Γ e t) 
-  
-  [(types Γ e_1 (→ t_2 t_3)) 
-   (types Γ e_2 t_2) 
-   ------------------------- 
-   (types Γ (e_1 e_2) t_3)] 
-  
-  [(types (x : t_1 Γ) e t_2) 
-   ----------------------------------- 
-   (types Γ (λ (x t_1) e) (→ t_1 t_2))] 
-  
-  [(types Γ e (→ (→ t_1 t_2) (→ t_1 t_2))) 
-   --------------------------------------- 
-   (types Γ (fix e) (→ t_1 t_2))] 
-  
-  [--------------------- 
-   (types (x : t Γ) x t)] 
-  
-  [(types Γ x_1 t_1) 
-   (side-condition (different x_1 x_2)) 
-   ------------------------------------ 
-   (types (x_2 : t_2 Γ) x_1 t_1)] 
-  
-  [(types Γ e num) ... 
-   ----------------------- 
-   (types Γ (+ e ...) num)] 
-  
-  [-------------------- 
-   (types Γ number num)] 
-  
-  [(types Γ e_1 num) 
-   (types Γ e_2 t) 
-   (types Γ e_3 t) 
-   ----------------------------- 
-   (types Γ (if0 e_1 e_2 e_3) t)] 
-  
-  [(types Γ e num) ... 
-   -------------------------- 
-   (types Γ (amb e ...) num)])
-
-(define-metafunction L+Γ
-  [(different x_1 x_1) #f] 
-  [(different x_1 x_2) #t])
-
-(define-extended-language Ev L+Γ
-  (p (e ...))
-  (P (e ... E e ...))
-  (E (v E)
-     (E e)
-     (+ v ... E e ...)
-     (if0 E e e)
-     (fix E)
-     hole)
-  (v (λ (x t) e)
-     (fix v)
-     number))
-
-(define-metafunction Ev
-  Σ : number ... -> number
-  [(Σ number ...)
-   ,(apply + (term (number ...)))])
+(define-language REDEX)
 
 
-(require redex/tut-subst)
-(define-metafunction Ev
-  subst : x v e -> e
-  [(subst x v e)
-   ,(subst/proc x? (list (term x)) (list (term v)) (term e))])
-(define x? (redex-match Ev x))
+(define-judgment-form REDEX
+    #:mode (lookup I I O)
+    #:contract (lookup ((any any) ...) any any)
+    [(lookup (_ ... (any any_0) _ ...) any any_0)])
 
-(define red
-  (reduction-relation
-   Ev
-   #:domain p
-   (--> (in-hole P (if0 0 e_1 e_2))
-        (in-hole P e_1)
-        "if0t")
-   (--> (in-hole P (if0 v e_1 e_2))
-        (in-hole P e_2)
-        (side-condition (not (equal? 0 (term v))))
-        "if0f")
-   (--> (in-hole P ((fix (λ (x t) e)) v))
-        (in-hole P (((λ (x t) e) (fix (λ (x t) e))) v))
-        "fix")
-   (--> (in-hole P ((λ (x t) e) v))
-        (in-hole P (subst x v e))
-        "βv")
-   (--> (in-hole P (+ number ...))
-        (in-hole P (Σ number ...))
-        "+")
-   (--> (e_1 ... (in-hole E (amb e_2 ...)) e_3 ...)
-        (e_1 ... (in-hole E e_2) ... e_3 ...)
-        "amb")))
 
-(define (types? e)
-  (not (null? (judgment-holds (types · ,e t)
-                              t))))
- 
-(define v? (redex-match Ev v))
- 
-(define (reduces? e)
-  (not (null? (apply-reduction-relation
-               red
-               (term (,e))))))
+(define-metafunction REDEX
+    ext1 : ((any any) ...) (any any) -> ((any any) ...)
+    [(ext1 (any_0 ... (any_k (any_v0 ...)) any_1 ...) (any_k any_v1))
+     (any_0 ... (any_k (any_v1 any_v0 ...)) any_1 ...)]
+    [(ext1 (any_0 ...) (any_k any_v1))
+     ((any_k (any_v1)) any_0 ...)])
 
-(define (progress-holds? e)
-  (if (types? e)
-      (or (v? e)
-          (reduces? e))
-      #t))
 
-(redex-check Ev e (progress-holds? (term e)))|#
+(define-metafunction REDEX
+    ext : ((any any) ...) (any any) ... -> ((any any) ...)
+    [(ext any) any]
+    [(ext any any_0 any_1 ...)
+     (ext1 (ext any any_1 ...) any_0)])
+
+#|(define-metafunction REDEX
+    unique : any ... -> boolean
+    [(unique any_!_1 ...) #t]
+    [(unique _ ...) #f])|#
+
+(define-relation REDEX
+    unique ⊆ any × ...
+    [(unique any_!_1 ...)])
