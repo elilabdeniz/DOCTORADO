@@ -11,21 +11,21 @@
 \newcommand{\lto}{\leftarrow}
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
+\newcommand{\confxu}[1]{#1 [x,\{w\}:s]}
 \newcommand{\confxD}[1]{#1 [\subxD]}
 \newcommand{\confx}[1]{#1 [\SubxD}
 \newcommand{\confy}[1]{#1 [\SubyD]}
-\newcommand{\confext}[1]{#1 [x \mapsto(w:T_1) \oplus s]}
+\newcommand{\confext}[1]{#1 [x \mapsto w \oplus s]}
 %\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
 %\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
 
 \newcommand{\subx}{x \mapsto \{\overline{w}\},s}
-\newcommand{\subxD}{x \mapsto \{(\overline{w:T})\},s}
-\newcommand{\SubxD}{x \mapsto \{(\overline{w:T_1})\},s}
-\newcommand{\SubyD}{y \mapsto \{(\overline{w:T_1})\},s}
-\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
-\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\subxD}{x \mapsto \{\overline{w}\},s}
+\newcommand{\SubxD}{x \mapsto \{\overline{w}\},s}
+\newcommand{\SubyD}{y \mapsto \{\overline{w}\},s}
+\newcommand{\Subx}{x \mapsto \{\overline{w}\},s'}
+\newcommand{\Suby}{y \mapsto \{\overline{w}\},s'}
 %\newcommand{\subx}{[x,(v:T_1):s']}
 %\newcommand{\suby}{[y,(v:T_1):s']}
 
@@ -196,7 +196,7 @@ $\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
 &\\
 $\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
 &\\
-$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
+$ \ascrip{w} \tto w $&$\rulename{Asc} $\\
 &\\
 ${\oletP{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
@@ -204,7 +204,7 @@ $\conf{\absD} \ w \tto \conf{[x \mapsto w]{t_2}}$&$\rulename{App}$\\
 &\\
 $\suma{w_1} \tto w_1 + 1$&$\rulename{Sum}$\\
 &\\
-$\negacion{w} \tto (\neg \ w) $&$\rulename{Negation}$\\
+$\negacion{w} \tto \neg \ w $&$\rulename{Negation}$\\
 &\\
 $ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 &\\
