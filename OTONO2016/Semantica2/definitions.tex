@@ -1,0 +1,718 @@
+\usepackage{anyfontsize} % kill warnings about font sizes 
+\usepackage{amsmath}     % Mathematics FTW!
+\usepackage{amsthm}      % Warning, I've only proven it correct :).
+\usepackage{amssymb}     % needed for \mathbb and mathcal
+\usepackage{amsbsy}      % for \boldsymbol
+\usepackage{semantic}    % for PLT
+\usepackage{stmaryrd}   % provides some PLy symbols, like Scott Brackets
+\usepackage{mathpartir}  % for \mathpar
+\usepackage{color}
+\usepackage{braket}      % for \set and \braket
+\usepackage{mathtools}   % for \bigtimes
+\usepackage{thmtools}    % to duplicate theorems in the appendix
+\usepackage{marvosym} % for deniarius (gradual label)
+\usepackage{wasysym}     % for \smiley
+\usepackage{balance}     % for the references
+\usepackage{xspace}
+\usepackage{mathrsfs} % for mathscr font
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{yhmath}
+\usepackage{rotating}
+\usepackage{tikz-cd}
+\usepackage{xcolor}
+\usepackage{changepage}
+\usepackage{centernot}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{centernot}
+\usepackage{mathtools}
+\usepackage{xparse}
+\usepackage{ upgreek }
+
+\def\presuper#1#2%
+  {\mathop{}%
+   \mathopen{\vphantom{#2}}^{#1}%
+   \kern-\scriptspace%
+   #2}
+
+\ExplSyntaxOn
+\DeclareExpandableDocumentCommand{\IfNoValueOrEmptyTF}{mmm}
+ {
+  \IfNoValueTF{#1}{#2}
+   {
+    \tl_if_empty:nTF {#1} {#2} {#3}
+   }
+ }
+\ExplSyntaxOff
+
+\makeatletter
+\newcommand{\xMapsto}[2][]{\ext@arrow 0599{\Mapstofill@}{#1}{#2}}
+\def\Mapstofill@{\arrowfill@{\Mapstochar\Relbar}\Relbar\Rightarrow}
+\makeatother
+
+% Comment form:  requires amssymb and color
+\newcommand{\mynote}[2]
+    {{\color{red} \fbox{\bfseries\sffamily\scriptsize#1}
+    {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}}~}
+
+%\definecolor{clxccolor}{HTML}{3F7D31}
+%\definecolor{staticcolor}{HTML}{3F7D31}
+\definecolor{clxccolor}{HTML}{009773}
+\definecolor{staticcolor}{HTML}{009773}
+\definecolor{propcolor}{HTML}{3F7D31}
+\definecolor{mypurple}{HTML}{5B069D}
+\definecolor{dynamic}{HTML}{D55E00}
+\definecolor{memory}{HTML}{0072B2}
+% \definecolor{clxccolor}{RGB}{182,109,255}
+% \definecolor{staticcolor}{RGB}{182,109,255}
+% \definecolor{dynamic}{RGB}{219,209,0}
+%\definecolor{orange}{RGB}{0,146,146}
+\newcommand{\myproposal}[2]
+    {{\color{propcolor} \fbox{\bfseries\sffamily\scriptsize#1}
+    {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}}~}
+
+% \renewcommand{\mynote}[2]{}
+\newcommand{\et}[1]{\mynote{ET}{#1}}
+\newcommand{\ron}[1]{\mynote{RG}{#1}}
+\newcommand{\mt}[1]{\mynote{MT}{#1}}
+\newcommand{\nl}[1]{\mynote{NL}{#1}}
+
+\newcommand{\mtp}[1]{\myproposal{MT}{#1}}
+
+%% block - used tog indent code or create newlines of math stuff.
+\newenvironment{block}[1][t]
+  {\begin{array}[#1]{@{}l@{}}}
+  {\end{array}}
+
+% Grey Box
+\definecolor{lightgray}{gray}{0.90}
+\newcommand{\Gbox}[1]{\colorbox{lightgray}{$#1$}}
+
+\newcommand{\gbox}[1]{{\setlength{\fboxsep}{1pt}\colorbox{lightgray}{\tiny$#1$}}}
+
+
+%
+% Mathy definitions
+% 
+
+\declaretheorem{theorem}
+\declaretheorem[sibling=theorem]{lemma}
+\declaretheorem[sibling=theorem]{proposition}
+\declaretheorem[sibling=theorem]{corollary}
+\declaretheorem{definition}
+\declaretheorem[style=remark,numbered=no]{case}
+\declaretheorem[style=remark,numbered=no]{notation}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}{Definition}
+%\newtheorem{property}{Property}
+
+%\theoremstyle{remark}
+%\newtheorem*{case}{Case}
+%\newtheorem*{notation}{Notation}
+
+
+%
+% PLy definitions
+%
+\newcommand{\sbrack}[1]{|[ #1 |]} % Scott brackets
+\newcommand{\Sbrack}[1]{\left[\!\!\left[ #1 \right]\!\!\right]} % Scott brackets
+
+\mathlig{[]}{\square}
+\mathlig{|-s}{\vdash^{\!\forall}}
+\mathlig{|-}{\vdash}
+\mathlig{|}{\mid} % For BNFs
+\mathlig{@>}{\leadsto} % for type-directed translations
+
+
+\reservestyle{\oblang}{\mathsf}
+\oblang{if[if\;],then[\;then\;],else[\;else\;],let[let\;],in[\;in\;]}
+
+%
+% Cleaned up macros
+%
+
+% syntactic sets
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}} % the set of integers
+\newcommand{\Pow}{\ensuremath{\mathcal{P}}} % The powerset
+% Use sans-serif for object language constructors
+\newcommand{\Int}{\mathsf{Int}}
+\newcommand{\String}{\mathsf{String}}
+\newcommand{\Float}{\mathsf{Float}}
+\newcommand{\Bool}{\mathsf{Bool}}
+% Use smallcaps for the names of object language sets.
+\newcommand{\oblset}[1]{\textsc{#1}}
+\newcommand{\Label}{\oblset{Label}}
+\newcommand{\Type}{\oblset{Type}}
+\newcommand{\Var}{\oblset{Var}}
+\newcommand{\Value}{\oblset{Value}}
+\newcommand{\Term}{\oblset{Term}}
+\newcommand{\Const}{\oblset{Const}}
+\newcommand{\TTerm}{\oblset{TTerm}}
+\newcommand{\XTerm}{\oblset{XTerm}}
+\newcommand{\GTerm}{\oblset{GTerm}}
+\newcommand{\SType}{\oblset{SType}}
+\newcommand{\GType}{\oblset{GType}}
+\newcommand{\EType}{\oblset{EType}}
+\newcommand{\GEType}{\oblset{GEType}}
+\newcommand{\GSType}{\oblset{GSType}}
+\newcommand{\GLabel}{\oblset{GLabel}}
+\newcommand{\setof}[1]{\set{\overline{#1}}}
+
+% language
+\newcommand{\fff}{\textsf{false}}
+\newcommand{\ff}{\fff} % temporary - backward compat
+\newcommand{\ttt}{\textsf{true}}
+% \newcommand{\ite}[3]{\texttt{if}\;#1\;\texttt{then}\;#2\;\texttt{else}\;#3}
+\newcommand{\ite}[3]{\<if> #1 \<then> #2 \<else> #3}
+\newcommand{\iite}[4]{\<if>^{{\color{staticcolor} #1}} #2 \<then> #3 \<else> #4}
+\newcommand{\lsec}{$\lambda_\text{SEC}$\xspace}
+\newcommand{\lgsec}{$\lambda_{\consistent{\text{SEC}}}$\xspace}
+
+% relations
+\newcommand{\dom}{\mathit{dom}}
+\newcommand{\cod}{\mathit{cod}}
+\newcommand{\cmb}{\mathit{equate}}
+\newcommand{\lvalid}{\mathit{lvalid}}
+\newcommand{\valid}{\mathit{valid}}
+\newcommand{\tlc}{\ensuremath{\collecting{\mathit{tlc}}}}
+\newcommand{\gprec}{\sqsubseteq} % greater precision
+\newcommand{\sub}{<:}
+\newcommand{\nsub}{<:_n}
+\newcommand{\csub}{\lesssim}
+\newcommand{\clsub}{\mathrel{\collecting{<:}}}
+\newcommand{\ccsub}{\mathrel{\consistent{<:}}}
+\newcommand{\join}{\sqcup}
+\newcommand{\setdiff}{\mathrel{\backslash}}
+\newcommand{\meet}{\sqcap}
+\newcommand{\union}{\cup}
+\newcommand{\setint}{\cap}
+\newcommand{\finto}{\stackrel{\text{fin}}{\rightharpoonup}}% Finite partial map
+\newcommand{\pfun}{\rightharpoonup}% partial function
+
+% convention for consistent/gradual and collecting
+\newcommand{\?}{\textsf{\upshape ?}} %unknown type
+\newcommand{\consistent}[1]{\widetilde{#1}}
+\newcommand{\collecting}[1]{\wideparen{#1}}
+\newcommand{\cT}{{\consistent{T}}} %gradual type
+\newcommand{\clT}{\collecting{T}}% collecting type
+\newcommand{\ct}{\consistent{t}} %gradual term
+\newcommand{\gvl}{\consistent{v}} %gradual value
+
+% collecting / consistent relations
+\newcommand{\carrow}{\;\collecting{\rightarrow}\;}
+\newcommand{\clab}{\collecting{label}}
+\newcommand{\ctype}{\collecting{type}}
+\newcommand{\ccod}{\consistent{\cod}}
+\newcommand{\cdom}{\consistent{\dom}}
+\newcommand{\ccmb}{\consistent{\cmb}}
+\newcommand{\clcmb}{\collecting{\cmb}}
+\newcommand{\clcod}{\collecting{\cod}}
+\newcommand{\cldom}{\collecting{\dom}}
+\newcommand{\cP}{\consistent{P}}
+\newcommand{\cF}{\consistent{F}}
+\newcommand{\clpred}{\collecting{P}}
+\newcommand{\cpred}{\cP}
+\newcommand{\clfun}{\collecting{F}}
+\newcommand{\cfun}{\consistent{F}}
+\newcommand{\ceq}{\consistent{=}}
+\newcommand{\cleq}{\collecting{=}}
+
+%subtyping
+\newcommand{\subjoin}{\mathbin{\begin{turn}{90}$\hspace{-0.2em}<:$\end{turn}}}
+\newcommand{\submeet}{\mathbin{\begin{turn}{-90}$\hspace{-0.8em}<:$\end{turn}}}
+\newcommand{\proj}{\mathit{proj}}
+\newcommand{\cproj}{\consistent{\proj}}
+\newcommand{\cssubmeet}{\mathbin{\consistent{\submeet}}}
+\newcommand{\cssubjoin}{\mathbin{\consistent{\subjoin}}}
+
+% security typing
+\newcommand{\ltop}{\textsf{H}}
+\newcommand{\lbot}{\textsf{L}}
+\newcommand{\lx}{\ell} % label
+\newcommand{\ul}{\?}% unknown label
+
+
+\DeclareDocumentCommand{\bul}{ O{\lx_1} O{\lx_2} }{[{#1},{#2}]}
+\newcommand{\bult}{\bul[\lx_3][\lx_4]}
+\newcommand{\bull}[2]{\bul[{\lx_{#1}}][{\lx_{#2}}]}
+\newcommand{\bulu}{\bul[\bot][\top]}
+
+\newcommand{\clx}{{\tilde{\lx}}} % gradual label
+%\newcommand{\clx}[1][]{{\tilde{\lx}\IfNoValueOrEmptyTF{#1}{}{_#1}}}} % gradual label
+\newcommand{\cll}{\collecting{\lx}} % collecting label
+\newcommand{\cS}{{\consistent{S}}} % gradual sec type
+\newcommand{\clS}{\collecting{S}}% collecting sec type
+\newcommand{\subl}{\preccurlyeq}% sub on labels
+
+\newcommand{\clL}{\collecting{\sL}}% collecting ev label
+\newcommand{\clE}{\collecting{\sE}}% collecting ev type
+\newcommand{\sE}{{{E}}} % evidence type
+\newcommand{\sL}{{{\lx}}} % list of labels
+\newcommand{\cE}{{{\sE}}} % evidence type
+\newcommand{\cL}{{\consistent{L}}} % list of labels
+\newcommand{\csubl}{\;\consistent{\subl}\;}
+\newcommand{\ljoincore}{\begin{turn}{90}$\hspace{-0.2em}\prec$\end{turn}}
+\newcommand{\lmeetcore}{\begin{turn}{270}$\hspace{-0.6em}\prec$\end{turn}}
+\newcommand{\ljoin}{\mathbin{\ljoincore}}
+\newcommand{\lmeet}{\mathbin{\lmeetcore}}
+\newcommand{\cjoin}{\mathbin{\consistent{\ljoincore}}}
+\newcommand{\cjoinc}{\triangle}
+\newcommand{\cmeet}{\mathbin{\consistent{\lmeetcore}}}
+\newcommand{\cljoin}{\cjoin}
+\newcommand{\clmeet}{\cmeet}
+% gamma/alpha for labels/security types/pretypes
+\newcommand{\gammal}{\gamma_\lx}
+\newcommand{\alphal}{\alpha_\lx}
+\newcommand{\gammas}{\gamma_S}
+\newcommand{\gammat}{\gamma_T}
+\newcommand{\alphas}{\alpha_S}
+\newcommand{\alphat}{\alpha_T}
+\newcommand{\slabel}{\mathit{label}}
+
+\newcommand{\gammae}{{\gamma^{\tiny\ljoin}_E}}
+\newcommand{\alphae}{{\alpha^{\tiny\ljoin}_E}}
+\newcommand{\gammaem}{{\gamma^{\tiny\lmeet}_E}}
+\newcommand{\alphaem}{{\alpha^{\tiny\lmeet}_E}}
+\newcommand{\gammaL}{{\gamma^{\tiny\ljoin}_L}}
+\newcommand{\gammaLM}{{\gamma^{\tiny\lmeet}_L}}
+\newcommand{\gammaS}{{\gamma^{\tiny\star}_L}}
+\newcommand{\alphaL}{{\alpha^{\tiny\ljoin}_L}}
+\newcommand{\alphaLM}{{\alpha^{\tiny\lmeet}_L}}
+% interior and evidence
+\newcommand{\interior}[1]{\mathcal{I}_{#1}}
+\DeclareDocumentCommand{\interiorf}{ m O{\joinfun}}{\mathcal{I}^{#2}_{#1}}
+
+\newcommand{\Ev}[1]{\oblset{Ev}^{#1}}
+\newcommand{\Isub}{\interior{<:}}
+\newcommand{\Isubf}{\interiorf{<:}}
+\newcommand{\Isubfm}{\interiorf{<:}[\lmeet]}
+\newcommand{\trans}[1]{\circ^{#1}}
+\renewcommand{\merge}[1]{\triangle^{#1}}
+
+% intrinsic stuff
+% \newcommand{\rec}[1]{\set{#1}}
+\newcommand{\rec}[1]{[#1]}
+\newcommand{\VarT}[1]{\oblset{Var}_{#1}}
+\newcommand{\LocT}[1]{\oblset{Loc}_{#1}}
+\newcommand{\TermT}[1]{\oblset{Term}_{#1}}
+\newcommand{\injto}{\stackrel{\!\textrm{i\;f}}{\rightharpoonup}}
+\newcommand{\EvTerm}{\oblset{EvTerm}}
+\newcommand{\EvValue}{\oblset{EvValue}}
+\newcommand{\EvLabel}{\oblset{EvLabel}}
+\newcommand{\SimpleValue}{\oblset{SimpleValue}}
+\newcommand{\EvFrame}{\oblset{EvFrame}}
+\newcommand{\TmFrame}{\oblset{TmFrame}}
+\newcommand{\pr}[1]{\braket{{#1}}}
+\newcommand{\cast}[2]{\evcast{\evpr{#1}}{#2}}
+\newcommand{\error}{\textup{\textbf{error}}}
+\newcommand{\evt}{\mathit{et}}
+\newcommand{\evv}{\mathit{ev}}
+\newcommand{\red}{\longmapsto}
+\newcommand{\nred}{~-->~}
+%\newcommand{\lred}[1][\lxr]{\xmapsto{#1}}
+%\newcommand{\lnred}[1][\lxr]{\xrightarrow{#1}}
+\newcommand{\lred}[1][\lxr]{\overset{#1}{\red}}
+\newcommand{\lnred}[1][\lxr]{\overset{#1}{\nred}}
+
+
+% \newcommand{\cred}[1][]{~{\xmapsto{#1}}~}
+% \newcommand{\cnred}[1][]{\overset{#1}{\nred}}
+%\newcommand{\cred}[1][\el]{~{\overset{#1}{\red}}~}
+%\newcommand{\cnred}[1][\el]{\overset{#1}{\nred}}
+
+%\DeclareDocumentCommand{\cnred}{O{\el} O{\clxc}}{\overset{#1}{\nred}_{\IfNoValueOrEmptyTF{#2}{}{#2}}}
+\DeclareDocumentCommand{\cred}{O{\el} O{\clxc}}{~\overset{#1}{\red}_{#2}}
+\DeclareDocumentCommand{\cnred}{O{\el} O{\clxc}}{~\overset{#1}{-->}_{#2}~}
+
+\newcommand{\credi}[0]{\cred[{\ev_{ri}\clxr_i}]}
+
+
+\newcommand{\iapp}[1]{\mathbin{@^{#1}}}
+\newcommand{\iappev}[3][{\evl}]{\mathbin{@^{{\color{staticcolor} #2}}_{{#1}}}}
+\newcommand{\invcod}{\mathit{icod}}
+\newcommand{\invdom}{\mathit{idom}}
+\newcommand{\invproj}{\mathit{iproj}}
+
+\newcommand{\sarray}[1]{
+{\begin{array}[c]{@{}l@{}} #1
+  \end{array}}}
+
+
+% text
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+
+% Annoying saveboxes because \wide* don't nest well
+\newsavebox{\cTsave}
+\savebox{\cTsave}{$\cT$}
+\newsavebox{\clTsave}
+\savebox{\clTsave}{$\clT$}
+
+% Dynamic language (wrt simply-typed gradual language) terms
+\newcommand{\DTerm}{\oblset{DTerm}}
+\newcommand{\dyn}[1]{\check{#1}}
+\newcommand{\dt}{\dyn{t}}
+
+% Evidence
+\newcommand{\ev}{\varepsilon}
+
+\newcommand{\evl}[1][]{{{\ev_{\lx #1}}}}
+% \newcommand{\evcast}[2]{#1#2}
+% \newcommand{\evlangle}{\color{red}\langle}
+% \newcommand{\evrangle}{\color{red}\rangle}
+% \newcommand{\evpr}[1]{{\color{red}\langle}#1{\color{red}\rangle}}
+\newcommand{\evcast}[2]{#1#2}
+\newcommand{\evlangle}{\langle}
+\newcommand{\evrangle}{\rangle}
+\newcommand{\evpr}[1]{\braket{#1}}
+
+\newcommand{\STFLsub}{\text{STFL}_{<:}}
+\newcommand{\GTFLcsub}{\text{GTFL}_{\csub}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%REFS%
+\newcommand{\braketeq}[2]{\braket{#1}}
+
+\newcommand{\ConfigT}[1]{\oblset{Config}_{#1}}
+\newcommand{\ConfigEl}[2]{#1|#2}
+
+%LSECREF%
+\newcommand{\new}[1]{\textcolor{memory}{#1}}
+\newcommand{\Evidence}{\oblset{Evidence}}
+% \newcommand{\lobs}{\zeta}
+\newcommand{\lobs}{\lx_o}
+\newcommand{\rel}[1][\lobs]{\approx_{#1}}
+\newcommand{\rcomp}[1]{\mathcal{C}(#1)} 
+\newcommand{\bval}[1]{bval(#1)}
+\newcommand{\subst}{\sigma}
+\newcommand{\itm}[1]{{t^{\cS_{#1}}}}
+\renewcommand{\cast}[2]{#1#2}
+
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\E}{\mathcal{E}}
+ 
+\newcommand{\lateff}[1]{{\overset{#1}{-->}}}
+
+\newcommand{\Reff}[0]{{\mathsf{Ref}}}
+\newcommand{\Ref}[1]{{\mathsf{Ref}}~#1}
+\newcommand{\Refl}[2]{{\mathsf{Ref}}_{#1}~#2}
+\newcommand{\Unit}{\mathsf{Unit}}
+\newcommand{\unit}{\mathsf{unit}}
+
+%\DeclareDocumentCommand{\reff}{ m m O{\lxc} }{\new{\mathsf{ref}}^{#2,#3}~#1}
+\newcommand{\reff}[1]{\mathsf{ref}~#1}
+\DeclareDocumentCommand{\reffss}{ m m O{\lxc} }{{\mathsf{ref}}^{#2}~#1}
+\DeclareDocumentCommand{\reffs}{ m m O{\clxc} }{{\mathsf{ref}}^{#2}~#1}
+\DeclareDocumentCommand{\reffsev}{ m m O{\evl} O{\clxc} }{{{\mathsf{ref}}^{{\color{staticcolor} #2}}_{#3}}~#1}
+
+\newcommand{\lett}[0]{\mathsf{let}}
+\newcommand{\deref}[1]{{\mathsf{!}}#1}
+\newcommand{\derefev}[2]{{\mathsf{!}}^{{\color{staticcolor} #1}} #2}
+\newcommand{\assign}[2]{#1 {:=} #2}
+\newcommand{\assignev}[3][{\evl}]{#2 \overset{#1}{:=} #3}
+\newcommand{\tref}{\mathit{tref}}
+\newcommand{\freeLocs}{\mathit{freeLocs}}
+\newcommand{\ctref}{\consistent{\tref}}
+\newcommand{\highlight}[1]{\textcolor{memory}{#1}}
+\newcommand{\highlightr}[1]{\textcolor{red}{#1}}
+\newcommand{\ConfT}[1]{\oblset{Conf}_{#1}}
+\newcommand{\ConfEl}[2]{#1|#2}
+\newcommand{\Store}[0]{\oblset{Store}}
+\newcommand{\Pc}[0]{\oblset{Label}}
+\newcommand{\cPc}[0]{\oblset{GLabel}}
+\newcommand{\braketeqs}[1]{\braketeq{#1}{#1}}
+\newcommand{\mudom}[0]{\mathit{dom}}
+\newcommand{\invtref}[0]{\mathit{itref}} 
+\newcommand{\true}{\mathsf{true}}
+\newcommand{\false}{\mathsf{false}}
+\newcommand{\ascOnHeap}[1]{#1}
+\newcommand{\inn}{~\mathsf{in}}
+\newcommand{\opt}[1]{}
+\newcommand{\Loc}{\oblset{Loc}}
+\newcommand{\loc}{{l}}
+\newcommand{\lxlabel}{\mathsf{label}}
+\newcommand{\clxlabel}{\consistent{label}}
+%\newcommand{\lgsecref}{$\lambda^{{\text{REF}}}_{\consistent{\text{SEC}}}$\xspace}
+\newcommand{\lgsecref}{GSL$_{\textsf{Ref}}$\xspace}
+\newcommand{\siml}{~\approx~}
+\newcommand{\invref}{\mathit{iref}}
+\newcommand{\invlabel}{\mathit{ilbl}}
+\newcommand{\invlat}{\mathit{ilat}}
+
+\newcommand{\lambdaAn}[1]{\lambda^{{#1}}}
+%\newcommand{\lambdaAn}[1]{\lambda^}
+\newcommand{\lxc}[1][]{{\color{clxccolor} \lx_{c#1}}}
+\newcommand{\lxcp}[1][]{{\color{clxccolor} \lx'_{c#1}}}
+\newcommand{\lxcpp}[1][]{{\color{clxccolor} \lx''_{c#1}}}
+\newcommand{\lxcppp}[1][]{{\color{clxccolor} \lx'''_{c#1}}}
+
+\newcommand{\lxr}[1][]{{\color{dynamic} \lx_{r#1}}}
+\newcommand{\clxc}[1][]{{\color{clxccolor} \tilde{\lx}_{c#1}}}
+\newcommand{\clxcp}[1][]{{\color{clxccolor} \tilde{\lx}'_{c#1}}}
+\newcommand{\clxcpp}[1][]{{\color{clxccolor} \tilde{\lx}''_{c#1}}}
+\newcommand{\clxcppp}[1][]{{\color{clxccolor} \tilde{\lx}'''_{c#1}}}
+
+
+
+
+\newcommand{\clxr}[1][]{{\color{dynamic} \tilde{\lx}_{r#1}}}
+\newcommand{\clxrp}[1][]{{\color{dynamic} \tilde{\lx}'_{r#1}}}
+
+\newcommand{\cllxc}{\collecting{\lxc}}
+%\newcommand{\lsecref}{$\lambda_\text{SEC}^{\text{REF}}$\xspace}
+\newcommand{\lsecref}{SSL$_{\textsf{Ref}}$\xspace}
+\newcommand{\conf}[3]{#1 ~\new{| #2}}
+\DeclareDocumentCommand{\iconf}{ m m O{\clxc} }{#2 \triangleright^{\hspace*{-0.5em}{}^{#3}}\hspace*{-0.4em} #1}
+\DeclareDocumentCommand{\iconfnaive}{ m m O{\clxc} }{#2 \triangleright #1}
+
+
+
+% \newcommand{\iconflg}[2]{\exists \clxc, \clxc |- #1}
+\newcommand{\iconflg}[2]{\iconf{#1}{\evr\clxr[i]}[\clxc[i]]}
+
+\DeclareDocumentCommand{\iconfr}{ m m m O{\clxc} }{\iconf{#2}{#1}[{#4}] ~{| #3}}
+\DeclareDocumentCommand{\iconfre}{ m m m O{\clxc} }{#2~{| #3}}
+
+\newcommand{\iconfrlg}[3]{\iconflg{#2}{#1} ~{| #3}}
+
+\newcommand{\projL}[0]{\mathcal{L}}
+\newcommand{\projLl}[1]{\mathcal{L}_{#1}}
+\newcommand{\pH}[0]{\mathfrak{H}}
+\newcommand{\wng}[1]{{\color{red}#1}}
+\newcommand{\rval}{\mathit{rval}}
+\newcommand{\prot}[2]{\mathsf{prot}_{#1}#2}
+
+\DeclareDocumentCommand{\cprot}{ O{\evl\clx'} m m m O{\clxcp} O{\evrp}}{\mathsf{prot}^{{\color{staticcolor} #5,#2,#3}}_{#6,#1} #4}
+\DeclareDocumentCommand{\cprots}{ O{\evl\clx'} m O{\evrp}}{\mathsf{prot}^{{\color{staticcolor}}}_{#3,#1} #2}
+%\renewcommand{\mynote}[2]{}
+
+\newcommand{\muwt}[2]{#1 |- #2}
+
+%\newcommand{\logr}[3]{\braket{{\color{dynamic} #1}, #2, #3}}
+\DeclareDocumentCommand{\logr}{ m m m O{\evr} O{\clxc}}{\braket{\iconf{#2}{\cast{#4}{{\color{dynamic} #1}}}[#5], #3}}
+\DeclareDocumentCommand{\logrs}{ m m m O{\evr} O{\clxc}}{\braket{\cast{#4}{{\color{dynamic} #1}}, #5, #2, #3}}
+\DeclareDocumentCommand{\logri}{ m m m m O{\evr} O{\clxc} O{}}{\braket{\iconf{#2_{#4}}{\cast{#5[#4]}{#1[#4]}}[#6[#4]], #3[#4]}}
+\DeclareDocumentCommand{\logris}{ m m m m O{\evr} O{\clxc} O{}}{\braket{\cast{#5[#4]}{#1[#4]},#6[#4],#2_{#4}, #3[#4]}}
+%\newcommand{\logr}[3]{\braket{\iconf{#1}{#2}, #3}}
+\newcommand{\mulogr}[2]{\braket{{\color{dynamic} #1}, #2}}
+
+\newcommand{\LTermT}[1]{\oblset{LTerm}_{#1}}
+\newcommand{\lgrpc}[1][]{\clxr[#1]}
+
+\newcommand{\uval}{\mathit{uval}}
+
+\newcommand{\irred}{\mathit{irred}}
+
+%ICFP2016-Refs%
+\newcommand{\soplus}{\mathbin{\llbracket \oplus \rrbracket}}
+\newcommand{\ncsubl}{\mathbin{\not \hspace{-2mm}\csubl}}
+\newcommand{\nsubl}{\mathbin{\not\subl}}
+\newcommand{\RawValue}{\oblset{RawValue}}
+\mathlig{++}{\mathbin{++}}
+
+\newcommand{\lref}{$\lambda^{\text{REF}}$\xspace}
+
+\newcommand{\glref}{$\consistent{\lambda^{\text{REF}}}$\xspace}
+
+\newmdenv[topline=false,bottomline=false,leftline=false]{borderright}
+
+\newcommand{\permreff}[1]{\mathsf{ref^{*}}~{#1}}
+\newcommand{\permRef}[1]{\mathsf{Ref^{*}}~{#1}}
+
+\newcommand{\observable}[0]{\mathsf{obs}_{\lobs}}
+
+\newcommand{\el}[1][]{{\color{dynamic} \mathit{e\lx}_{#1}}}
+\newcommand{\StoreT}{{\Sigma}}
+
+
+\DeclareDocumentCommand{\store}{ O{} }{ {\IfNoValueTF{#1}{\new{\mu}}{\new{\mu_{#1}}}}}
+\DeclareDocumentCommand{\storep}{ O{} }{ {\IfNoValueTF{#1}{\new{\mu'}}{\new{\mu'_{#1}}}}}
+\DeclareDocumentCommand{\storepp}{ O{} }{ {\IfNoValueTF{#1}{\new{\mu''}}{\new{\mu''_{#1}}}}}
+\DeclareDocumentCommand{\storeppp}{ O{} }{ {\IfNoValueTF{#1}{\new{\mu'''}}{\new{\mu'''_{#1}}}}}
+
+\newcommand{\finterval}[0]{\mathsf{Interval}}
+
+\newcommand{\confs}[3]{#1 | #2}
+
+
+
+\newcommand{\lnreds}[1][\lxr]{{\nred}}
+\newcommand{\lreds}[1][\lxr]{~{\red}~}
+\newcommand{\evr}[1][]{{\color{dynamic} \ev_{r#1}}}
+\newcommand{\evrp}[1][]{{\color{dynamic} \ev'_{r#1}}}
+\newcommand{\evrpp}[1][]{{\color{dynamic} \ev''_{r#1}}}
+
+\newcommand{\joinfun}{\ljoin}
+\newcommand{\joinfunE}{\ljoin_E}
+\newcommand{\meetfun}{\lmeet}
+\newcommand{\meetfunE}{\lmeet_E}
+\newcommand{\cjoinfun}{\widetilde{\ljoin}}
+
+\DeclareDocumentCommand{\setofjoins}{ m O{\joinfun} }{#2\overline{#1}}
+\DeclareDocumentCommand{\setofjoinsE}{ m O{\joinfunE} }{#2\overline{#1}}
+\DeclareDocumentCommand{\setofmeets}{ m O{\meetfun} }{#2\overline{#1}}
+\DeclareDocumentCommand{\setofmeetsE}{ m O{\meetfunE} }{#2\overline{#1}}
+
+\DeclareDocumentCommand{\setofcjoins}{m O{\cjoinfun}}{\setofjoins{#1}[#2]}
+
+\DeclareDocumentCommand{\funkyset}{ O{\lx} O{\star} }{\setj{#1 \IfNoValueOrEmptyTF{#2}{}{, #2}}}
+\DeclareDocumentCommand{\funkysetm}{ O{\lx} O{\star} }{\setm{#1 \IfNoValueOrEmptyTF{#2}{}{, #2}}}
+%\DeclareDocumentCommand{\funkyset}{ O{\lx} O{*} }{\def\@tempa{#2} \set{#1 \ifx\@tempa\@empty\relax empty\else {, #2}\fi }}
+\DeclareDocumentCommand{\funkysetu}{ }{ \funkyset[\ul][] }
+\DeclareDocumentCommand{\funkysetum}{ }{ \funkysetm[\ul][] }
+
+
+\newcommand{\eagerjoin}{\aries}
+\newcommand{\eagermeet}{\mathrel{\reflectbox{\rotatebox[origin=c]{180}{$\eagerjoin$}}}}
+
+\newcommand{\PC}{PC\xspace}
+\newcommand{\meetjoin}{\meet^{\tiny\ljoin}}
+\newcommand{\meetmeet}{\meet^{\tiny\lmeet}}
+
+\DeclareDocumentCommand{\mergejoin}{ O{\subl} }{{\merge{#1}_{\tiny\ljoin}}}
+\DeclareDocumentCommand{\mergemeet}{ O{\subl} }{\merge{#1}_{\tiny\lmeet}}
+
+\DeclareDocumentCommand{\transjoin}{ O{\subl} }{{\trans{#1}_{\tiny\ljoin}}}
+\DeclareDocumentCommand{\transmeet}{ O{\subl} }{{\trans{#1}_{\tiny\lmeet}}}
+\newcommand{\evolution}{\rightarrowtriangle}
+\newcommand{\labelset}{labelset\xspace}
+\newcommand{\labelsets}{labelsets\xspace}
+
+
+\newcommand{\setj}[1]{\set{#1}^{\tiny\ljoin}}
+\newcommand{\setm}[1]{\set{#1}^{\tiny\lmeet}}
+\newcommand{\sets}[1]{\set{#1}^{\tiny\star}}
+
+\newcommand{\setofj}[1]{\setj{\overline{#1}}}
+\newcommand{\setofm}[1]{\setm{\overline{#1}}}
+\newcommand{\setofs}[1]{\sets{\overline{#1}}}
+
+
+\newcommand{\thie}{FT\xspace}
+\newcommand{\zdan}{ZD\xspace}
+
+\newcommand{\clt}{t}
+
+\newcommand{\clsLm}{{\collecting{\lx}^{\tiny\lmeet}}}
+\newcommand{\clsLj}{{\collecting{\lx}^{\tiny\ljoin}}}
+
+\newcommand{\latlx}[1][]{\lxc[#1]}
+\newcommand{\latlxp}[1][]{\lxcp[#1]}
+\newcommand{\latlxpp}[1][]{\lxcpp[#1]}
+\newcommand{\latlxppp}[1][]{\lxcppp[#1]}
+
+\newcommand{\clatlx}[1][]{\clxc[#1]}
+\newcommand{\clatlxp}[1][]{\clxcp[#1]}
+\newcommand{\clatlxpp}[1][]{\clxcpp[#1]}
+\newcommand{\clatlxppp}[1][]{\clxcppp[#1]}
+\newcommand{\unitifyd}{\mathit{uf}}
+\newcommand{\refifyd}{\mathit{rf}}
+
+\newcommand{\unitify}[1]{\unitifyd(#1)}
+\newcommand{\refify}[1]{\refifyd(#1)}
+\newcommand{\typetoevtype}{\Uparrow^{\cE}_{\cS}}
+\newcommand{\emptyenv}{.}
+
+
+
+\newcommand{\subljoin}{\mathbin{\begin{turn}{90}$\hspace{-0.2em}\subl$\end{turn}}}
+\newcommand{\csubljoin}{\mathbin{\begin{turn}{90}$\hspace{-0.2em}\csubl$\end{turn}}}
+
+\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
+
+% \newcommand{\pra}[3]{{}^{{#2}}{\braket{{#1}}{}^{\hspace{-0.2em}#3}}}
+\newcommand{\pra}[3]{\braket{#1}^{#2}_{#3}}
+\newcommand{\cPa}[2]{\cP^{\tiny#1,#2}}
+
+\newcommand{\joina}[2]{{\Prefix^{{#1}}{\subljoin^{{#2}}}}}
+\newcommand{\cjoina}[2]{{\widetilde{\Prefix^{{#1}}{\subljoin^{{#2}}}}}}
+
+\newcommand{\subjoina}[2]{{\Prefix^{{#1}}{\subjoin{}^{{#2}}}}}
+\newcommand{\csubjoina}[2]{{\widetilde{\Prefix^{{#1}}{\subjoin{}^{{#2}}}}}}
+
+% \newcommand{\subargs}[3]{{}^{{#2}}\overline{{#1}}{}^{{#3}}}
+\newcommand{\subargs}[3]{\overline{#1}_{[{#2}/{#3}]}}
+
+\newcommand{\relabel}{\mathit{relabel}}
+
+
+\newcommand{\alphalj}[2]{\alpha'_{\lx}}
+\newcommand{\alphalaj}{\alpha_{\evl}}
+\newcommand{\alphalam}[2]{\alpha^{#1}_{#2}}
+\newcommand{\alphalje}[2]{\alpha'^{#1,#2}_{\lx}}
+\newcommand{\alphasj}[2]{\alpha'^{#1,#2}_{S}}
+\newcommand{\alphasje}[2]{\alpha'^{#1,#2}_{S'}}
+\newcommand{\alphasaj}{\alpha_{\ev}}
+\newcommand{\alphasam}{\alpha_{\ev}}
+
+
+\newcommand{\gammalj}[2]{\gamma'_{\lx}}
+\newcommand{\gammalaj}{\gamma_{\evl}}
+\newcommand{\gammalje}[2]{\gamma'^{#1,#2}_{\lx'}}
+\newcommand{\gammasj}[2]{\gamma'^{#1,#2}_{S}}
+\newcommand{\gammasje}[2]{\gamma'^{#1,#2}_{S'}}
+\newcommand{\gammasaj}{\gamma_{\ev}}
+\newcommand{\gammasam}{\gamma_{\ev}}
+
+
+
+\newcommand{\setofaj}[5]{\set{\overline{\prap{#1}{#2}{#3}{#4}{#5}}}}
+\newcommand{\setofam}[5]{\set{\overline{\prap{#1}{#2}{#3}{#4}{#5}}}}
+\newcommand{\setofas}[5]{\set{\overline{\prap{#1}{#2}{#3}{#4}{#5}}}}
+
+\newcommand{\setofop}[2]{{#2(\overline{#1})}}
+
+\newcommand{\op}{o}
+\newcommand{\opl}[1][]{o_{\lx #1}}
+\newcommand{\ops}[1][]{o_{S #1}}
+\newcommand{\Operation}{\oblset{Operation}}
+
+\newcommand{\invjoin}{\ljoin^{-1}}
+\newcommand{\invmeet}{\lmeet^{-1}}
+\newcommand{\invsubjoin}{\subjoin^{-1}}
+\newcommand{\invsubmeet}{\submeet^{-1}}
+
+\newcommand{\eager}{\aries}
+\newcommand{\eagerp}{\aries}
+
+\newcommand{\concat}{c}
+
+
+\newcommand{\prap}[5]{\braket{#1}^{#4#2}_{#5#3}}
+\newcommand{\prp}[2]{\braket{#1}^{#2}}
+\DeclareDocumentCommand{\interiorfp}{ m O{\opl[1]} O{\opl[2]}}{\mathcal{I}^{#2,#3}_{#1}}
+
+\newcommand{\opstol}{\downarrow}
+
+\newcommand{\alphaevl}{\alpha_{\evl}}
+\newcommand{\gammaevl}{\gamma_{\evl}}
+\newcommand{\alphaev}{\alpha_{\ev}}
+\newcommand{\gammaev}{\gamma_{\ev}}
+\newcommand{\alphaiv}{\alpha_{\iv}}
+\newcommand{\gammaiv}{\gamma_{\iv}}
+
+\newcommand{\alphaE}{\alpha_{\cE}}
+\newcommand{\gammaE}{\gamma_{\cE}}
+
+\newcommand{\iv}{\imath}
+
+\newcommand{\Interval}{\Label^2}
+
+
+\newcommand{\bounds}{\mathit{bounds}}
+
+\newcommand{\trfunb}{\opstol}
+\newcommand{\trfunbi}{\opstol^{\mathit{-1}}}
+\newcommand{\trfunbis}[1]{#1^{-1}}
+\newcommand{\trfunbim}[1]{#1^{\meet}}
+
+
+
+
+

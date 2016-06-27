@@ -45,6 +45,55 @@
     (CI ::= (C I) W)
     (I ::= (→ I I) T *))
 ;--------------------------------------------------------------------------------------------------------------------
+(define-extended-language OLT OL
+    (Γ  ::= ((X T) ...))
+    (A  ::= ((X (T ...)) ...))
+    (T* ::= (T ...)))
+;--------------------------------------------------------------------------------------------------------------------
+(define-judgment-form OLT
+    #:mode (⊢ I I I I O)
+    #:contract (⊢ A Γ M : T*)
+    [(lookup Γ X T)
+     -------------- var_1
+     (⊢ A Γ X : (T))]
+
+    [(lookup A X M)
+     -------------- var_2
+     (⊢ A Γ X : M)]
+  
+    [------------- num
+     (⊢ A Γ N : (num))]
+  
+    [------------- bool
+     (⊢ A Γ B : (bool))]
+  
+    [----------------------- opB1
+     (⊢ A Γ OB1 : (→ bool bool))]
+  
+    [--------------------------- opN1
+     (⊢ A Γ ON1 : (→ num num))]
+  
+    [(⊢ A Γ M_1 : T_1*)
+     (⊢ A Γ M_1 : T_2*)
+     ----------------------- app
+     (⊢ A Γ (M_1 M_2) : T_2*)]
+
+    [(⊢ A Γ M : T*)
+    (side-condition (esta? T* T))
+    ----------------------- asc
+    (⊢ A Γ (M :: T) : T)]
+
+     [(⊢ A Γ M_1 : T_1*)
+     (side-condition (esta? T_1* T_1))
+     (⊢ (ext A (X T_1)) Γ M_2 : T_2*)
+     ----------------------- let
+     (⊢ A Γ (mlet (X T_1) = M_1 in M_2) : T_2*)]
+  
+    [(unique X)
+     (⊢ A (extT Γ (X T)) M : T*)
+     ------------------------------------------ λ
+     (⊢ A Γ (λ (X T) M) : (→ T T*))])
+;--------------------------------------------------------------------------------------------------------------------
 (define value? (redex-match OLρI  W))
 
 (define (is-value? t)
@@ -117,19 +166,6 @@
 (define-metafunction OLρI
     [(typi add1) num]
     [(typi not) bool])
-
-#|(define/public (reduce-one-step-with-p CI) 
-        (define res (apply-reduction-relation vρ (term CI)))
-        (match res
-          [(list (C I)) C]
-          [(list CI) CI]))
-
-(define -->vρ
-    (context-closure vρ OLρ E))
-
-(define-metafunction OLρ
-    injρ : M -> C
-    [(injρ M) (M ())])|#
 ;--------------------------------------------------------------------------------------------------------------------
 (define-judgment-form OL
     #:mode (δN I O)
@@ -140,8 +176,6 @@
     #:mode (δB I O)
     #:contract (δB (O B ...) B)
     [(δB (not B) ,(not (term B)))])
-;--------------------------------------------------------------------------------------------------------------------
-(define-language REDEX)
 
 (define-metafunction OLρI
   [(consistentType? T T) #t]
@@ -149,12 +183,27 @@
   [(consistentType? (→ T_1 T_2) (→ I_1 I_2)) ,(and (term (consistentType? T_1 I_1)) (term (consistentType? T_2 I_2)))]
   [(consistentType? T I) #f])
 
+(define-metafunction OLT
+  [(esta? (_ ... T _ ...) T) #t]
+  [(esta? T* T) #f])
+;--------------------------------------------------------------------------------------------------------------------
+(define-language REDEX)
+
+(define-relation REDEX
+    unique ⊆ any × ...
+    [(unique any_!_1 ...)])
+
+(define-judgment-form REDEX
+    #:mode (lookup I I O)
+    #:contract (lookup ((any any) ...) any any)
+    [(lookup (_ ... (any any_0) _ ...) any any_0)])
+
 (define-judgment-form REDEX
     #:mode (lookup2 I I I O)
     #:contract (lookup2 ((any any) ...) any any any)
     [(side-condition (consistentType? any_i any_ip))
      -----------------------------------------
-     (lookup2(_ ... (any (_ ... (any_i any_v) _ ...)) _ ...) any any_ip any_v)])
+     (lookup2(_ ... (any_x (_ ... (any_i any_v) _ ...)) _ ...) any_x any_ip any_v)])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-metafunction REDEX
     ext1 : ((any (any ...)) ...) (any any) -> ((any (any ...)) ...)
@@ -168,18 +217,21 @@
     [(ext any) any]
     [(ext any any_0 any_1 ...)
      (ext1 (ext any any_1 ...) any_0)])
+
+ (define-metafunction REDEX
+    extT1 : ((any any) ...) (any any) -> ((any any) ...)
+    [(extT1 (any_0 ... (any_k any_v0) any_1 ...) (any_k any_v1))
+     (any_0 ... (any_k any_v1) any_1 ...)]
+    [(extT1 (any_0 ...) (any_k any_v1))
+     ((any_k any_v1) any_0 ...)])
+
+ (define-metafunction REDEX
+    extT : ((any any) ...) (any any) ... -> ((any any) ...)
+    [(extT any) any]
+    [(extT any any_0 any_1 ...)
+     (extT1 (exTt any any_1 ...) any_0)])
 ;--------------------------------------------------------------------------------------------------------------------
-#|(define-judgment-form REDEX
-    #:mode (lookup I I O)
-    #:contract (lookup ((any any) ...) any any)
-    [(lookup (_ ... (any any_0) _ ...) any any_0)])
-
-
-
-(define-judgment-form REDEX
-    #:mode (choose I O)
-    #:contract (choose (any ...) any)
-    [(choose (_ ... any_v _ ...) any_v)])
+#|
 
 (define-metafunction REDEX
     lookup1 : ((any any) ...) any -> any
@@ -193,17 +245,15 @@
     [(unique any_!_1 ...) #t]
     [(unique _ ...) #f])|#
 
-(define-relation REDEX
-    unique ⊆ any × ...
-    [(unique any_!_1 ...)])
 
-(traces -->vρ (term (injρ(mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
+
+(traces vρ (term (((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
 (mlet (z (→ bool (→ bool bool))) = (λ (a_1 bool) (λ (a_2 bool) (not #t)))  in 
 (mlet (y bool) = #t in 
 (mlet (y num) = 1 in 
 (mlet (x (→ bool bool)) = (λ (a_3 bool) (not #t)) in 
 (mlet (x (→ char char)) = (λ (a_4 char) (add1 1)) in 
 (mlet (t char) = 2 in 
-(mlet (t bool) = #f in ((z y)(x t)))))))))))))
+(mlet (t bool) = #f in ((z y)(x t)))))))))) () ) bool)))
 
 |#
