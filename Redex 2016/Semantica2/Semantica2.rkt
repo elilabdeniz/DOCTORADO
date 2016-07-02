@@ -94,6 +94,7 @@
      [(⊢ A Γ M_1 : T*_1)
      (side-condition (esta? T*_1 T_1))
      (side-condition (definido? A))
+     (side-condition (noisin? X (sacar Γ)))
      (⊢ (ext A (X T_1)) Γ M_2 : T*_2)
      --------------------------------------- let
      (⊢ A Γ (mlet (X T_1) = M_1 in M_2) : T*_2)]
@@ -101,6 +102,8 @@
     [(unique X)
      (side-condition (definido? Γ))
      (⊢ A (extT Γ (X T)) M : T*)
+     (side-condition (noisin? X (sacar Γ)))
+     (side-condition (noisin? X (sacar A)))
      (side-condition (novacio? T*))
      ------------------------------------------ λ
      (⊢ A Γ (λ (X T) M) : (distribuir T T*))])
@@ -119,7 +122,8 @@
      (--> (((mlet (X T) = M_1 in M_2) ρ) I) ((mlet (X T) = (M_1 ρ) in (M_2 ρ)) I) ρ-let)
      (--> ((X ρ) I) W
           (judgment-holds (lookup2 ρ X I W))
-          ρ-x)
+          ρ-x
+          (side-condition(term (construirEnvCond ρ))))
      ;-------------------------------------
      (--> ((((λ (X T) M) ρ) W) I)
           (((subst (X W) M ) ρ) I)
@@ -235,7 +239,8 @@
     ----------------------- c-asc
     (types Γ (C :: T) : (T))]
 
-    [(types Γ (mlet (X T_1) = (M_1 ρ) in (M_2 ρ)) : T*)
+    [(side-condition (noisin? X (sacar Γ)))
+     (types Γ (mlet (X T_1) = (M_1 ρ) in (M_2 ρ)) : T*)
     ----------------------------------------------------- let
     (types Γ ((mlet (X T_1) = M_1 in M_2) ρ) : T*)]
 
@@ -251,6 +256,8 @@
      (side-condition (construirEnvCond ρ))
      (side-condition (definido? Γ))
      (⊢ (construirEnv ρ) (extT Γ (X T)) M : T*)
+     (side-condition (noisin? X (sacar Γ)))
+     (side-condition (noisin? X (sacar (construirEnv ρ))))
      (side-condition (novacio? T*))
      ------------------------------------------ λ
      (types Γ ((λ (X T) M) ρ) : (distribuir T T*))])
@@ -316,12 +323,12 @@
 
 (define-metafunction OLρT
   [(construirEnvCond ((X ((T W) ...)) any_0 ...)) ,(and (term (construirEnvAuxCond ((T W) ...)))
-                                                      (term (construirEnvCond (any_0 ...))))]
+                                                      (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
   [(construirEnvCond ()) #t])
 
 (define-metafunction OLρT
   [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (judgment-holds (types () W : (_ ... T _ ...))) 
-                                                      (term (construirEnvAuxCond (any_0 ...))))]
+                                                      (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
   [(construirEnvAuxCond ()) #t])
 
 (define-metafunction OLρT
