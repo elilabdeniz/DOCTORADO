@@ -151,7 +151,7 @@
           let_1
           (side-condition (not (is-value? (term C_1))))
           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C_1 T)))))))
-      (--> ((C :: T) T)
+      (--> ((C :: T) I)
            (((configuration ,(apply-reduction-relation vρ (term (C T)))) :: T) T)
            asc_1
            (side-condition (not (is-value? (term C))))
