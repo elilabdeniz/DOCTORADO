@@ -1,0 +1,99 @@
+\documentclass{article}
+
+%%%% Packages
+\usepackage{hyperref} %package for generating bookmarks
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%used for figure, for stopping auto float
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stackengine}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\graphicspath{ {img/} }
+
+%Multiline comment
+\usepackage{verbatim}
+%for logic proofs
+\usepackage{proof}
+\usepackage{pdflscape}
+% Package that contains captionof
+\usepackage{caption}
+% Package for code listings
+\usepackage{listings}
+\lstset{language=ML} 
+
+%\usepackage{color}
+\usepackage[usenames, dvipsnames]{color}
+%\setcounter{secnumdepth}{6}
+\usepackage{authblk}
+
+\title{\bf Overloading}
+\author{Elizabeth Labrada Deniz
+\thanks{Funded by grant CONICYT, CONICYT-PCHA/Doctorado Nacional/2015-63140148}}
+\affil{Computer Science Department (DCC), University of Chile, Chile}
+\date{}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\begin{document}
+	\maketitle
+	\renewcommand{\abstractname}{Abstract}	
+	\begin{abstract}
+	\end{abstract}	
+\section{Introduction}
+
+In this research we are interested in the study of overloading. This feature of the programming languages, is a kind of polyphormism included in a lot of language like: Scala, C++, Java, Haskell, and many others. The classification of the different types of polyphormism presented by Cardelli and Wegner~\cite{CardelliWegner}, is relevant to understand overloading and their differences with another kind of polyphormism(Figure~\ref{figure:varpolyphormism}).
+
+On the one hand, universally polymorphic functions typically work on an infinite number of types, where the types share a common structure. Parametric polymorphism occurs when a function defined over a range of types has a single implemetation, acting in the same way for each type~\cite{CardelliWegner, scott, wadlerBlott:popl89}. The identity function is one of the simplest examples of parametric polymorphic function, where for any type, the behavior is the same. Inclusion polymorphism is used to model subtypes and inheritance, of the object-oriented paradigm.
+
+On the other hand, ad-hoc polymorphism~\cite{CardelliWegner, wadlerBlott:popl89}, is obtained when a function is defined over several different types and may behave in unrelated ways for each type.  Overloading and coercion polymorphism are classified as the two major subcategories of ad-hoc polymorphism, according to Figure~\ref{figure:varpolyphormism}. In general, we are in present of overloading when the same variable name is used to denote different functions, then the context is essential to decide which function is selected by a particular instance of the name. An example of the overloading function is $+$, since it is applicable to both integer and real arguments. Additionally, a coercion~\cite{CardelliWegner} is a semantic operation which is needed to convert an argument to the type expected by a function, in a situation which would otherwise result in a type error. The function $+$ is also an example of coercion, if it is defined only for real addition, and integer arguments are always coerced to corresponding reals.\\
+
+\begin{comment}
+We may imagine that a preprocessing of the program will eliminate overloading by giving different names to the different functions; in this sense overloading is just a convenient syntactic abbreviation.
+ Overloading is not true polymorphism: instead of a value having many types, we allow a symbol to have many types, but the values denoted by that symbol have distinct and possibly incompatible types. Similarly, coercions do not achieve true polymorphism: an operator may appear to accept values of many types, but the values must be converted to some representation before the operator can use them; hence that operator really works on (has) only one type. Moreover, the output type is no longer dependent on the input type, as is the case in parametric polymorphism.
+\end{comment}
+
+Commonly, overloading is integrated in a programming language with another kind of polymorphism. For instance, a type class in Haskell~\cite{Nipkow:1993:TCT:158511.158698, Odersky:1995:SLO:224164.224195, Ribeiro2013, wadlerBlott:popl89} is a sort of interface that defines some behavior and it includes overloading and parametric polymorphism. As well, another languages like Java~\cite{BETTINI2009261}, C++, C\# and others, implement overloading with inclusion and parametric polymorphism, with inheritance and generic. In this paper, we have the goal of designing a calculus for overloading without another types of polymorphism, with the aim of studying this mechanism alone.
+
+We want to develop a calculus for overloading with the purpose of, in future researchs, to understand its meaning in the gradual types world. The literature reviewed shows that, mostly, given a program, overloading is eliminated  by giving different names to the different functions or overloaded variables are tagged~\cite{BETTINI2009261, CardelliWegner, scott, OOSOFHl, Nipkow:1993:TCT:158511.158698, Odersky:1995:SLO:224164.224195,Ribeiro2013,wadlerBlott:popl89}.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+\begin{figure}
+\begin{center}
+\[ Polyphormism = 
+\begin{cases} 
+     universal & 
+     \begin{cases} 
+     	parametric &\\
+     	inclusion &
+   	\end{cases} \\
+		 & \\
+     ad \ hoc & 
+     \begin{cases} 
+     	overloading & \\
+     	coercion &
+   	\end{cases}
+ \end{cases}
+\]
+\caption{Varieties of polyphormism.}
+\label{figure:varpolyphormism}
+\end{center}
+\end{figure}
+
+
+
+\section{Concepts}\label{section:concepts}
+\subsection{Explicit substitution}
+\subsection{Local Type Inference}
+\subsection{Polymorphism}
+\section{Ad-hoc Polymorphism}\label{section:polymorphism}
+\subsection{Type classes}
+\subsection{Featherweight Java with dynamic and static overloading}
+
+%Bibliography
+\medskip 
+\bibliographystyle{abbrv}
+\bibliography{gsta,pleiad,gp,bib,common}
+\end{document}

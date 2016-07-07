@@ -110,69 +110,115 @@
 ;--------------------------------------------------------------------------------------------------------------------
 (define vρ
     (reduction-relation
-     OLρI #:domain CI
-     (--> ((B ρ) I) B ρ-bool)
-     (--> ((N ρ) I) N ρ-num)
-     (--> ((CH ρ) I) CH ρ-str)
-     (--> ((O ρ) I) O ρ-op)
-     (--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
+     OLρT #:domain C
+     (--> (B ρ) B ρ-bool)
+     (--> (N ρ) N ρ-num)
+     (--> (CH ρ) CH ρ-str)
+     (--> (O ρ) O ρ-op)
+     ;(--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
      ;-------------------------------------
-     (--> (((M_1 M_2) ρ) I) (((M_1 ρ) (M_2 ρ)) I) ρ-app)
-     (--> (((M :: T) ρ) I) (((M ρ) :: T) I) ρ-asc)
-     (--> (((mlet (X T) = M_1 in M_2) ρ) I) ((mlet (X T) = (M_1 ρ) in (M_2 ρ)) I) ρ-let)
-     (--> ((X ρ) I) W
-          (judgment-holds (lookup2 ρ X I W))
+     (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
+     (--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     (--> ((mlet (X T) = M_1 in M_2) ρ) (mlet (X T) = (M_1 ρ) in (M_2 ρ)) ρ-let)
+     (--> (X ρ) W
+          (judgment-holds (lookup2 ρ X W))
           ρ-x
           (side-condition(term (construirEnvCond ρ))))
      ;-------------------------------------
-     (--> ((((λ (X T) M) ρ) W) I)
-          (((subst (X W) M ) ρ) I)
+     (--> (((λ (X T) M) ρ) W) 
+          ((subst (X W) M ) ρ)
           app)
      
-     (--> ((OB W ...) I) W_1
+     (--> ((X_1 ρ_1) (X_2 ρ_2)) 
+          (W_1 W_2)
+          (judgment-holds (lookup3 ρ_1 X_1 W_1 T_1))
+          (judgment-holds (lookup4 ρ_2 X_2 T_1 W_2))
+          app11)
+     
+     (--> (((λ (X T) M) ρ) (X_2 ρ_2)) 
+          (((λ (X T) M) ρ) W_2)
+          (judgment-holds (lookup4 ρ_2 X_2 T W_2))
+          app12)
+     
+     (--> ((X_1 ρ_1) W_2) 
+          (W_1 W_2)
+          (judgment-holds (lookup2 ρ_1 X_1 W_1))
+          app13)
+     
+     (--> (OB W ...) W_1
           (judgment-holds (δB (OB W ...) W_1))
           δB)
      
-     (--> ((ON W ...) I) W_1
+     (--> (ON W ...) W_1
           (judgment-holds (δN (ON W ...) W_1))
           δN)
+
+     (--> (OB (X_2 ρ_2)) W_2
+          (judgment-holds (lookup4 ρ_2 X_2 bool W_1))
+          (judgment-holds (δB (OB  W_1) W_2))          
+          δB1)
      
-     (--> ((W :: T) I) W asc)
+     (--> (ON (X_2 ρ_2)) W_2
+          (judgment-holds (lookup4 ρ_2 X_2 num W_1))
+          (judgment-holds (δN (ON W_1) W_2))
+          δN1)
      
-     (--> ((mlet (X T) = W in (M  ρ)) I)
-          ((M (ext ρ (X (T W)))) I)
+     
+     (--> (W :: T) W asc)
+     
+     (--> (mlet (X T) = W in (M  ρ))
+          (M (ext ρ (X (T W))))
           let
-          ;(side-condition (definido? ρ))
+          ;(side-condition (definido? ρ))  
           ;(side-condition (not (is-value? (term M))))
           )
      ;-------------------------------------
-     (--> ((mlet (X T) = C_1 in C_2) I)
-          ((mlet (X T) =  (configuration ,(apply-reduction-relation vρ (term (C_1 T)))) in C_2) I)
+     (--> (mlet (X T) = C_1 in C_2)
+          (mlet (X T) =  C_3 in C_2)
+          (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_1)) C_3))
           let_1
           (side-condition (not (is-value? (term C_1))))
-          (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C_1 T)))))))
-      (--> ((C :: T) I)
-           (((configuration ,(apply-reduction-relation vρ (term (C T)))) :: T) T)
+          (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1))))))
+
+     (--> (C :: T)
+           (C_3 :: T)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C)) C_3))
            asc_1
            (side-condition (not (is-value? (term C))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C T)))))))
-      (--> ((C_1 C_2) I)
-           (((configuration ,(apply-reduction-relation vρ (term (C_1 (→ * I))))) C_2) I)
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C ))))))
+
+      (--> (C_1 C_2)
+           (C_3 C_2)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_1)) C_3))
            app_1
            (side-condition (not (is-value? (term C_1))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C_1 (→ * I))))))))
+           (side-condition (not (is-variable? (term (primero  C_1)))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1 ))))))
       
-      (--> ((((λ (X T) M) ρ) C_2) I)
-           ((((λ (X T) M) ρ) (configuration ,(apply-reduction-relation vρ (term (C_2 T))))) I)
+      (--> (((λ (X T) M) ρ) C_2)
+           (((λ (X T) M) ρ) C_3)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
            app_2
            (side-condition (not (is-value? (term C_2))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C_2 T)))))))
+           (side-condition (not (is-variable? (term (primero C_2)))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
 
-      (--> ((O C_2) I)
-           ((O (configuration ,(apply-reduction-relation vρ (term (C_2 (typi O)))))) I)
+      (--> (X C_2)
+           (X  C_3)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
+           app_3
+           (side-condition (not (is-value? (term C_2))))
+           (side-condition (not (is-variable?  (term (primero C_2)))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
+
+      (--> (O C_2)
+           (O C_3)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
            app_2O
            (side-condition (not (is-value? (term C_2))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term (C_2 (typi O))))))))
+           (side-condition (not (is-variable? (term (primero  C_2)))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 )))))
+           )
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
@@ -265,18 +311,22 @@
 (define value? (redex-match OLρI  W))
 
 (define (is-value? t)
-        (redex-match? OLρI  W t))
+        (redex-match? OLρT  W t))
+
+(define (is-variable? t)
+        (redex-match? OLρT  X t))
+
 ;--------------------------------------------------------------------------------------------------------------------
 (define-metafunction OLρI
   [(tipoConf (C I)) I]
   [(tipoConf any) any])
 
-(define-metafunction OLρI
+(define-metafunction OLρT
   [(configuration ((C I))) C]
   [(configuration (any)) any])
 
 (define-metafunction OLρI
-  [(configuration1 (C I)) C]
+  [(configuration1 (C ρ)) C]
   [(configuration1 any) any])
 
 (define-metafunction OLρI
@@ -369,11 +419,26 @@
     [(lookup (_ ... (any any_0) _ ...) any any_0)])
 
 (define-judgment-form REDEX
-    #:mode (lookup2 I I I O)
-    #:contract (lookup2 ((any any) ...) any any any)
-    [(side-condition (consistentType? any_i any_ip))
-     -----------------------------------------
-     (lookup2(_ ... (any_x (_ ... (any_i any_v) _ ...)) _ ...) any_x any_ip any_v)])
+    #:mode (escoger I O)
+    #:contract (escoger (any ...) any)
+    [(escoger (_ ... any_0 _ ...) any_0)])
+
+
+(define-judgment-form REDEX
+    #:mode (lookup2 I I O)
+    #:contract (lookup2 ((any any) ...) any any)
+    [(lookup2(_ ... (any (_ ... (any_t any_v) _ ...)) _ ...) any any_v)])
+
+(define-judgment-form REDEX
+    #:mode (lookup3 I I O O)
+    #:contract (lookup3 ((any any) ...) any any any)
+    [(lookup3(_ ... (any (_ ... ((→ any_t1 any_t2) any_v) _ ...)) _ ...) any any_v any_t1)])
+
+(define-judgment-form REDEX
+    #:mode (lookup4 I I I O)
+    #:contract (lookup4 ((any any) ...) any any any)
+    [
+     (lookup4(_ ... (any_x (_ ... (any_i any_v) _ ...)) _ ...) any_x any_i any_v)])
 
 (define-metafunction REDEX
     concat : any (any ...) -> (any ...)
@@ -398,6 +463,10 @@
     ;isin? : any (any ...) -> bool
     [(cantidad ()) 0]
     [(cantidad (any_0 any_1 ...)) ,(+ 1 (term (cantidad (any_1 ...))))])
+
+(define-metafunction REDEX
+  [(primero (any_1 any_2)) any_1]
+  [(primero any) any])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-metafunction REDEX
     ext1 : ((any (any ...)) ...) (any any) -> ((any (any ...)) ...)
@@ -469,14 +538,14 @@
       #t))
 
 
-(traces vρ (term (((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
+(apply-reduction-relation* vρ (term ((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
 (mlet (z (→ bool (→ bool bool))) = (λ (a_1 bool) (λ (a_2 bool) (not #t)))  in 
 (mlet (y bool) = #t in 
 (mlet (y num) = 1 in 
 (mlet (x (→ bool bool)) = (λ (a_3 bool) (not #t)) in 
 (mlet (x (→ str str)) = (λ (a_4 str) (add1 1)) in 
 (mlet (t str) = 2 in 
-(mlet (t bool) = #f in ((z y)(x t)))))))))) () ) bool)))
+(mlet (t bool) = #f in ((z y)(x t)))))))))) () )))
 
 
 
@@ -495,12 +564,17 @@
                                  (mlet (y num) = 5 in (x y)
                                  ))) : T*) T*)
 
-(traces vρ (term (((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
+(traces vρ (term ((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 u_2) :: num))) in 
 (mlet (z (→ bool (→ bool bool))) = (λ (a_1 bool) (λ (a_2 bool) (not a_2)))  in 
 (mlet (y bool) = #t in 
 (mlet (y num) = 1 in 
 (mlet (x (→ bool bool)) = (λ (a_3 bool) (not a_3)) in 
 (mlet (x (→ str str)) = (λ (a_4 str) "abcd") in 
 (mlet (t str) = 2 in 
-(mlet (t bool) = #f in ((z y)(x t)))))))))) () ) bool)))
+(mlet (t bool) = #f in ((z y)(x t)))))))))) () )))
+
+(traces vρ (term ((mlet (x (→ bool bool)) = (λ (a_3 bool) (not a_3)) in 
+(mlet (x (→ str str)) = (λ (a_4 str) "abcd") in 
+(mlet (t bool) = #f in (x #t)))) () )))
+
 |#
