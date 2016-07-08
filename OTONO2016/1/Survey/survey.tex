@@ -50,4 +50,14 @@ Explicar Overloadin, ejemplos, para que sirve. Hablar de overl
 \section{Ad-hoc Polymorphism}\label{section:polymorphism}
 \subsection{Type classes}
 \subsection{Featherweight Java with dynamic and static overloading}
+Featherweight Multi Java (FMJ) is an extension of Featherweight Java (FJ) with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through this.
+the authors point out that semantics of overloading and inheritance is rather ‘‘clean’’ if it is interpreted through a copy semantics of inheritance, whereby all the inherited overloaded methods are intended to be directly copied into the subclass (apart for those explicitly redefined by the subclass itself) 
+
+, and the branch selection is symmetric: during dynamic overloading selection the receiver type of the method invocation has no precedence over the argument types (differently from the encapsulated multimethods of [14] and [13]).
+Symmetry of branch selection is tightly related to copy semantics: if the receiver of a method invocation had the precedence over the parameters, we would search for the best matching branch only in the class of the receiver (or in the first superclass that defines some branch in case the class of the receiver does not define branches), i.e., without inspecting also the superclasses’ branches (which could provide a more specialized version). Thus, copy semantics would not be implemented
+
+%Bibliography
+\medskip 
+\bibliographystyle{abbrv}
+\bibliography{gsta,pleiad,gp,bib,common}
 \end{document}
