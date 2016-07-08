@@ -326,8 +326,13 @@
                                                       (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
   [(construirEnvCond ()) #t])
 
-(define-metafunction OLρT
+#|(define-metafunction OLρT
   [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (judgment-holds (types () W : (_ ... T _ ...))) 
+                                                      (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
+  [(construirEnvAuxCond ()) #t])|#
+
+(define-metafunction OLρT
+  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (term (esta?  ,(first (ObtTypes (term W))) T))
                                                       (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
   [(construirEnvAuxCond ()) #t])
 
@@ -495,12 +500,12 @@
                                  (mlet (y num) = 5 in (x y)
                                  ))) : T*) T*)
 
-(traces vρ (term (((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
+(apply-reduction-relation* vρ (term (((mlet (z (→ num (→ num num))) = (λ (u_1 num) (λ (u_2 num) ((add1 3) :: num))) in 
 (mlet (z (→ bool (→ bool bool))) = (λ (a_1 bool) (λ (a_2 bool) (not a_2)))  in 
 (mlet (y bool) = #t in 
 (mlet (y num) = 1 in 
 (mlet (x (→ bool bool)) = (λ (a_3 bool) (not a_3)) in 
 (mlet (x (→ str str)) = (λ (a_4 str) "abcd") in 
-(mlet (t str) = 2 in 
+(mlet (t str) = "abcd" in 
 (mlet (t bool) = #f in ((z y)(x t)))))))))) () ) bool)))
 |#
