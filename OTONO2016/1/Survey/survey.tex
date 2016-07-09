@@ -11,7 +11,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stackengine}
-
+\usepackage{enumerate} 
 %Multiline comment
 \usepackage{verbatim}
 %for logic proofs
@@ -47,10 +47,28 @@ Explicar Overloadin, ejemplos, para que sirve. Hablar de overl
 \subsection{Explicit substitution}
 \subsection{Local Type Inference}
 \subsection{Polymorphism}
+\subsection{Static Overloading}
+\subsection{Dynamic Overloading}
+\subsection{Polymorphism}
 \section{Ad-hoc Polymorphism}\label{section:polymorphism}
 \subsection{Type classes}
 \subsection{Featherweight Java with dynamic and static overloading}
-Featherweight Multi Java (FMJ) is an extension of Featherweight Java (FJ) with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through this.
+Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through this. For the resolution overloading:
+
+\begin{itemize}
+  \item All the inherited overloaded methods are copied into the subclass.
+  \item The receiver type of the method invocation has no precedence over the argument types, when the  dynamic overloading selection is performed.
+  \item All method invocations are annotated with the type selected during static type checking, in order to choose the best specialized branch during the dynamic overloading method selection. Thus, at run-time it is sound  to select only a specialization of the static type.
+  \item A procedure to select the most appropriate branch at run-time using both the dynamic type of the arguments and the annotated static type guarantees that no ambiguity can dynamically occur in well-typed programs.
+
+\end{itemize} 
+
+
+
+
+
+
+
 the authors point out that semantics of overloading and inheritance is rather ‘‘clean’’ if it is interpreted through a copy semantics of inheritance, whereby all the inherited overloaded methods are intended to be directly copied into the subclass (apart for those explicitly redefined by the subclass itself) 
 
 , and the branch selection is symmetric: during dynamic overloading selection the receiver type of the method invocation has no precedence over the argument types (differently from the encapsulated multimethods of [14] and [13]).
