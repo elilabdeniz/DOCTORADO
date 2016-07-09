@@ -332,7 +332,7 @@
   [(construirEnvAuxCond ()) #t])|#
 
 (define-metafunction OLρT
-  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (term (esta?  ,(first (ObtTypes (term W))) T))
+  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and   (judgment-holds (types () W : (_ ... T_1 _ ...))) (term (esta?  ,(first (ObtTypes (term W))) T))
                                                       (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
   [(construirEnvAuxCond ()) #t])
 

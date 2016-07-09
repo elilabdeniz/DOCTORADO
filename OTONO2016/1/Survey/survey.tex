@@ -1,6 +1,9 @@
 \documentclass{article}
 
 %%%% Packages
+\usepackage{mathtools}
+%\usepackage{proof}
+%\usepackage{ebproof}
 \usepackage{hyperref} %package for generating bookmarks
 %\usepackage[utf8]{inputenc}
 %\usepackage[T1]{fontenc}
@@ -15,7 +18,7 @@
 %Multiline comment
 \usepackage{verbatim}
 %for logic proofs
-\usepackage{proof}
+%\usepackage{proof}
 \usepackage{pdflscape}
 % Package that contains captionof
 \usepackage{caption}
@@ -27,6 +30,97 @@
 \usepackage[usenames, dvipsnames]{color}
 %\setcounter{secnumdepth}{6}
 \usepackage{authblk}
+\usepackage{definitions}
+
+\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+\newcommand{\tto}{\longrightarrow}
+\newcommand{\lto}{\leftarrow}
+
+\newcommand{\conf}[2][s]{(#2)[#1]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
+\newcommand{\confxD}[1]{#1 [\subxD]}
+\newcommand{\confx}[1]{#1 [\SubxD}
+\newcommand{\confy}[1]{#1 [\SubyD]}
+\newcommand{\confext}[1]{#1 [x \mapsto(w:T_1) \oplus s]}
+%\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+%\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
+
+\newcommand{\subx}{x \mapsto \{\overline{w}\},s}	    
+\newcommand{\subxD}{x \mapsto \{(\overline{w:T})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{w:T_1})\},s}
+\newcommand{\SubyD}{y \mapsto \{(\overline{w:T_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+%\newcommand{\subx}{[x,(v:T_1):s']}
+%\newcommand{\suby}{[y,(v:T_1):s']}
+
+\newcommand{\tyC}{{\Gamma \vdash_c \ }}
+\newcommand{\env}{{\Gamma \vdash \ }}
+
+\newcommand{\envE}{{\Gamma , x:T_1  ; \emt \vdash \ }}
+\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : T_1)  \vdash \ }}
+
+\newcommand{\envC}{{\Gamma ; \emt(s) \vdash \ }}
+\newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
+\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
+
+
+\newcommand{\ascrip}[1]{#1::T}
+\newcommand{\ascripP}[2]{#1::#2}
+\newcommand{\oletD}{\mathsf{mlet} \ x : T = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{mlet} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{mlet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\app}[2]{#1 \ #2}
+\newcommand{\appD}{t_1 \ t_2}
+\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
+\newcommand{\absD}{\lambda x:T_1. \ t_2}
+%\newcommand{\suma}[2]{#1 + #2}
+\newcommand{\negacion}[1]{\mathsf{not} \ #1}
+\newcommand{\suma}[1]{\mathsf{add1} \ #1}
+
+\newcommand{\lab}{\mathsf{tag}}
+\newcommand{\undefmy}{\mathsf{undef}}
+\newcommand{\truet}{\mathsf{true}}
+\newcommand{\falset}{\mathsf{false}}
+\newcommand{\boolt}{\mathsf{Bool}}
+\newcommand{\intt}{\mathsf{Int}}
+\newcommand{\funt}{\mathsf{Fun}}
+\newcommand{\selvt}{\mathsf{selvt}}
+\newcommand{\selvv}{\mathsf{selvv}}
+
+\newcommand{\mtD}{T^{*}}
+\newcommand{\mtP}[1]{#1^{*}}
+\newcommand{\mtC}[1]{\{\overline {#1}\}}
+\newcommand{\mtCu}[1]{\{ #1 \}}
+
+\newcommand{\emt}{\phi}
+\newcommand{\conc}{:^{*}}
+
+\newcommand{\tagi}[2]{<#1, #2>}
+
+
+\newcommand{\errorA}{\mathsf{Error1}}
+\newcommand{\errorB}{\mathsf{Error2}}
+\newcommand{\errorC}{\mathsf{Error3}}
+\newcommand{\errorD}{\mathsf{Error4}}
+\newcommand{\errorE}{\mathsf{Error5}}
+
+\newcommand\inferir{\stackrel{\mathclap{\normalfont\mbox{$\to$}}}{\in}}
+\newcommand\chequear{\stackrel{\mathclap{\normalfont\mbox{$\lto$}}}{\in}}
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+
+\newcommand{\clases}[1][D]{\mathsf{class} \ C \ \mathsf{extends} \ #1 \ \{ \overline{C} \ \overline{f}; \ K; \ \overline{M}\}}
+\newcommand{\constructor}{ C(\overline{C} \ \overline{f})\{\mathsf{super}(\overline{f}); \ \mathsf{this}.\overline{f} =  \overline{f} \}}
+\newcommand{\metodo}{C \ m \ (\overline{C} \ \overline{x})\{\mathsf{return} \ e;\}}
+\newcommand{\expresion}{x \ | \ e.f |\  \invocacion \ | \ \mathsf{new} \ C(\overline{e})}
+\newcommand{\invocacion}{e.m(\overline{e})}
+\newcommand{\valore}{\mathsf{new} \ C(\overline{v})}
+\newcommand{\mtypesel}{\mathsf{mtypesel} (m, C, \overline{C})}
+\newcommand{\mtype}{\mathsf{mtype} (m, C)}
+\newcommand{\fields}[1][C]{\mathsf{fields} (#1)}
+\newcommand{\wellformed}[1][B]{\mathsf{wellformed} (\{\overline {\overline{#1} \to #1}\})}
 
 \title{\bf Overloading}
 \author{Elizabeth Labrada Deniz
@@ -42,7 +136,8 @@
 	\begin{abstract}
 	\end{abstract}	
 \section{Introduction}
-Explicar Overloadin, ejemplos, para que sirve. Hablar de overl
+Explicar Overloadin, ejemplos, para que sirve. Hablar de overl 
+$\wellformed[S]$
 \section{Concepts}\label{section:concepts}
 \subsection{Explicit substitution}
 \subsection{Local Type Inference}
@@ -60,9 +155,54 @@ Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Fea
   \item The receiver type of the method invocation has no precedence over the argument types, when the  dynamic overloading selection is performed.
   \item All method invocations are annotated with the type selected during static type checking, in order to choose the best specialized branch during the dynamic overloading method selection. Thus, at run-time it is sound  to select only a specialization of the static type.
   \item A procedure to select the most appropriate branch at run-time using both the dynamic type of the arguments and the annotated static type guarantees that no ambiguity can dynamically occur in well-typed programs.
+\end{itemize}
+ 
+\begin{figure}
+\begin{small}
+%\begin{table}
+\begin{center}
+\begin{tabular}{|l c l r|}
+\hline
+$\mathsf {Syntax}:$&&&\\
+&&&\\
+$L$&::=&$\clases[C]$&$\mathsf {classes}$\\
+&&&\\
+$K$&::=&$\constructor$&$\mathsf {constructors}$\\
+&&&\\
+$M$&::=&$\metodo$&$\mathsf {methods}$\\
+&&&\\
+$e$&::=&$\expresion$&$\mathsf {expressions}$\\
+&&&\\
+$v$&::=&$\valore$&$\mathsf {values}$\\
+\hline
+\end{tabular}
+\caption{Syntax of FMJ.}
+\label{figure:syntax_of_FMJ}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
 
-\end{itemize} 
-
+\begin{figure}
+\begin{small}
+%\begin{table}
+\begin{center}
+\begin{tabular}{|c l|}
+\hline
+&\\
+$\inference{\env e:C}{a} $&$\rulename{TInvk}$\\
+&\\
+$\inference{a}{a} $&$\rulename{TMethod}  $\\
+&\\
+$\inference{a}{a} $&$\rulename{TClass}  $\\
+\hline
+\end{tabular}
+\caption{Typing rules for FMJ.}
+\label{figure:typingrules}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
 
 
 
