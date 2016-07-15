@@ -112,19 +112,27 @@
     (reduction-relation
      OLρT #:domain C
      (--> (B ρ) B ρ-bool)
+     
      (--> (N ρ) N ρ-num)
+     
      (--> (CH ρ) CH ρ-str)
+     
      (--> (O ρ) O ρ-op)
+     
      ;(--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
      ;-------------------------------------
      (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
+     
      (--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     
      (--> ((mlet (X T) = M_1 in M_2) ρ) (mlet (X T) = (M_1 ρ) in (M_2 ρ)) ρ-let)
+     
      (--> (X ρ) W
           (judgment-holds (lookup2 ρ X W))
           ρ-x
           (side-condition(term (construirEnvCond ρ))))
      ;-------------------------------------
+
      (--> (((λ (X T) M) ρ) W) 
           ((subst (X W) M ) ρ)
           app)
@@ -390,11 +398,15 @@
                                                       (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
   [(construirEnvCond ()) #t])
 
-
 (define-metafunction OLρT
-  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (term (esta?  ,(first (ObtTypes (term W))) T))
+  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and   (judgment-holds (types () W : (_ ... T_1 _ ...))) (term (esta?  ,(first (ObtTypes (term W))) T))
                                                       (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
   [(construirEnvAuxCond ()) #t])
+
+;(define-metafunction OLρT
+  ;[(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (term (esta?  ,(first (ObtTypes (term W))) T))
+                                                      ;(term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
+  ;[(construirEnvAuxCond ()) #t])
 
 
 ;(define-metafunction OLρT

@@ -1,4 +1,17 @@
-\documentclass{article}
+\documentclass[hidelinks, twocolumn]{article}
+%\documentclass{article}
+
+\usepackage
+[
+        a4paper,
+        left=2cm,
+        right=2cm,
+        top=2.5cm,
+        bottom=3cm,
+]
+{geometry}
+\usepackage{lipsum}
+
 
 %%%% Packages
 \usepackage{mathtools}
@@ -113,14 +126,18 @@
 
 \newcommand{\clases}[1][D]{\mathsf{class} \ C \ \mathsf{extends} \ #1 \ \{ \overline{C} \ \overline{f}; \ K; \ \overline{M}\}}
 \newcommand{\constructor}{ C(\overline{C} \ \overline{f})\{\mathsf{super}(\overline{f}); \ \mathsf{this}.\overline{f} =  \overline{f} \}}
-\newcommand{\metodo}{C \ m \ (\overline{C} \ \overline{x})\{\mathsf{return} \ e;\}}
+\newcommand{\metodo}[1][C]{#1 \ m \ (\overline{#1} \ \overline{x})\{\mathsf{return} \ e;\}}
+\newcommand{\metodoV}[1]{C_{#1} \ m \ (\overline{C_{#1}} \ \overline{x})\{\mathsf{return} \ e_{#1};\}}
 \newcommand{\expresion}{x \ | \ e.f |\  \invocacion \ | \ \mathsf{new} \ C(\overline{e})}
 \newcommand{\invocacion}{e.m(\overline{e})}
 \newcommand{\valore}{\mathsf{new} \ C(\overline{v})}
 \newcommand{\mtypesel}{\mathsf{mtypesel} (m, C, \overline{C})}
-\newcommand{\mtype}{\mathsf{mtype} (m, C)}
+\newcommand{\mtype}[1][C]{\mathsf{mtype} (m, #1)}
 \newcommand{\fields}[1][C]{\mathsf{fields} (#1)}
+\newcommand{\mbody}[1][C]{\mathsf{mbody} (m, #1,\overline{B})}
 \newcommand{\wellformed}[1][B]{\mathsf{wellformed} (\{\overline {\overline{#1} \to #1}\})}
+\newcommand{\multt}[1][B]{\{ \overline{\overline{#1} \to #1} \}}
+
 
 \title{\bf Overloading}
 \author{Elizabeth Labrada Deniz
@@ -131,6 +148,16 @@
 \renewcommand\Affilfont{\itshape\small}
 
 \begin{document}
+%\textheight = 600pt
+%\topmargin = -40pt
+%\oddsidemargin = -10pt
+
+%\marginparwidth = 10pt
+%\marginparsep = 0pt
+%\paperheight = 800pt
+%\textwidth = 1000pt
+\setlength{\columnsep}{20pt} %settting space column
+
 	\maketitle
 	\renewcommand{\abstractname}{Abstract}	
 	\begin{abstract}
@@ -138,33 +165,77 @@
 \section{Introduction}
 Explicar Overloadin, ejemplos, para que sirve. Hablar de overl 
 $\wellformed[S]$
-\section{Concepts}\label{section:concepts}
-\subsection{Explicit substitution}
-\subsection{Local Type Inference}
+\section{Background}\label{section:concepts}
+In this section we explain some concepts related to overloading, like polymorphism and the different kind of overloading.
 \subsection{Polymorphism}
+Cardelli and Wegner~\cite{CardelliWegner} present a classification of the different types of polyphormism which result relevant to understand overloading and its differences with another kind of polyphormism(Figure~\ref{figure:varpolyphormism}).
+
+\begin{figure}[h]
+\begin{center}
+\[ Polyphormism = 
+\begin{cases} 
+     universal & 
+     \begin{cases} 
+     	parametric &\\
+     	inclusion &
+   	\end{cases} \\
+		 & \\
+     ad \ hoc & 
+     \begin{cases} 
+     	overloading & \\
+     	coercion &
+   	\end{cases}
+ \end{cases}
+\]
+\caption{Varieties of polyphormism.}
+\label{figure:varpolyphormism}
+\end{center}
+\end{figure}
+
+On the one hand, universally polymorphic functions typically work on an infinite number of types, where the types share a common structure. Parametric polymorphism occurs when a function defined over a range of types has a single implemetation, acting in the same way for each type~\cite{CardelliWegner, scott, wadlerBlott:popl89}. The identity function is one of the simplest examples of parametric polymorphic function, where for any type, the behavior is the same. Another example can be the function $\mathsf{length}$, which operates with lists of any type. Otherwise, inclusion polymorphism is used to model subtypes and inheritance. For instance, in object-oriented paradigm, an object can be viewed as polymorphic because it belongs to different classes.
+
+On the other hand, ad-hoc polymorphism~\cite{CardelliWegner, wadlerBlott:popl89}, is obtained when a function is defined over several different types and may behave in unrelated ways for each type.  Overloading and coercion polymorphism are classified as the two major subcategories of ad-hoc polymorphism, according to Figure~\ref{figure:varpolyphormism}. In general, we are in present of overloading when the same variable name is used to denote different functions, then the context is essential to decide which function is selected by a particular instance of the name. An example of the overloading function is $+$, since it is applicable to both integer and real arguments. Additionally, a coercion~\cite{CardelliWegner} is a semantic operation which is needed to convert an argument to the type expected by a function, in a situation which would otherwise result in a type error. The function $+$ is also an example of coercion, if it is defined only for real addition, and integer arguments are always coerced to corresponding reals.
+%\subsection{Explicit substitution}
+%\subsection{Local Type Inference}
 \subsection{Static Overloading}
+Programming Languages like Java, C++ and C\# implement static overloading, i.e., that at compile time it is selected the most appropriate  function's definition for a function call, only according to the static type of the arguments. For example, if we have the Java code below, where $\texttt{C}$ is a subclass of $\texttt{B}$, and $\texttt{B}$ is a subclass of $\texttt{A}$, then for the invocation of the method $\texttt{m}$, is select the first definition. As can be observed, the selection of the implementation of the method $\texttt{m}$, it is based in the static type of the argument $\texttt{e}$, not in the dynamic type.                                   \\
+\texttt{class O \{\\
+\ \ \ public void m (A e)\{...\}\\
+\ \ \ public void m (B e)\{...\}\\
+%\ \ \ public void m (C e)\{...\}\\
+\}\\
+...\\
+O o = new O();\\
+A e = new B();\\
+o.m(e);}        
 \subsection{Dynamic Overloading}
-\subsection{Polymorphism}
+Multi-methods is considered a collection of overloaded methods associated to the same message, where the selection occur dynamically, according to run-time types of the reciver and of the arguments~\cite{FJM}. When selection occur dynamically, we are in presence of dynamic overloading. Thus, with this kind of overloading, in the above example of Java code, for the invocation of the method $\texttt{m}$, is select the second definition. Dynamic overloading seems to provide more flexibility and and accuracy selecting the most specialized implementation for a method invocation.
+
+Common Lisp Object System(CLSO)~\cite{Bobrow:1988:CLO:885631.885632} is an object-oriented extension to Common Lisp which implements dynamic overloading. It is worth noting that CLSO do not admit any static checking, therefore is dynamically typed. For instance, the code below in the in most languages with static type checking, results in an static error by ambiguity. However, in CLSO is considered the second implementation for  method $\texttt{m}$ more specific than the first, thus can be executed without ambiguity. In CLSO, the order of the parameters is crucial for the resolution of overloading.\\
+\texttt{
+class A \{\} \\
+class B extends A \{\} \\
+def m(x: A, y: B): Int = 1\\
+def m(x: B, y: A): Int = 2\\
+m(new B, new B)\\ }
 \section{Ad-hoc Polymorphism}\label{section:polymorphism}
 \subsection{Type classes}
 \subsection{Featherweight Java with dynamic and static overloading}
-Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through this. For the resolution overloading:
-
+Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through $\mathsf{this}$. Figure~\ref{figure:syntax_of_FMJ} shows the syntax of FMJ, which is minimal and simple. For more explanation, it can be consulted in~\cite{BETTINI2009261}. Some important aspects to note related to overloading in these work~\cite{BETTINI2009261, FJM} are:
 \begin{itemize}
   \item All the inherited overloaded methods are copied into the subclass.
   \item The receiver type of the method invocation has no precedence over the argument types, when the  dynamic overloading selection is performed.
   \item All method invocations are annotated with the type selected during static type checking, in order to choose the best specialized branch during the dynamic overloading method selection. Thus, at run-time it is sound  to select only a specialization of the static type.
   \item A procedure to select the most appropriate branch at run-time using both the dynamic type of the arguments and the annotated static type guarantees that no ambiguity can dynamically occur in well-typed programs.
 \end{itemize}
- 
+
 \begin{figure}
 \begin{small}
 %\begin{table}
 \begin{center}
-\begin{tabular}{|l c l r|}
-\hline
-$\mathsf {Syntax}:$&&&\\
-&&&\\
+\setlength{\tabcolsep}{1pt}
+\begin{tabular}{l c l r}
+%\hline
 $L$&::=&$\clases[C]$&$\mathsf {classes}$\\
 &&&\\
 $K$&::=&$\constructor$&$\mathsf {constructors}$\\
@@ -174,7 +245,7 @@ $M$&::=&$\metodo$&$\mathsf {methods}$\\
 $e$&::=&$\expresion$&$\mathsf {expressions}$\\
 &&&\\
 $v$&::=&$\valore$&$\mathsf {values}$\\
-\hline
+%\hline
 \end{tabular}
 \caption{Syntax of FMJ.}
 \label{figure:syntax_of_FMJ}
@@ -183,19 +254,89 @@ $v$&::=&$\valore$&$\mathsf {values}$\\
 \end{small}
 \end{figure}
 
-\begin{figure}
+In FMJ is used the concept of multi-types, which represents the types of  multi-methods. Formally, a multi-types is a set of arrows types, with the following shape: $\{ \overline{C_1} \to C_1,  \cdots ,  \overline{C_n} \to C_n\}$ or $\{\overline{ \overline{C} \to C}\}$, in a compact form. For example, if we have the following sequence of methods definition: \\
+$\metodoV{1}, \cdots , \metodoV{n}$ or  $\overline{\metodo[C]}$, 
+for brevity, then the corresponding multi-type of the method $m$ would be  $\{\overline{ \overline{C} \to C}\}$.
+
+Another important point is that statically, is checked that the multi-types associated to every multi-method is well formed. For this, they define  the function  $\mathsf{wellformed}$, formally described in Definition~\ref{definition:lwfmt}. The first condition in this definition requires  that all input types are distinct. Collaterally it imposes that a muti-method has the same number of parameters in each definition, unlike Java. The second condition guarantees that if during the dynamic overloading method selection, is chosen a specialized branch according to the static type,then it is safe.
+
+\begin{definition}[Local Well-Formedness of Multi-Types]
+\label{definition:lwfmt}
+\mbox{}
+A multi-type $\multt$ is well-formed, denoted by $\wellformed$, if $\forall(\overline{B_i} \to B_i)$, $(\overline{B_j} \to B_j) \in \multt$ the following conditions are verified:
+\begin{enumerate}[1.]
+    \item $\overline{B_i} \neq \overline{B_j}$
+    \item $\overline{B_i} <: \overline{B_j} \Rightarrow B_i <: B_j$.
+   \end{enumerate}
+\end{definition}
+
+A function $\mathsf{minsel}$, Definition~\ref{definition:mss}, is crucial for the static  resolution of overloading. It is responsible for choosing the most specialized type of a multi-method invocation, given a parameter types set and a multi-type corresponding to a multi-method. If the function is defined means that it can be chosen a definition for the multi-method call, without ambiguity.
+
+\begin{definition}[Set of minimal arrow types]
+\label{definition:smt}
+\mbox{}
+Given a set of arrow types $\multt$, $\mathsf{MIN}(\multt)$ denote the set of minimal arrow types defined as follow: $\mathsf{MIN}(\multt) \myeq \{\overline{B_i} \to B_i \in \multt| \forall(\overline{B_j} \to B_j) \in \multt \ s.t \ \overline{B_i}\neq \overline{B_j} , \overline{B_j} \not<: \overline{B_i} \}$.
+\end{definition}
+
+
+\begin{definition}[Most specialized selection]
+\label{definition:mss}
+\mbox{}
+Given some parameter  types $\overline{C}$
+and a multi-type $\multt$, then $\mathsf{minsel}(\overline{C}, \multt) \myeq \overline{B_i} \to B_i$ if and only if $\mathsf{MIN}(\{\overline{B_j} \to B_j \in \multt|\overline{C} <: \overline{B_j}\}) = \{ \overline{B_i} \to B_i\}$.
+\end{definition}
+
+Figure~\ref{figure:typingrules} present the typing rules for FMJ, which are very similar to FJ. The principal difference is in the rule $\rulename{TIvnk}$, with the use of the function $\mathsf{mtypesel}$. This function, described in Figure~\ref{figure:lookup_functions_typing} find the appropriate type for a multi-method call, given the method, its parameter types  and the receiver type of the method invocation. The auxiliary functions used in the typing rules are defined in Figure~\ref{figure:lookup_functions_typing}.
+\begin{figure}[h]
 \begin{small}
 %\begin{table}
 \begin{center}
-\begin{tabular}{|c l|}
-\hline
+\begin{tabular}{c}
+%\hline
+$\mathsf{fields}(\mathsf{Object}) = \bullet $\\
+\\
+$\inference{\clases & \fields[D] = \overline{D} \ \overline{g}} {\fields[C] = \overline{D} \ \overline{g}, \ \overline{C} \ \overline{f}} $\\
+\\
+$\mathsf{mtype}(\_, \mathsf{Object}) = \emptyset$\\
+\\
+$\inference{\clases & \\ \overline {\metodo[B]} \in \overline{M}}{\mtype = \multt 	\cup \mtype[D]} $\\
+\\
+$\inference{\clases & m \notin \overline{M}}{\mtype = \mtype[D]}$\\
+\\
+$\inference{\mtype = \multt & \\ \mathsf{minsel}(\overline{C}, \multt) = \overline{D} \to D} {\mtypesel = \overline{D} \to D}$\\
+%\\
+%\hline
+\end{tabular}
+\caption{Lookup functions for typing of FMJ.}
+\label{figure:lookup_functions_typing}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{small}
+%\begin{table}
+\begin{center}
+\setlength{\tabcolsep}{1pt}
+\begin{tabular}{c l}
+%\hline
+%&\\
+$\inference{}{\env x : \Gamma(x)}$&$\rulename{TVar}$\\
 &\\
-$\inference{\env e:C}{a} $&$\rulename{TInvk}$\\
+$\inference{\env e_0 : C_0 & \fields[C_0] = \overline{C} \ \overline{f}}{\env e_0.f_i : C_i}$&$\rulename{TField}$\\
 &\\
-$\inference{a}{a} $&$\rulename{TMethod}  $\\
+$\inference{\env e:C & \env \overline{e} : \overline{C} & \\ \mtypesel = B \to \overline{B}}{\env e.m(\overline{e}) : B} $&$\rulename{TInvk}$\\
 &\\
-$\inference{a}{a} $&$\rulename{TClass}  $\\
-\hline
+$\inference{\fields = \overline{D} \ \overline{f} & \env e : C & \overline{C} <: \overline{D}}{\env \mathsf{new} \ C(\overline{e}) : C }$&$\rulename{TNew}$\\
+&\\
+$\inference{\overline{x} : \overline{B}, \mathsf{this} : C \vdash \ e:E & E <: B & \\  \clases}{\metodo[B] \ \mathsf{OK \ IN} \ C} $&$\rulename{TMethod}   $\\
+&\\
+$\inference{K = C(\overline{D} \ \overline{g}, \overline{C} \ \overline{f}) \{ \mathsf{super}(\overline{g});  \ \mathsf{this}.\overline{f} = \overline{f} \} & \\ \fields[D] = \overline{D} \ \overline{g} & \mtype = \{ \overline{\overline{B} \to B}\} \\
+\land  \ \wellformed \ \mathsf{for \ all} \ m \ \mathsf{in} \ \overline{M}} {\clases \ \mathsf{OK}}$&$\rulename{TClass}$\\
+%&\\
+%\hline
 \end{tabular}
 \caption{Typing rules for FMJ.}
 \label{figure:typingrules}
@@ -204,15 +345,75 @@ $\inference{a}{a} $&$\rulename{TClass}  $\\
 \end{small}
 \end{figure}
 
+The operational semantics for FMJ, showed partially in Figure~\ref{figure:os}, works with the method invocations annotated with the static type selected. For this purpose in~\cite{BETTINI2009261} is defined an annotation function.	Also, is defined the function $\mathsf{bminsel}$, similar to $\mathsf{minsel}$, but it receives besides, the annotated type of the method invocation. The function $\mathsf{bminsel}$ guarantees the election of a specialized type or the same, related with annotated type, without ambiguity and in a safe way. Figure~\ref{figure:lookup_opsemantic} presents the  functions for the operational semantics.
 
+\begin{figure}[h]
+\begin{small}
+%\begin{table}
+\setlength{\tabcolsep}{1pt}
+\begin{center}
+\begin{tabular}{c}
+%\hline
+%\\
+$\inference{\mtype = \multt & \\ \mathsf{bminsel}(\overline{C}, \multt, \overline{E}) = \overline{D} \to D}{ \mathsf{bmtypesel}(m, C, \overline{C}, \overline{E}) = \overline{D} \to D}$\\
+\\
+$\inference{\clases & \\ \metodo[B] \in \overline{M}}{\mbody =  (\overline{x}, e)} $\\
+\\
+$\inference{\clases & m \notin \overline{M}}{\mbody = \mbody[D]}$\\
+\\
+$\inference{\mathsf{bmtypesel}(m, C, \overline{C}, \overline{E}) = \overline{D} \to D & \\ \mathsf{mbody}(m, C, \overline{D}) = (\overline{x}, e)} {\mathsf{mbodysel}(m, C, \overline{C}, \overline{E}) = (\overline{x}, e)}$\\
+%\\
+%\hline
+\end{tabular}
+\caption{Lookup functions for the operational semantic of FMJ.}
+\label{figure:lookup_opsemantic}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
 
+\begin{figure}[h]
+\begin{small}
+%\begin{table}
+\begin{center}
+\setlength{\tabcolsep}{1pt}
+\begin{tabular}{c l}
+%\hline
+%&\\
+$\inference{\fields = \overline{C} \ \overline{f}}{(\mathsf{new \ C(\overline{v})).f_i = v_i}} $&$\rulename{RField}$\\
+&\\
+$\inference{\mathsf{mbodysel}(m, C, \overline{D}, \overline{E}) = (\overline{x}, e_0)}{\begin{block}  \ \ \mathsf{new} \ C(\overline{v}).m(\overline{\mathsf{new \ D(\overline{u})}}) ^ {\overline{E} \to E}\tto \\ \ [\overline{x} \mapsto \overline{\mathsf{new \ D(\overline{u})}}, \mathsf{this} \mapsto \mathsf{new} \ C(\overline{v})]e_0 \end{block} }$&$\rulename{RInvk}$\\
+%&\\
+%\hline
+\end{tabular}
+\caption{Operational semantics for FMJ.}
+\label{figure:os}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
 
+The approach of~\cite{BETTINI2009261} propose an straightforward  way to obtain    static overloading, changing the rule $\rulename{RInvk}$ by the rule $\rulename{RSInvk}$, showed in Figure~\ref{figure:ost}. In the method invocation, only it is  relevant the static annotated type. In fact, this static overloading approach has a little difference regarding Java. In Java, the second condition request by the $\mathsf{wellformed}$ it is not necessary.
+\begin{figure}[h]
+\begin{small}
+%\begin{table}
+\begin{center}
+\setlength{\tabcolsep}{1pt}
+\begin{tabular}{c l}
+%\hline
+%&\\
+$\inference{\mathsf{mbody}(m, C, \overline{E}) = (\overline{x}, e_0)}{ \begin{block} \ \ \mathsf{new} \  C(\overline{v}).m(\overline{\mathsf{new \ D(\overline{u})}}) ^ {\overline{E} \to E} \longrightarrow \\ \ [\overline{x} \mapsto \overline{\mathsf{new \ D(\overline{u})}}, \mathsf{this} \mapsto  \mathsf{new} \ C(\overline{v})]e_0 \end{block}}$&$\rulename{RSInvk}$\\
+%&\\
+%\hline
+\end{tabular}
+\caption{Operational semantics for FMJ with static overloading.}
+\label{figure:ost}
+\end{center}
+%\end{table}
+\end{small}
+\end{figure}
 
-
-the authors point out that semantics of overloading and inheritance is rather ‘‘clean’’ if it is interpreted through a copy semantics of inheritance, whereby all the inherited overloaded methods are intended to be directly copied into the subclass (apart for those explicitly redefined by the subclass itself) 
-
-, and the branch selection is symmetric: during dynamic overloading selection the receiver type of the method invocation has no precedence over the argument types (differently from the encapsulated multimethods of [14] and [13]).
-Symmetry of branch selection is tightly related to copy semantics: if the receiver of a method invocation had the precedence over the parameters, we would search for the best matching branch only in the class of the receiver (or in the first superclass that defines some branch in case the class of the receiver does not define branches), i.e., without inspecting also the superclasses’ branches (which could provide a more specialized version). Thus, copy semantics would not be implemented
+It is important to note that FMJ, and more general Java, only admit overloaded method invocation, unlike type classes. Type classes allow function calls and function arguments overloaded. The reason for this is that in Java, the functions are not first-class citizen. 
 
 %Bibliography
 \medskip 
