@@ -223,8 +223,7 @@ m(new B, new B)\\ }
 \section{Overloading}\label{section:polymorphism}
 In the preset section we report some different works related to the overloading field. We start with type class, a powerful mechanism which allow overloading, combined with parametric polyphormism. Then we present an interesting work that explain overloading in object-oriented programming languages, with static or dynamic overloading.
 \subsection{Type classes}
-Type class in Haskell~\cite{wadlerBlott:popl89} is a sort of interface that defines some behavior supporting overloading
-and parametric polymorphism. Haskell has a static type system, therefore at compile time, the type of every expression is known and the overloading  is resolved. 
+Type class in Haskell~\cite{wadlerBlott:popl89} is a sort of interface that defines some behavior supporting overloading and parametric polymorphism. A type class is defined by Nipkow et al.~\cite{Nipkow1993}	, as a set of types, which all happen to provide a certain set of functions. Haskell has a static type system, therefore at compile time, the type of every expression is known and the overloading  is resolved. 
 
 The operator ($\texttt{==}$) for equality is widely used in most languages. Commonly overloaded, this polymorphic operator can be defined using type classes and instance declarations. The Haskell code showed below defines a type class that provides an interface for the ($\texttt{==}$) operator in a straightforward way. It is worth noting that this type class could have another functionality, like ($\texttt{/=}$). Once we have this type class, we can define instance for each different types, for instance,  \texttt{Eq Int} and \texttt{Eq Char}, where \texttt{eqInt} and \texttt{eqChar}, are the implementation for the ($\texttt{==}$) operator per each type. The class Eq is used as a constraint for  type variables  that require to support equality inspection.\\
 
@@ -239,6 +238,34 @@ As we mentioned previously, the overloading resolution in Haskell is static. For
 at compile-time a transformation of the code~\cite{wadlerBlott:popl89}. A program that contain class and instance declarations it is translated to an equivalent program that does not. The overloaded variables are also eliminated, with the introduction of "dictionaries", which include the implementation for each functionality of an instance.   
 
 Haskell supports overloading with the definition of type classes, but all the overloaded instances must share a common type pattern.
+
+Since the original type inference system is undecidable [7], some additional (syntactical) restrictions had to be imposed to obtain a type system where most general typings can efectively be computed~\cite{SEIDL199457}.
+
+The type system of ML[21], known as the Hindley-Milner type system, has two stand-out features. First, it supports type inference; type inference allows the programmer to write programs without explicit type annotations, while retaining full static type checking. Consider the following ML code fragment. The second major feature of the ML type system is parametric polymorphism. A type system supports polymorphism if it allows objects to have more than one type. The canonical example of a polymorphic function is the identity function:
+let id = fun x -> x;; Hindley-Milner infers most generic types
+from programs; the concept of principal types formally denes this feature[4].
+Aside from the inherent complexity of supporting
+overloading, other problems arise from interactions between overloading and
+other programming language facilities. Especially problematic are the interactions
+with advanced module systems, automatic type coercions, and inheritance facilities.
+Consequently, languages that do support overloading (e.g. Ada, C++, SML) do so
+with restrictions.
+
+Type classes permit the systematic overloading
+of function names while retaining the advantages of the
+Hindley/Damas/Milner system: every expression which
+has a type has a most general type which can be inferred
+automatically~\cite{Nipkow1993}. The main purpose of this paper is to give
+what we believe to be the simplest algorithm published
+so far, a contribution for implementors. At the same
+time we present a correspondingly simple type inference
+system, a contribution aimed at users of the language.
+The algorithm is sound and complete with respect to
+the inference system, and both are very close to their
+ML-counterparts.
+
+The overloading is global en type classes???d
+
 \subsection{Overloading in Object Oriented Paradigm}
 Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through $\mathsf{this}$. Figure~\ref{figure:syntax_of_FMJ} shows the syntax of FMJ, which is minimal and simple. For more explanation, it can be consulted in~\cite{BETTINI2009261}. Some important aspects to note related to overloading in these work~\cite{BETTINI2009261, FJM} are:
 \begin{itemize}

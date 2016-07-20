@@ -508,4 +508,11 @@
 (mlet (x (→ str str)) = (λ (a_4 str) "abcd") in 
 (mlet (t str) = "abcd" in 
 (mlet (t bool) = #f in ((z y)(x t)))))))))) () ) bool)))
+
+(apply-reduction-relation* vρ (term (((mlet (w num) = 3 in (mlet (w bool) = #t in (mlet (x (→ bool bool)) = (λ (a3 bool) (not a3)) in 
+(mlet (x (→ bool num )) = (λ (a4 bool) (add1 w)) in 
+(mlet (t str) = "abcd" in 
+(mlet (t bool) = #f in ((x w) :: num))))))) () ) num)))
+
+ (redex-check OLρI CI (progress-holds? (term CI)) #:attempts 100000000)
 |#
