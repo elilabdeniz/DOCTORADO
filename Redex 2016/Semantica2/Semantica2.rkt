@@ -514,5 +514,23 @@
 (mlet (t str) = "abcd" in 
 (mlet (t bool) = #f in ((x w) :: num))))))) () ) num)))
 
+(apply-reduction-relation* vρ (term
+               (((mlet (read (→ str num)) = (λ (a3 str) 4) in
+                 (mlet (read (→ str bool)) = (λ (a3 str) #t) in
+                 (mlet (x (→ bool bool)) = (λ (a3 bool) (not a3)) in 
+                 (mlet (x (→ bool num )) = (λ (a4 bool) (add1 1)) in 
+                 (mlet (t str) = "abcd" in 
+                 (mlet (t bool) = #f in
+                        ((read t) :: num))))))) () ) num)))
+
+(judgment-holds 
+               (types ()  ((mlet (read (→ str num)) = (λ (a3 str) 4) in
+                 (mlet (read (→ str bool)) = (λ (a3 str) #t) in
+                 (mlet (x (→ bool bool)) = (λ (a3 bool) (not a3)) in 
+                 (mlet (x (→ bool num )) = (λ (a4 bool) (add1 1)) in 
+                 (mlet (t str) = "abcd" in 
+                 (mlet (t bool) = #f in
+                        ((read t) :: num))))))) () ) : T*) T*)
+
  (redex-check OLρI CI (progress-holds? (term CI)) #:attempts 100000000)
 |#

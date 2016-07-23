@@ -11,23 +11,22 @@
 \newcommand{\lto}{\leftarrow}
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confxu}[1]{#1 [x,\{v\}:s]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
 \newcommand{\confxD}[1]{#1 [\subxD]}
-\newcommand{\confx}[1]{#1 [\SubxD]}
+\newcommand{\confx}[1]{#1 [\SubxD}
 \newcommand{\confy}[1]{#1 [\SubyD]}
-\newcommand{\confext}[1]{#1 [x \mapsto v \oplus s]}
-%\nevcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
-%\nevcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
+\newcommand{\confext}[1]{#1 [x,(v:T_1) \conc s]}
+%\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+%\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
 
-\newcommand{\subx}{x \mapsto \{\overline{v}\},s}
-\newcommand{\subxD}{x \mapsto \{\overline{v}\},s}
-\newcommand{\SubxD}{x \mapsto \{\overline{v}\},s}
-\newcommand{\SubyD}{y \mapsto \{\overline{v}\},s}
-\newcommand{\Subx}{x \mapsto \{\overline{v}\},s'}
-\newcommand{\Suby}{y \mapsto \{\overline{v}\},s'}
-%\nevcommand{\subx}{[x,(v:T_1):s']}
-%\nevcommand{\suby}{[y,(v:T_1):s']}
+\newcommand{\subxD}{x \mapsto \{(\overline{v:T})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{v:T_1})\},s}
+\newcommand{\SubyD}{y \mapsto \{(\overline{v:T_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+%\newcommand{\subx}{[x,(v:T_1):s']}
+%\newcommand{\suby}{[y,(v:T_1):s']}
 
 \newcommand{\tyC}{{\Gamma \vdash_c \ }}
 \newcommand{\env}{{\Gamma ; \emt   \vdash \ }}
@@ -39,20 +38,22 @@
 \newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
 \newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
 
-
 \newcommand{\ascrip}[1]{#1::T}
 \newcommand{\ascripP}[2]{#1::#2}
-\newcommand{\oletD}{\mathsf{mlet} \ x = t \ \mathsf{in}  \ t}
-\newcommand{\olet}{\mathsf{mlet} \ x = t_1 \ \mathsf{in}  \ t_2}
-\newcommand{\oletP}[3]{\mathsf{mlet} \ x = #2 \ \mathsf{in}  \ #3}
+\newcommand{\oletD}{\mathsf{mlet} \ x : T = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{mlet} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{mlet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
 \newcommand{\app}[2]{#1 \ #2}
 \newcommand{\appD}{t_1 \ t_2}
-\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
-\newcommand{\absST}[2]{\lambda #1. \ #2}
-\newcommand{\absD}{\lambda x:T_1. \ t_2}
+\newcommand{\abs}[4]{(\lambda #1. \ #2)^{#3 \to #4}}
+\newcommand{\absST}[2]{(\lambda #1. \ #2)^{T \to T}}
+\newcommand{\absD}{(\lambda x. \ t_2) ^{T_1 \to T_2}}
 %\nevcommand{\suma}[2]{#1 + #2}
 \newcommand{\negacion}[1]{\mathsf{not} \ #1}
 \newcommand{\suma}[1]{\mathsf{add1} \ #1}
+\newcommand{\novalvar}[1]{\mathrm{notVal\_Var}(#1)}
+\newcommand{\buscar}{\mathrm{lookup}}
+\newcommand{\tipo}{\mathrm{tag}}
 
 \newcommand{\lab}{\mathsf{tag}}
 \newcommand{\undefmy}{\mathsf{undef}}
@@ -107,6 +108,7 @@ $t$&$::=$&&$\mathsf {terms}$\\
 &&$\app {t}{t}$&$\mathsf {application}$\\
 &&$\oletD$&$\mathsf {overloading \ let}$\\
 &&$\ascrip {t}$&$\mathsf {ascription}$\\
+%&&$op \ t$&$\mathsf {operator \ application}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
 %&&$\negacion{t}$&$\mathsf {negation}$\\
 &&&\\
@@ -118,9 +120,13 @@ $op$&$::=$&&$\mathsf {operators}$\\
 &&$\suma$&$\mathsf {sum}$\\
 &&$\negacion$&$\mathsf{negation} $\\
 &&&\\
+$T$&$::=$&&$\mathsf {types}$\\
+&&$\intt$&$\mathsf {type \ of \ integers}$\\
+&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
+&&$T \to T$&$\mathsf {type \ of \ functions}$\\
 \end{tabular}
 & \begin{tabular}{l c l r}
-
+&&&\\
 $v$&$::=$&&$\mathsf {configuration-values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
@@ -134,12 +140,12 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$\oletP {T}{c}{c}$&\\
 &&$\ascrip{c}$&\\
 %&&$\suma{c}$&\\
-% &&$\negacion{c}$&\\
+%&&$\negacion{c}$&\\
 &&$\mathsf{error}$&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$\subx$&$\mathsf {variable \ substitution}$\\
-
+&&$\subxD$&$\mathsf {variable \ substitution}$\\
+&&&\\
 \end{tabular}\\
 \hline
 \end{tabular}
@@ -162,52 +168,39 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 %$\truet[s] \tto \truet$&$\rulename{True}  $\\
 %&\\
 %$\falset[s] \tto \falset$&$\rulename{False}  $\\
-$b[s] \tto b$&$\rulename{False}  $\\
+$b[s] \tto b$&$\rulename{Bool}  $\\
 &\\
 $n[s] \tto n$&$\rulename{Num}  $\\
 &\\
 $op [s] \tto op$&$\rulename{Op}  $\\
-&\\
-$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
-&\\
-$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
-&\\
-$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
+%&\\
+%$\suma[s] \tto \suma$&$\rulename{Op2}  $\\
+%&\\
+%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
+%&\\
+%$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
+%&\\
+%$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
 $ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
 &\\
 $ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
 &\\
 $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
-%&\\
+&\\
 %$\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
 %&\\
 %$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
-&\\
+%&\\
 $ \ascrip{v} \tto v $&$\rulename{Asc} $\\
 &\\
 ${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
-$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
 &\\
 $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
 $\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
-&\\
-$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
-&\\
-$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
-&\\
-$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
-&\\
-$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
-&\\
-%$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
-%$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
-%&\\
-%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
-%&\\
-%$ \inference {c \tto c'}{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
 &\\
 \hline
 \end{tabular}
@@ -216,4 +209,53 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \end{center}
 \end{small}
 \end{figure}
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+$ \inference{ v = \buscar(x, [s], T)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
+&\\
+$\inference{ v = \buscar(x_1, [s_1], T_1)}{\oletP{T_1}{x_1[s_1]}{c_2} \tto \oletP{T_1}{v}{c_2}}$&$\rulename{LetVar} $\\
+&\\
+$\inference{v_2 = \buscar(x_2, [s_2], T_1)}{\conf{\absD} \ x_2[s_2] \tto \conf{\absD} \ v_2}$&$\rulename{AppVar1}$\\
+&\\
+$\inference{T = \tipo(v_2)& v_1 = \buscar(x_1, [s_1], T \to *)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar2}$\\
+&\\
+$\inference{(v_1, v_2) = \buscar(x_1, x_2, [s_1], [s_2])}{x_1[s_1] \ x_2[s_2] \tto v_1 \ v_2}$&$\rulename{AppVar3}$\\
+&\\
+$\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
+&\\
+$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \neg \ b}$&$\rulename{NegationVar}$\\
+&\\
+$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+&\\
+$ \inference {c_1 \tto c_1' & \novalvar{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\\
+$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}$\\
+&\\
+$ \inference {c \tto c' & \novalvar{c}}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+&\\
+$ \inference {c_2 \tto c_2'  & \novalvar{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
+&\\
+%$\inference {c_1 \tto c_1'  & \novalvar{c_1}}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
+%&\\
+%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
+%&\\
+%$ \inference {c \tto c' & \novalvar{c} }{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
+%$\inference {c \tto c'  & \novalvar{c}}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
+%&\\
+\hline
+\end{tabular}
+\caption{Configuration reduction rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
 \end{document}

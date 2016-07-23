@@ -251,6 +251,8 @@ with advanced module systems, automatic type coercions, and inheritance faciliti
 Consequently, languages that do support overloading (e.g. Ada, C++, SML) do so
 with restrictions.
 
+All articles revised use Hindley/Damas/Milner system.
+
 Type classes permit the systematic overloading
 of function names while retaining the advantages of the
 Hindley/Damas/Milner system: every expression which
@@ -264,7 +266,31 @@ The algorithm is sound and complete with respect to
 the inference system, and both are very close to their
 ML-counterparts.
 
-The overloading is global en type classes???d
+The overloading is global en type classes??
+ No formalize para la semantics
+ 
+In the work of Camar\~ao et al. ~\cite{Camarao1999} is summarized some of the limitations or requirements of type classes such as: the declaration of an overloaded function requires a class declarations, all the overloaded instances must share a common type pattern and definitions of overloaded symbols must occur in global instance declarations.
+
+open world assumption where the
+set of declared instances is considered open to extension (from different modules,
+introduced at link time).
+
+
+Ribeiro and Camar\~ao~\cite{Ribeiro2013} note that a type system for Haskell allows distinct derivations for ambiguous expressions, which are usually rejected by the type inference algorithm. Also, they remark that the Haskell's open world approach affects the standard definition of ambiguity. Buscar una definicion standart
+
+
+Context-dependent overloading, is a form of overloading where the selection of the definition for an application function depends not only on the types of the arguments, but also on the call context. For instance,  if we have the  expression $m \ e$, we use for the correct selection of the definition of $m$, the type of $e$ and the information of the context in which  $m \ e$ is used.
+
+\texttt{class M a where m :: Char -> a\\
+class E a where e :: a\\
+instance M Char where m ...\\
+instance M Bool where m ...\\
+instance E Char where e ...}
+(m e) :: Bool
+
+
+Coherence establishes a single well-defined meaning for each expression. That is, a coherent semantics is such that, for any well-typed expression e:
+
 
 \subsection{Overloading in Object Oriented Paradigm}
 Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through $\mathsf{this}$. Figure~\ref{figure:syntax_of_FMJ} shows the syntax of FMJ, which is minimal and simple. For more explanation, it can be consulted in~\cite{BETTINI2009261}. Some important aspects to note related to overloading in these work~\cite{BETTINI2009261, FJM} are:
