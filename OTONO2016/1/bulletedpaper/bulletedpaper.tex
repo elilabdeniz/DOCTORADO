@@ -1,0 +1,111 @@
+\documentclass{article}
+
+%%%% Packages
+\usepackage{hyperref} %package for generating bookmarks
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%used for figure, for stopping auto float
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stackengine}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\graphicspath{ {img/} }
+
+%Multiline comment
+\usepackage{verbatim}
+%for logic proofs
+\usepackage{proof}
+\usepackage{pdflscape}
+% Package that contains captionof
+\usepackage{caption}
+% Package for code listings
+\usepackage{listings}
+\lstset{language=ML} 
+
+%\usepackage{color}
+\usepackage[usenames, dvipsnames]{color}
+%\setcounter{secnumdepth}{6}
+\usepackage{authblk}
+
+\title{\bf Overloading}
+\author{Elizabeth Labrada Deniz
+\thanks{Funded by grant CONICYT, CONICYT-PCHA/Doctorado Nacional/2015-63140148}}
+\affil{Computer Science Department (DCC), University of Chile, Chile}
+\date{}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\begin{document}
+	\maketitle
+	\renewcommand{\abstractname}{Abstract}	
+	\begin{abstract}
+	\end{abstract}	
+\section{Introduction}
+\begin{itemize}
+    \item Que es Overloading?
+    \item Para que sirve, nombrando algunos lenguajes conocidos que lo tienen.
+    \item Explicar que es considerado un tipo de polimorfismo.
+    \item Explicar brevemente distintos tipos de polimorfismo y las diferencias con overloading~\cite{CardelliWegner}.
+	\item Explicar que la mayoria de los lenguajes que poseen polimorfismo resuelven el overloading en presencia de otras clases de polimorfismo, por ejemplo type classes y Java. Queremos iniciar con un lenguaje que solo contenga  overlaoding, para estudiar esta caracteristica en si.\cite{Nipkow:1993:TCT:158511.158698, Odersky:1995:SLO:224164.224195, Ribeiro2013, wadlerBlott:popl89}
+	\item Explicar brevemente como se resuelve overloading en la mayoria de los lenguajes, que es en tiempo de compilacion, o al menos se utiliza informacion en tiempo de compilacion, tal como FeatherWeight Java con multi-method. Nombrar Common Lisp como un lenguaje diferente.
+	\item Decir que el lenguaje que queremos dise\~nar es para posteriormente estudiarlo con tipos graduales, y asi explicar que nos conllevo al diseño de la semantica del lenguaje.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+\end{itemize}
+\begin{figure}
+\begin{center}
+\[ Polyphormism = 
+\begin{cases} 
+     universal & 
+     \begin{cases} 
+     	parametric &\\
+     	inclusion &
+   	\end{cases} \\
+		 & \\
+     ad \ hoc & 
+     \begin{cases} 
+     	overloading & \\
+     	coercion &
+   	\end{cases}
+ \end{cases}
+\]
+\caption{Varieties of polyphormism.}
+\label{figure:varpolyphormism}
+\end{center}
+\end{figure}
+
+
+
+\section{Background}\label{section:concepts}\
+\begin{itemize}
+\item Substitucion explicita, explicar brevemnte que es y porque la vamos a utilizar.
+\item Ambiguedad 
+\item Local Type Inference, si se utiliza en el sistema de tipo
+\item Otros
+\end{itemize}
+\section{Calculus}\label{section:polymorphism}
+\begin{itemize}
+\item Explicar que agrega cada semantica con respecto a la anterior, por ejemplo deteccion de errores. 
+\item Explicar relaciones entre las semanticas,
+
+\end{itemize}
+
+\subsection{Semantic 1}
+\subsection{Semantic 2}
+\subsection{Semantic 3}
+\subsection{Semantic 4}
+\subsection{Type System}
+\subsection{Proofs}
+\section{Conclusions}
+\begin{itemize}
+\item Conclusiones
+\item Trabajo Futuro
+\end{itemize}
+%Bibliography
+\medskip 
+\bibliographystyle{abbrv}
+\bibliography{gsta,pleiad,gp,bib,common}
+\end{document}
