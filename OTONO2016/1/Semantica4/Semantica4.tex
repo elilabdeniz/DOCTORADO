@@ -5,7 +5,7 @@
 \usepackage{definitions}
 \usepackage{comment}
 
-\newcommand\rulename[1]{\mathrm{(#1)}}
+\newcommand\rulename[1]{\mathsf{(#1)}}
 \newcommand{\nothing}{\varnothing} % different from \emptyset
 \newcommand{\tto}{\longrightarrow}
 \newcommand{\lto}{\leftarrow}
@@ -15,7 +15,7 @@
 \newcommand{\confxD}[1]{#1 [\subxD]}
 \newcommand{\confx}[1]{#1 [\SubxD}
 \newcommand{\confy}[1]{#1 [\SubyD]}
-\newcommand{\confext}[1]{#1 [x,(v:T_1) \conc s]}
+\newcommand{\confext}[1]{#1 [x \mapsto(v:T_1) \oplus s]}
 %\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
 %\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
@@ -51,9 +51,9 @@
 %\nevcommand{\suma}[2]{#1 + #2}
 \newcommand{\negacion}[1]{\mathsf{not} \ #1}
 \newcommand{\suma}[1]{\mathsf{add1} \ #1}
-\newcommand{\novalvar}[1]{\mathrm{notVal\_Var}(#1)}
-\newcommand{\buscar}{\mathrm{lookup}}
-\newcommand{\tipo}{\mathrm{tag}}
+\newcommand{\novalvar}[1]{\mathsf{notVal\_Var}(#1)}
+\newcommand{\buscar}{\mathsf{lookup}}
+\newcommand{\tipo}{\mathsf{tag}}
 
 \newcommand{\lab}{\mathsf{tag}}
 \newcommand{\undefmy}{\mathsf{undef}}
@@ -88,6 +88,16 @@
 \providecommand{\norm}[1]{\lVert#1\rVert}
 
 \begin{document}
+\begin{itemize}
+\item Deterministic.
+\item Type error detection.
+\item Dispatch error detection.
+\item Ambiguity error detection.
+\item Type annotation in lambda functions, $\mathsf{mlet}$ and ascription.
+\item More expressive than Semantic 3, with the use structural tags.
+\item Do not support context-dependent overloading.
+\end{itemize}
+
 \setlength{\topmargin}{-25mm}
 \setlength{\textheight}{230mm}
 \begin{figure}
@@ -231,7 +241,7 @@ $\inference{(v_1, v_2) = \buscar(x_1, x_2, [s_1], [s_2])}{x_1[s_1] \ x_2[s_2] \t
 &\\
 $\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
 &\\
-$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \neg \ b}$&$\rulename{NegationVar}$\\
+$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 &\\

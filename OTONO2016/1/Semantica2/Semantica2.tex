@@ -11,33 +11,32 @@
 \newcommand{\lto}{\leftarrow}
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confxu}[1]{#1 [x,\{v\}:s]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:S_1)\}:s]}
 \newcommand{\confxD}[1]{#1 [\subxD]}
-\newcommand{\confx}[1]{#1 [\SubxD]}
+\newcommand{\confx}[1]{#1 [\SubxD}
 \newcommand{\confy}[1]{#1 [\SubyD]}
-\newcommand{\confext}[1]{#1 [x \mapsto v \oplus s]}
-%\nevcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
-%\nevcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
+\newcommand{\confext}[1]{#1 [x \mapsto(v:S_1) \oplus s]}
+%\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
+%\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
 
-\newcommand{\subx}{x \mapsto \{\overline{v}\},s}
-\newcommand{\subxD}{x \mapsto \{\overline{v}\},s}
-\newcommand{\SubxD}{x \mapsto \{\overline{v}\},s}
-\newcommand{\SubyD}{y \mapsto \{\overline{v}\},s}
-\newcommand{\Subx}{x \mapsto \{\overline{v}\},s'}
-\newcommand{\Suby}{y \mapsto \{\overline{v}\},s'}
-%\nevcommand{\subx}{[x,(v:T_1):s']}
-%\nevcommand{\suby}{[y,(v:T_1):s']}
+\newcommand{\subxD}{x \mapsto \{(\overline{v:S})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{v:S_1})\},s}
+\newcommand{\SubyD}{y \mapsto \{(\overline{v:S_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:S})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:S})\},s'}
+%\newcommand{\subx}{[x,(v:T_1):s']}
+%\newcommand{\suby}{[y,(v:T_1):s']}
 
 \newcommand{\tyC}{{\Gamma \vdash_c \ }}
 \newcommand{\env}{{\Gamma ; \emt   \vdash \ }}
 
-\newcommand{\envE}{{\Gamma , x:T_1  ; \emt \vdash \ }}
-\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : T_1)  \vdash \ }}
+\newcommand{\envE}{{\Gamma , x:S_1  ; \emt \vdash \ }}
+\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : S_1)  \vdash \ }}
 
 \newcommand{\envC}{{\Gamma ; \emt(s) \vdash \ }}
-\newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
-\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
+\newcommand{\envEC}{{\Gamma , x:S_1 ; \emt(s) \vdash \ }}
+\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : S_1) \vdash \ }}
 
 
 \newcommand{\ascrip}[1]{#1::T}
@@ -53,6 +52,10 @@
 %\nevcommand{\suma}[2]{#1 + #2}
 \newcommand{\negacion}[1]{\mathsf{not} \ #1}
 \newcommand{\suma}[1]{\mathsf{add1} \ #1}
+\newcommand{\novalvar}[1]{\mathsf{notVal\_Var}(#1)}
+\newcommand{\noval}[1]{\mathsf{notVal}(#1)}
+\newcommand{\buscar}{\mathsf{lookup}}
+\newcommand{\tipo}{\mathsf{tag}}
 
 \newcommand{\lab}{\mathsf{tag}}
 \newcommand{\undefmy}{\mathsf{undef}}
@@ -63,6 +66,8 @@
 \newcommand{\funt}{\mathsf{Fun}}
 \newcommand{\selvt}{\mathsf{selvt}}
 \newcommand{\selvv}{\mathsf{selvv}}
+\newcommand{\tagval}{\mathsf{tagVal}}
+\newcommand{\tagtype}{\mathsf{tagType}}
 
 \newcommand{\mtD}{T^{*}}
 \newcommand{\mtP}[1]{#1^{*}}
@@ -87,10 +92,13 @@
 \providecommand{\norm}[1]{\lVert#1\rVert}
 
 \begin{document}
-\begin{itemize}
-\item Non deterministic.
+\begin{itemize}\item Non deterministic.
 \item Type error  detection.
-\item Without type annotation in lambda functions or $\mathsf{mlet}$, only in ascription without use.
+\item Dispatch error detection. In the case of the lambda functions, it is not effective because of the environment contains at least a value with tag function, it is not detected  dispatch error. let, ascription.
+\item Without type annotation in lambda functions or $\mathsf{mlet}$, only in ascription.
+\item Semantic "tag driven", introducing flat tag in the environment.
+
+ 
 \end{itemize}
 
 \setlength{\topmargin}{-25mm}
@@ -124,15 +132,17 @@ $op$&$::=$&&$\mathsf {operators}$\\
 &&$\suma$&$\mathsf {sum}$\\
 &&$\negacion$&$\mathsf{negation} $\\
 &&&\\
-&&&\\
-&&&\\
-\end{tabular}
-& \begin{tabular}{l c l r}
-&&&\\
 $T$&$::=$&&$\mathsf {types}$\\
 &&$\intt$&$\mathsf {type \ of \ integers}$\\
 &&$\boolt$&$\mathsf {type \ of \ booleans}$\\
 &&$T \to T$&$\mathsf {type \ of \ functions}$\\
+\end{tabular}
+& \begin{tabular}{l c l r}
+&&&\\
+$S$&$::=$&&$\mathsf {tags}$\\
+&&$\intt$&$\mathsf {integer \ tag}$\\
+&&$\boolt$&$\mathsf {boolean \ tag}$\\
+&&$\funt$&$\mathsf {function \ tag}$\\
 &&&\\
 $v$&$::=$&&$\mathsf {configuration-values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
@@ -151,8 +161,8 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$\mathsf{error}$&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$\subx$&$\mathsf {variable \ substitution}$\\
-
+&&$\subxD$&$\mathsf {variable \ substitution}$\\
+&&&\\
 \end{tabular}\\
 \hline
 \end{tabular}
@@ -187,19 +197,9 @@ $\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
-&\\
-$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
-&\\
-$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
-%&\\
-%$\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
-%&\\
-%$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
-&\\
 $ \ascrip{v} \tto v $&$\rulename{Asc} $\\
 &\\
-${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+$\inference{S_1 = \tagval(v)}{\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
 $\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
 &\\
@@ -207,13 +207,43 @@ $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
 $\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
 &\\
-$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+\hline
+\end{tabular}
+\caption{Configuration reduction rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
 &\\
-$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\framebox {$c \tto c$}\\
 &\\
-$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+$ \inference{ S = \tagtype(T) & v = \buscar(x, [s], S)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
 &\\
-$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+$\inference{v_1 = \buscar(x_1, [s_1],\funt)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
+&\\
+$\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
+&\\
+$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
+&\\
+$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+&\\
+$ \inference {c_1 \tto c_1' & \noval{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\\
+$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+&\\
+$ \inference {c \tto c' & \noval{c}}{\conf{\absST{x}{t_2}} \ c \tto \conf{\absST{x}{t_2}} \ c'}$&$\rulename{App2}  $\\
+&\\
+$ \inference {c_2 \tto c_2' & \noval{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
+&\\
+$ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  $\\
 &\\
 %$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
 %$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
@@ -229,4 +259,5 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \end{center}
 \end{small}
 \end{figure}
+
 \end{document}
