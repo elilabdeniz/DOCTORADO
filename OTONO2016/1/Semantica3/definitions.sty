@@ -1,0 +1,354 @@
+%\usepackage{widetilde} #TODO FIX
+\usepackage{anyfontsize} % kill warnings about font sizes 
+\usepackage{amsmath}     % Mathematics FTW!
+\usepackage{amsthm}      % Warning, I've only proven it correct :).
+\usepackage{amssymb}     % needed for \mathbb and mathcal
+\usepackage{amsbsy}      % for \boldsymbol
+\usepackage{semantic}    % for PLT
+\usepackage{stmaryrd}   % provides some PLy symbols, like Scott Brackets
+\usepackage{mathpartir}  % for \mathpar
+\usepackage{color}
+\usepackage{braket}      % for \set and \braket
+\usepackage{mathtools}   % for \bigtimes
+\usepackage{thmtools}    % to duplicate theorems in the appendix
+\usepackage{marvosym} % for deniarius (gradual label)
+\usepackage{wasysym}     % for \smiley
+\usepackage{balance}     % for the references
+\usepackage{xspace}
+\usepackage{mathrsfs} % for mathscr font
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{yhmath}
+\usepackage{rotating}
+\usepackage{tikz-cd}
+\usepackage{xcolor}
+\usepackage{changepage}
+\usepackage{centernot}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{centernot}
+\usepackage{mathtools}
+\usepackage{xparse}
+\usepackage{ upgreek }
+
+
+% Comment form:  requires amssymb and color
+\newcommand{\mynote}[2]
+    {{\color{red} \fbox{\bfseries\sffamily\scriptsize#1}
+    {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}}~}
+
+
+
+\newcommand{\myproposal}[2]
+    {{\color{propcolor} \fbox{\bfseries\sffamily\scriptsize#1}
+    {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}}~}
+
+% \renewcommand{\mynote}[2]{}
+\newcommand{\et}[1]{\mynote{ET}{#1}}
+\newcommand{\ron}[1]{\mynote{RG}{#1}}
+\newcommand{\mt}[1]{\mynote{MT}{#1}}
+\newcommand{\nl}[1]{\mynote{NL}{#1}}
+\newcommand{\mtp}[1]{\myproposal{MT}{#1}}
+
+%% block - used tog indent code or create newlines of math stuff.
+\newenvironment{block}[1][t]
+  {\begin{array}[#1]{@{}l@{}}}
+  {\end{array}}
+
+\newcommand{\sarray}[1]{
+{\begin{array}[c]{@{}l@{}} #1
+  \end{array}}}
+
+% Grey Box
+\definecolor{lightgray}{gray}{0.90}
+\newcommand{\Gbox}[1]{\colorbox{lightgray}{$#1$}}
+
+\newcommand{\gbox}[1]{{\setlength{\fboxsep}{1pt}\colorbox{lightgray}{\tiny$#1$}}}
+
+
+%
+% Mathy definitions
+% 
+
+\declaretheorem{theorem}
+\declaretheorem[sibling=theorem]{lemma}
+\declaretheorem[sibling=theorem]{proposition}
+\declaretheorem[sibling=theorem]{corollary}
+\declaretheorem{definition}
+\declaretheorem[style=remark,numbered=no]{case}
+\declaretheorem[style=remark,numbered=no]{notation}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}{Definition}
+%\newtheorem{property}{Property}
+
+%\theoremstyle{remark}
+%\newtheorem*{case}{Case}
+%\newtheorem*{notation}{Notation}
+
+
+%
+% PLy definitions
+%TODO: review
+\newcommand{\sbrack}[1]{|[ #1 |]} % Scott brackets
+\newcommand{\Sbrack}[1]{\left[\!\!\left[ #1 \right]\!\!\right]} % Scott brackets
+
+
+\mathlig{[]}{\square}
+\mathlig{|-s}{\vdash^{\!\forall}}
+\mathlig{|-}{\vdash}
+\mathlig{|}{\mid} % For BNFs
+\mathlig{@>}{\leadsto} % for type-directed translations
+
+
+\reservestyle{\oblang}{\mathsf}
+\oblang{if[if\;],then[\;then\;],else[\;else\;],let[let\;],in[\;in\;]}
+\newcommand{\ite}[3]{\<if> #1 \<then> #2 \<else> #3}
+
+
+%
+% Cleaned up macros
+%
+
+% syntactic sets
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}} % the set of integers
+\newcommand{\Pow}{\ensuremath{\mathcal{P}}} % The powerset
+% Use sans-serif for object language constructors
+\newcommand{\Int}{\mathsf{Int}}
+\newcommand{\String}{\mathsf{String}}
+\newcommand{\Float}{\mathsf{Float}}
+\newcommand{\Bool}{\mathsf{Bool}}
+\newcommand{\Ref}[1]{{\mathsf{Ref}}~#1}
+\newcommand{\Unit}{\mathsf{Unit}}
+\newcommand{\unit}{\mathsf{unit}}
+% Use smallcaps for the names of object language sets.
+\newcommand{\oblset}[1]{\textsc{#1}}
+\newcommand{\Type}{\oblset{Type}}
+\newcommand{\Var}{\oblset{Var}}
+\newcommand{\Value}{\oblset{Value}}
+\newcommand{\Term}{\oblset{Term}}
+\newcommand{\Const}{\oblset{Const}}
+
+
+
+\newcommand{\setof}[1]{\set{\overline{#1}}}
+
+% language
+\newcommand{\fff}{\textsf{false}}
+\newcommand{\ff}{\fff} % temporary - backward compat
+\newcommand{\ttt}{\textsf{true}}
+\newcommand{\true}{\mathsf{true}}
+\newcommand{\false}{\mathsf{false}}
+% \newcommand{\ite}[3]{\texttt{if}\;#1\;\texttt{then}\;#2\;\texttt{else}\;#3}
+
+
+
+% relations
+\newcommand{\dom}{\mathit{dom}}
+\newcommand{\cod}{\mathit{cod}}
+\newcommand{\cmb}{\mathit{equate}}
+
+
+
+\newcommand{\sub}{<:}
+%\newcommand{\clsub}{\mathrel{\collecting{<:}}}
+\newcommand{\join}{\sqcup}
+\newcommand{\setdiff}{\mathrel{\backslash}}
+\newcommand{\meet}{\sqcap}
+\newcommand{\union}{\cup}
+\newcommand{\setint}{\cap}
+\newcommand{\finto}{\stackrel{\text{fin}}{\rightharpoonup}}% Finite partial map
+\newcommand{\pfun}{\rightharpoonup}% partial function
+
+
+
+
+
+
+%subtyping
+\newcommand{\subjoin}{\mathbin{\begin{turn}{90}$\hspace{-0.2em}<:$\end{turn}}}
+\newcommand{\submeet}{\mathbin{\begin{turn}{-90}$\hspace{-0.8em}<:$\end{turn}}}
+\newcommand{\proj}{\mathit{proj}}
+
+
+
+% dynamic semantics
+\newcommand{\TmFrame}{\oblset{TmFrame}}
+\newcommand{\red}{\longmapsto}
+\newcommand{\nred}{~-->~}
+\newcommand{\error}{\textup{\textbf{error}}}
+
+
+
+
+
+
+% text
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+
+
+
+% Dynamic language (wrt simply-typed gradual language) terms
+\newcommand{\DTerm}{\oblset{DTerm}}
+\newcommand{\dyn}[1]{\check{#1}}
+\newcommand{\dt}{\dyn{t}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newcommand{\new}[1]{\textcolor{memory}{#1}}
+
+% \newcommand{\lobs}{\zeta}
+\newcommand{\subst}{\sigma}
+
+
+
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\E}{\mathcal{E}}
+
+
+
+
+\newcommand{\lett}[0]{\mathsf{let}}
+\newcommand{\deref}[1]{{\mathsf{!}}#1}
+\newcommand{\freeLocs}{\mathit{freeLocs}}
+
+%TODO: FIX
+\newcommand{\highlight}[1]{\textcolor{memory}{#1}}
+\newcommand{\highlightr}[1]{\textcolor{red}{#1}}
+
+\newcommand{\Store}[0]{\oblset{Store}}
+
+
+\newcommand{\mudom}[0]{\mathit{dom}}
+
+
+
+\newcommand{\inn}{~\mathsf{in}}
+\newcommand{\Loc}{\oblset{Loc}}
+\newcommand{\loc}{{l}}
+
+
+%\newcommand{\wng}[1]{{\color{red}#1}}
+
+%ICFP2016-Refs%
+\newcommand{\soplus}{\mathbin{\llbracket \oplus \rrbracket}}
+
+
+\mathlig{++}{\mathbin{++}}
+
+\newcommand{\emptyenv}{\ensuremath{\o}\xspace}
+
+
+
+%%%
+%
+% AGT
+%
+%%%
+
+\newcommand{\GTerm}{\oblset{GTerm}}
+\newcommand{\GType}{\oblset{GType}}
+
+
+% relations
+\newcommand{\gprec}{\sqsubseteq} % greater precision
+\newcommand{\nsub}{<:_n}
+\newcommand{\csub}{\lesssim}
+\newcommand{\ccsub}{\mathrel{\consistent{<:}}}
+
+
+% convention for consistent/gradual and collecting
+\newcommand{\?}{\textsf{\upshape ?}} %unknown type
+\newcommand{\consistent}[1]{\widetilde{#1}}
+\newcommand{\collecting}[1]{\wideparen{#1}}
+\newcommand{\cT}{{\consistent{T}}} %gradual type
+\newcommand{\clT}{\collecting{T}}% collecting type
+\newcommand{\ct}{\consistent{t}} %gradual term
+\newcommand{\gvl}{\consistent{v}} %gradual value
+
+
+% collecting / consistent relations
+\newcommand{\carrow}{\;\collecting{\rightarrow}\;}
+\newcommand{\ctype}{\collecting{type}}
+\newcommand{\ccod}{\consistent{\cod}}
+\newcommand{\cdom}{\consistent{\dom}}
+\newcommand{\ccmb}{\consistent{\cmb}}
+\newcommand{\clcmb}{\collecting{\cmb}}
+\newcommand{\clcod}{\collecting{\cod}}
+\newcommand{\cldom}{\collecting{\dom}}
+\newcommand{\cP}{\consistent{P}}
+\newcommand{\cF}{\consistent{F}}
+\newcommand{\clpred}{\collecting{P}}
+\newcommand{\cpred}{\cP}
+\newcommand{\clfun}{\collecting{F}}
+\newcommand{\cfun}{\consistent{F}}
+\newcommand{\ceq}{\consistent{=}}
+\newcommand{\cleq}{\collecting{=}}
+
+
+%subtyping
+\newcommand{\cproj}{\consistent{\proj}}
+\newcommand{\cssubmeet}{\mathbin{\consistent{\submeet}}}
+\newcommand{\cssubjoin}{\mathbin{\consistent{\subjoin}}}
+
+
+
+
+% interior and evidence
+\newcommand{\interior}[1]{\mathcal{I}_{#1}}
+\newcommand{\Ev}[1]{\oblset{Ev}^{#1}}
+\newcommand{\Isub}{\interior{<:}}
+\newcommand{\trans}[1]{\circ^{#1}}
+\renewcommand{\merge}[1]{\triangle^{#1}}
+\newcommand{\ev}{\varepsilon}
+\newcommand{\evcast}[2]{#1#2}
+\newcommand{\evlangle}{\langle}
+\newcommand{\evrangle}{\rangle}
+\newcommand{\evpr}[1]{\braket{#1}}
+
+
+
+% intrinsic stuff
+% \newcommand{\rec}[1]{\set{#1}}
+\newcommand{\rec}[1]{[#1]}
+\newcommand{\VarT}[1]{\oblset{Var}_{#1}}
+\newcommand{\LocT}[1]{\oblset{Loc}_{#1}}
+\newcommand{\TermT}[1]{\oblset{Term}_{#1}}
+\newcommand{\injto}{\stackrel{\!\textrm{i\;f}}{\rightharpoonup}}
+\newcommand{\EvTerm}{\oblset{EvTerm}}
+\newcommand{\EvValue}{\oblset{EvValue}}
+\newcommand{\SimpleValue}{\oblset{SimpleValue}}
+\newcommand{\EvFrame}{\oblset{EvFrame}}
+\newcommand{\pr}[1]{\braket{{#1}}}
+\newcommand{\cast}[2]{\evcast{\evpr{#1}}{#2}}
+\newcommand{\evt}{\mathit{et}}
+\newcommand{\evv}{\mathit{ev}}
+
+
+% Annoying saveboxes because \wide* don't nest well
+%TODO: FIX
+\newsavebox{\cTsave}
+\savebox{\cTsave}{$\cT$}
+\newsavebox{\clTsave}
+\savebox{\clTsave}{$\clT$}
+
+
+
+\newcommand{\braketeq}[2]{\braket{#1}}
+\newcommand{\braketeqs}[1]{\braketeq{#1}{#1}}
+
+
+
+
+
+

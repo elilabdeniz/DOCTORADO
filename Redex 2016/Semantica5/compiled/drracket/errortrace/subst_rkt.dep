@@ -1,0 +1,1 @@
+("6.2.1" ("f078dd70ea53e2867c1e4b485568029ec0a5b0e8" . "b3d52ce53c12960a4bb1e7eb7c7f928e33bd4dbc") (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") #"C:\\1ELIZABETH\\1DOC\\1MyRepo\\Redex 2016\\Semantica5\\shared.rkt" (collects #"racket" #"runtime-config.rkt"))

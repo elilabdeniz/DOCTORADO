@@ -11,47 +11,49 @@
 \newcommand{\lto}{\leftarrow}
 
 \newcommand{\conf}[2][s]{(#2)[#1]}
-\newcommand{\confxu}[1]{#1 [x,\{(v:T_1)\}:s]}
+\newcommand{\confxu}[1]{#1 [x,\{(v:S_1)\}:s]}
 \newcommand{\confxD}[1]{#1 [\subxD]}
 \newcommand{\confx}[1]{#1 [\SubxD}
 \newcommand{\confy}[1]{#1 [\SubyD]}
-\newcommand{\confext}[1]{#1 [x \mapsto(v:T_1) \oplus s]}
+\newcommand{\confext}[1]{#1 [x \mapsto(v:S_1) \oplus s]}
 %\newcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
 %\newcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
 
-\newcommand{\subxD}{x \mapsto \{(\overline{v:T})\},s}
-\newcommand{\SubxD}{x \mapsto \{(\overline{v:T_1})\},s}
-\newcommand{\SubyD}{y \mapsto \{(\overline{v:T_1})\},s}
-\newcommand{\Subx}{x \mapsto \{(\overline{v:T})\},s'}
-\newcommand{\Suby}{y \mapsto \{(\overline{v:T})\},s'}
+\newcommand{\subxD}{x \mapsto \{(\overline{v:S})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{v:S_1})\},s'}
+\newcommand{\SubyD}{y \mapsto \{(\overline{v:S_1})\},s}
+\newcommand{\Subx}{x \mapsto \{(\overline{v:S})\},s'}
+\newcommand{\Suby}{y \mapsto \{(\overline{v:S})\},s'}
 %\newcommand{\subx}{[x,(v:T_1):s']}
 %\newcommand{\suby}{[y,(v:T_1):s']}
 
 \newcommand{\tyC}{{\Gamma \vdash_c \ }}
 \newcommand{\env}{{\Gamma ; \emt   \vdash \ }}
 
-\newcommand{\envE}{{\Gamma , x:T_1  ; \emt \vdash \ }}
-\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : T_1)  \vdash \ }}
+\newcommand{\envE}{{\Gamma , x:S_1  ; \emt \vdash \ }}
+\newcommand{\enve}{{\Gamma ; \emt  \oplus (x : S_1)  \vdash \ }}
 
 \newcommand{\envC}{{\Gamma ; \emt(s) \vdash \ }}
-\newcommand{\envEC}{{\Gamma , x:T_1 ; \emt(s) \vdash \ }}
-\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : T_1) \vdash \ }}
+\newcommand{\envEC}{{\Gamma , x:S_1 ; \emt(s) \vdash \ }}
+\newcommand{\enveC}{{\Gamma ;  \emt(s) \oplus (x : S_1) \vdash \ }}
+
 
 \newcommand{\ascrip}[1]{#1::T}
 \newcommand{\ascripP}[2]{#1::#2}
-\newcommand{\oletD}{\mathsf{mlet} \ x : T = t \ \mathsf{in}  \ t}
-\newcommand{\olet}{\mathsf{mlet} \ x : T_1 = t_1 \ \mathsf{in}  \ t_2}
-\newcommand{\oletP}[3]{\mathsf{mlet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\oletD}{\mathsf{mlet} \ x = t \ \mathsf{in}  \ t}
+\newcommand{\olet}{\mathsf{mlet} \ x = t_1 \ \mathsf{in}  \ t_2}
+\newcommand{\oletP}[3]{\mathsf{mlet} \ x = #2 \ \mathsf{in}  \ #3}
 \newcommand{\app}[2]{#1 \ #2}
 \newcommand{\appD}{t_1 \ t_2}
-\newcommand{\abs}[4]{(\lambda #1. \ #2)^{#3 \to #4}}
-\newcommand{\absST}[2]{(\lambda #1. \ #2)^{T \to T}}
-\newcommand{\absD}{(\lambda x. \ t_2) ^{T_1 \to T_2}}
+\newcommand{\abs}[3]{\lambda #1:#2. \ #3}
+\newcommand{\absST}[2]{\lambda #1. \ #2}
+\newcommand{\absD}{\lambda x:T_1. \ t_2}
 %\nevcommand{\suma}[2]{#1 + #2}
 \newcommand{\negacion}[1]{\mathsf{not} \ #1}
 \newcommand{\suma}[1]{\mathsf{add1} \ #1}
 \newcommand{\novalvar}[1]{\mathsf{notVal\_Var}(#1)}
+\newcommand{\noval}[1]{\mathsf{notVal}(#1)}
 \newcommand{\buscar}{\mathsf{lookup}}
 \newcommand{\tipo}{\mathsf{tag}}
 
@@ -64,6 +66,8 @@
 \newcommand{\funt}{\mathsf{Fun}}
 \newcommand{\selvt}{\mathsf{selvt}}
 \newcommand{\selvv}{\mathsf{selvv}}
+\newcommand{\tagval}{\mathsf{tagVal}}
+\newcommand{\tagtype}{\mathsf{tagType}}
 
 \newcommand{\mtD}{T^{*}}
 \newcommand{\mtP}[1]{#1^{*}}
@@ -90,12 +94,13 @@
 \begin{document}
 \begin{itemize}
 \item Deterministic.
-\item Type error detection.
-\item Dispatch error detection.
-\item Ambiguity error detection.
-\item Type annotation in lambda functions, $\mathsf{mlet}$ and ascription.
-\item More expressive than Semantic 3, with the use structural tags.
-\item Do not support context-dependent overloading.
+\item Type error  detection.
+\item Dispatch error detection. In the case of the lambda functions, it is not effective because if the environment contains at least a value with tag function, it is not detected  dispatch error, because we don't have type information for lambdas function. Similar with  $\mathsf{mlet}$, expression.
+\item Ambiguity error detection(restrictive).
+\item Without type annotation in lambda functions or $\mathsf{mlet}$, only in ascription.
+\item Semantic "tag driven", introducing flat tag in the environment.
+
+ 
 \end{itemize}
 
 \setlength{\topmargin}{-25mm}
@@ -118,7 +123,6 @@ $t$&$::=$&&$\mathsf {terms}$\\
 &&$\app {t}{t}$&$\mathsf {application}$\\
 &&$\oletD$&$\mathsf {overloading \ let}$\\
 &&$\ascrip {t}$&$\mathsf {ascription}$\\
-%&&$op \ t$&$\mathsf {operator \ application}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
 %&&$\negacion{t}$&$\mathsf {negation}$\\
 &&&\\
@@ -137,6 +141,11 @@ $T$&$::=$&&$\mathsf {types}$\\
 \end{tabular}
 & \begin{tabular}{l c l r}
 &&&\\
+$S$&$::=$&&$\mathsf {tags}$\\
+&&$\intt$&$\mathsf {integer \ tag}$\\
+&&$\boolt$&$\mathsf {boolean \ tag}$\\
+&&$\funt$&$\mathsf {function \ tag}$\\
+&&&\\
 $v$&$::=$&&$\mathsf {configuration-values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
@@ -150,7 +159,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$\oletP {T}{c}{c}$&\\
 &&$\ascrip{c}$&\\
 %&&$\suma{c}$&\\
-%&&$\negacion{c}$&\\
+% &&$\negacion{c}$&\\
 &&$\mathsf{error}$&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
@@ -178,35 +187,23 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 %$\truet[s] \tto \truet$&$\rulename{True}  $\\
 %&\\
 %$\falset[s] \tto \falset$&$\rulename{False}  $\\
-$b[s] \tto b$&$\rulename{Bool}  $\\
+$b[s] \tto b$&$\rulename{False}  $\\
 &\\
 $n[s] \tto n$&$\rulename{Num}  $\\
 &\\
 $op [s] \tto op$&$\rulename{Op}  $\\
-%&\\
-%$\suma[s] \tto \suma$&$\rulename{Op2}  $\\
-%&\\
-%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
-%&\\
-%$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
-%&\\
-%$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
+$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
 &\\
-$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
 &\\
-$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
-%$\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
-%&\\
-%$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
-%&\\
 $ \ascrip{v} \tto v $&$\rulename{Asc} $\\
 &\\
-${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+$\inference{S_1 = \tagval(v)}{\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
-$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
 &\\
 $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
@@ -221,6 +218,7 @@ $\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
 \end{figure}
 
 
+
 \begin{figure}
 \begin{small}
 \begin{center}
@@ -229,15 +227,9 @@ $\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
 &\\
 &\framebox {$c \tto c$}\\
 &\\
-$ \inference{ v = \buscar(x, [s], T)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
+$ \inference{ S = \tagtype(T) & v = \buscar(x, [s], S)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
 &\\
-$\inference{ v = \buscar(x_1, [s_1], T_1)}{\oletP{T_1}{x_1[s_1]}{c_2} \tto \oletP{T_1}{v}{c_2}}$&$\rulename{LetVar} $\\
-&\\
-$\inference{v_2 = \buscar(x_2, [s_2], T_1)}{\conf{\absD} \ x_2[s_2] \tto \conf{\absD} \ v_2}$&$\rulename{AppVar1}$\\
-&\\
-$\inference{T = \tipo(v_2)& v_1 = \buscar(x_1, [s_1], T \to *)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar2}$\\
-&\\
-$\inference{(v_1, v_2) = \buscar(x_1, x_2, [s_1], [s_2])}{x_1[s_1] \ x_2[s_2] \tto v_1 \ v_2}$&$\rulename{AppVar3}$\\
+$\inference{v_1 = \buscar(x_1, [s_1],\funt)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
 &\\
 $\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
 &\\
@@ -245,21 +237,23 @@ $\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 &\\
-$ \inference {c_1 \tto c_1' & \novalvar{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+$ \inference {c_1 \tto c_1' & \noval{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
 &\\
-$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}$\\
+$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
 &\\
-$ \inference {c \tto c' & \novalvar{c}}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+$ \inference {c \tto c' & \noval{c}}{\conf{\absST{x}{t_2}} \ c \tto \conf{\absST{x}{t_2}} \ c'}$&$\rulename{App2}  $\\
 &\\
-$ \inference {c_2 \tto c_2'  & \novalvar{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
+$ \inference {c_2 \tto c_2' & \noval{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
 &\\
-%$\inference {c_1 \tto c_1'  & \novalvar{c_1}}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
+$ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  $\\
+&\\
+%$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
+%$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
 %&\\
 %$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
 %&\\
-%$ \inference {c \tto c' & \novalvar{c} }{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
-%$\inference {c \tto c'  & \novalvar{c}}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
-%&\\
+%$ \inference {c \tto c'}{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
+&\\
 \hline
 \end{tabular}
 \caption{Configuration reduction rules.}
@@ -271,11 +265,11 @@ $ \inference {c_2 \tto c_2'  & \novalvar{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\r
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
-Given an environment  $s$ and a variable binding $x \mapsto (v_1:T_1)$, the operator $\oplus$ is defined  as follows:
-\[ s \oplus x \mapsto (v_1:T_1) = \begin{cases} 
-      x \mapsto \{(v_1:T_1)\}& s =  \varnothing \\
-      x \mapsto \{(\overline{v : T})\} \cup \{(v_1 : T_1)\}, s' & s = x \mapsto \{(\overline{v : T})\}, s'\\
-      y \mapsto \{(\overline{v : T})\}, s' \oplus x \mapsto (v_1:T_1) & s = y \mapsto \{(\overline{v : S})\}, s'\\
+Given an environment  $s$ and a variable binding $x \mapsto (v_1:S_1)$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto (v_1:S_1) = \begin{cases} 
+      x \mapsto \{(v_1:S_1)\}& s =  \varnothing \\
+      x \mapsto \{(\overline{v : S})\} \cup \{(v_1 : S_1)\}, s' & s = x \mapsto \{(\overline{v : S})\}, s'\\
+      y \mapsto \{(\overline{v : S})\}, s' \oplus x \mapsto (v_1:S_1) & s = y \mapsto \{(\overline{v : S})\}, s'\\
    \end{cases}
 \]
 \end{definition}
@@ -296,30 +290,37 @@ The function $\mathsf{flat}$ is defined  as follows:
 \mbox{}
 The function $\buscar$ is defined  as follows:
 \[ \buscar(x, s, S') = \begin{cases} 
-      v_i & s = x \mapsto \{(\overline{v : S})\}, s' \wedge S' = S_i\\
+      v_i & ! \exists (x \mapsto (v_i : S)) \in \mathsf{flat}(s)\\
       \buscar(x, s', S') & s = y \mapsto \{(\overline{v : S})\}, s'\\
       \mathsf{error} &s =  \varnothing\\
    \end{cases}
 \]
-
-\[ \buscar(x_1, x_2, s_1, s_2) = \begin{cases} 
-      (v_1, v_2) & !\exists x_1 \mapsto (v_1: T_1) \in \mathsf{flat}(s_1) \ \wedge \ !\exists x_2 \mapsto (v_2: T_1) \in \mathsf{flat}(s_2)\\
-      \mathsf{error} & otrw\\
-   \end{cases}
-\]
 \end{definition}
 
-\begin{definition}[$\lab$]
+\begin{definition}[$\tagtype$]
 \label{definition:tcs}
 \mbox{}
-The function $\lab$ is defined  as follows:
-\[ \lab(v) = \begin{cases} 
-      \intt & v = n \\
-      \boolt & v = b \\
-      T_1 \to T_2 & v  = \absD\\
+The function $\tagtype$ is defined  as follows:
+\[ \tagtype(T) = \begin{cases} 
+      \intt & T = \intt \\
+      \boolt & T = \boolt \\
+      \funt & T = T_1 \to T_2\\
    \end{cases}
 \]
-
 \end{definition}
+
+
+\begin{definition}[$\tagval$]
+\label{definition:tcs}
+\mbox{}
+The function $\tagval$ is defined  as follows:
+\[ \tagval(v) = \begin{cases} 
+      \intt & v = n \\
+      \boolt & v = b \\
+      \funt & v = \absST{x}{t}\\
+   \end{cases}
+\]
+\end{definition}
+
 
 \end{document}

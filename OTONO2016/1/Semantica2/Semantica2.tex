@@ -21,7 +21,7 @@
 
 
 \newcommand{\subxD}{x \mapsto \{(\overline{v:S})\},s}
-\newcommand{\SubxD}{x \mapsto \{(\overline{v:S_1})\},s}
+\newcommand{\SubxD}{x \mapsto \{(\overline{v:S_1})\},s'}
 \newcommand{\SubyD}{y \mapsto \{(\overline{v:S_1})\},s}
 \newcommand{\Subx}{x \mapsto \{(\overline{v:S})\},s'}
 \newcommand{\Suby}{y \mapsto \{(\overline{v:S})\},s'}
@@ -94,7 +94,7 @@
 \begin{document}
 \begin{itemize}\item Non deterministic.
 \item Type error  detection.
-\item Dispatch error detection. In the case of the lambda functions, it is not effective because of the environment contains at least a value with tag function, it is not detected  dispatch error. let, ascription.
+\item Dispatch error detection. In the case of the lambda functions, it is not effective because if the environment contains at least a value with tag function, it is not detected  dispatch error, because we don't have type information for lambdas function. Similar with  $\mathsf{mlet}$, expression.
 \item Without type annotation in lambda functions or $\mathsf{mlet}$, only in ascription.
 \item Semantic "tag driven", introducing flat tag in the environment.
 
@@ -259,5 +259,56 @@ $ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  
 \end{center}
 \end{small}
 \end{figure}
+
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given an environment  $s$ and a variable binding $x \mapsto (v_1:S_1)$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto (v_1:S_1) = \begin{cases} 
+      x \mapsto \{(v_1:S_1)\}& s =  \varnothing \\
+      x \mapsto \{(\overline{v : S})\} \cup \{(v_1 : S_1)\}, s' & s = x \mapsto \{(\overline{v : S})\}, s'\\
+      y \mapsto \{(\overline{v : S})\}, s' \oplus x \mapsto (v_1:S_1) & s = y \mapsto \{(\overline{v : S})\}, s'\\
+   \end{cases}
+\]
+\end{definition}
+
+
+\begin{definition}[$\buscar$]
+\label{definition:tcs}
+\mbox{}
+The function $\buscar$ is defined  as follows:
+\[ \buscar(x, s, S') = \begin{cases} 
+      v_i & s = x \mapsto \{(\overline{v : S})\}, s' \wedge S' = S_i\\
+      \buscar(x, s', S') & s = y \mapsto \{(\overline{v : S})\}, s'\\
+      \error &s =  \varnothing\\
+   \end{cases}
+\]
+\end{definition}
+
+\begin{definition}[$\tagtype$]
+\label{definition:tcs}
+\mbox{}
+The function $\tagtype$ is defined  as follows:
+\[ \tagtype(T) = \begin{cases} 
+      \intt & T = \intt \\
+      \boolt & T = \boolt \\
+      \funt & T = T_1 \to T_2\\
+   \end{cases}
+\]
+\end{definition}
+
+
+\begin{definition}[$\tagval$]
+\label{definition:tcs}
+\mbox{}
+The function $\tagval$ is defined  as follows:
+\[ \tagval(v) = \begin{cases} 
+      \intt & v = n \\
+      \boolt & v = b \\
+      \funt & v = \absST{x}{t}\\
+   \end{cases}
+\]
+\end{definition}
+
 
 \end{document}
