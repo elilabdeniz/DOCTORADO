@@ -16,8 +16,6 @@
 \newcommand{\confx}[1]{#1 [\SubxD]}
 \newcommand{\confy}[1]{#1 [\SubyD]}
 \newcommand{\confext}[1]{#1 [x \mapsto v \oplus s]}
-%\nevcommand{\confxE}[1]{#1 [x,(v:T_1):s']}
-%\nevcommand{\confyE}[1]{#1 [y,(v:T_1):s']}
 
 
 \newcommand{\subx}{x \mapsto \{\overline{v}\},s}
@@ -64,6 +62,18 @@
 \newcommand{\selvt}{\mathsf{selvt}}
 \newcommand{\selvv}{\mathsf{selvv}}
 
+\newcommand{\tagval}{\mathsf{tagVal}}
+\newcommand{\tagtype}{\mathsf{tagType}}
+\newcommand{\novalvar}[1]{\mathsf{notVal\_Var}(#1)}
+\newcommand{\noval}[1]{\mathsf{notVal}(#1)}
+\newcommand{\buscar}{\mathsf{lookup}}
+\newcommand{\tipo}{\mathsf{tag}}
+
+\newcommand{\semanticA}{Flexible Language}
+\newcommand{\semanticB}{Tag Driven Language}
+\newcommand{\semanticC}{Strict Language}
+\newcommand{\semanticD}{Overloading Language}
+
 \newcommand{\mtD}{T^{*}}
 \newcommand{\mtP}[1]{#1^{*}}
 \newcommand{\mtC}[1]{\{\overline {#1}\}}
@@ -75,22 +85,22 @@
 \newcommand{\tagi}[2]{<#1, #2>}
 
 
-\newcommand{\errorA}{\mathsf{Error1}}
-\newcommand{\errorB}{\mathsf{Error2}}
-\newcommand{\errorC}{\mathsf{Error3}}
-\newcommand{\errorD}{\mathsf{Error4}}
-\newcommand{\errorE}{\mathsf{Error5}}
-
 \newcommand\inferir{\stackrel{\mathclap{\normalfont\mbox{$\to$}}}{\in}}
 \newcommand\chequear{\stackrel{\mathclap{\normalfont\mbox{$\lto$}}}{\in}}
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \providecommand{\norm}[1]{\lVert#1\rVert}
 
+
+
 \begin{document}
+\semanticA:
 \begin{itemize}
 \item Non deterministic.
-\item Type error  detection.
-\item Without type annotation in lambda functions or $\mathsf{mlet}$, only in ascription without use.
+\item Type error means stuck.
+\item Without type annotation in lambda functions or $\mathsf{mlet}$.
+\item Introduce the explicit substitution in $\mathsf{mlet}$, and the substitution in lambdas.
+\item Characterize errors.
+\item Index.
 \end{itemize}
 
 \setlength{\topmargin}{-25mm}
@@ -112,7 +122,7 @@ $t$&$::=$&&$\mathsf {terms}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\app {t}{t}$&$\mathsf {application}$\\
 &&$\oletD$&$\mathsf {overloading \ let}$\\
-&&$\ascrip {t}$&$\mathsf {ascription}$\\
+%&&$\ascrip {t}$&$\mathsf {ascription}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
 %&&$\negacion{t}$&$\mathsf {negation}$\\
 &&&\\
@@ -123,17 +133,14 @@ $b$&$::=$&&$\mathsf {boolean \ value}$\\
 $op$&$::=$&&$\mathsf {operators}$\\
 &&$\suma$&$\mathsf {sum}$\\
 &&$\negacion$&$\mathsf{negation} $\\
-&&&\\
-&&&\\
-&&&\\
 \end{tabular}
 & \begin{tabular}{l c l r}
 &&&\\
-$T$&$::=$&&$\mathsf {types}$\\
-&&$\intt$&$\mathsf {type \ of \ integers}$\\
-&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
-&&$T \to T$&$\mathsf {type \ of \ functions}$\\
-&&&\\
+%$T$&$::=$&&$\mathsf {types}$\\
+%&&$\intt$&$\mathsf {type \ of \ integers}$\\
+%&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
+%&&$T \to T$&$\mathsf {type \ of \ functions}$\\
+%&&&\\
 $v$&$::=$&&$\mathsf {configuration-values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
@@ -145,19 +152,20 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$t[s]$&\\
 &&$c \ c $&\\
 &&$\oletP {T}{c}{c}$&\\
-&&$\ascrip{c}$&\\
+%&&$\ascrip{c}$&\\
 %&&$\suma{c}$&\\
 % &&$\negacion{c}$&\\
-&&$\mathsf{error}$&\\
+%&&$\mathsf{error}$&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
 &&$\subx$&$\mathsf {variable \ substitution}$\\
-
+&&&\\
+&&&\\
 \end{tabular}\\
 \hline
 \end{tabular}
 \hspace*{-2cm}
-\caption{Syntax of the simply typed lambda-calculus vith overloading.}
+\caption{Syntax of the \semanticA.}
 \label{figure:sencilla}
 \end{center}
 %\end{table}
@@ -181,13 +189,13 @@ $n[s] \tto n$&$\rulename{Num}  $\\
 &\\
 $op [s] \tto op$&$\rulename{Op}  $\\
 &\\
-$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
-&\\
+%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
+%&\\
 $\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
-&\\
-$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
+%&\\
+%$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
 &\\
 $ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
 &\\
@@ -197,8 +205,8 @@ $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 %&\\
 %$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
 &\\
-$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
-&\\
+%$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
+%&\\
 ${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
 $\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
@@ -207,8 +215,8 @@ $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
 $\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
 &\\
-$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
-&\\
+%$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+%&\\
 $ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
 &\\
 $\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
@@ -224,9 +232,141 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 &\\
 \hline
 \end{tabular}
+\caption{Reduction rules for \semanticA.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto v_1 = \begin{cases} 
+      x \mapsto \{v_1\}& s =  \varnothing \\
+      x \mapsto \{\overline{v}\} \cup \{v_1\}, s' & s = x \mapsto \{\overline{v }\}, s'\\
+      y \mapsto \{\overline{v}\}, s' \oplus x \mapsto v_1 & s = y \mapsto \{\overline{v}\}, s'\\
+   \end{cases}
+\]
+\end{definition}
+
+
+\semanticB:
+\begin{itemize}\item Non deterministic.
+\item Type error means stuck.
+\item Dispatch error means stuck.
+\item Without type annotation in lambda functions or $\mathsf{mlet}$.
+\item Semantic "tag driven", introducing flat tag in the environment.
+
+ 
+\end{itemize}
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|l c l r|}
+\hline
+&&$\cdots$&\\
+$S$&$::=$&&$\mathsf {tags}$\\
+&&$\intt$&$\mathsf {integer \ tag}$\\
+&&$\boolt$&$\mathsf {boolean \ tag}$\\
+&&$\funt$&$\mathsf {function \ tag}$\\
+&&$\cdots$&\\
+\hline
+\end{tabular}
+\caption{Syntax of the \semanticB(Extends \semanticA).}
+\label{figure:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+%$\truet[s] \tto \truet$&$\rulename{True}  $\\
+%&\\
+%$\falset[s] \tto \falset$&$\rulename{False}  $\\
+$b[s] \tto b$&$\rulename{False}  $\\
+&\\
+$n[s] \tto n$&$\rulename{Num}  $\\
+&\\
+$op [s] \tto op$&$\rulename{Op}  $\\
+%&\\
+%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
+&\\
+$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
+&\\
+$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
+&\\
+$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
+&\\
+$\inference{S_1 = \tagval(v)}{\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+&\\
+$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+&\\
+$\suma{n} \tto n + 1$&$\rulename{Sum}$\\
+&\\
+$\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
+&\\
+\hline
+\end{tabular}
 \caption{Configuration reduction rules.}
 \label{tabla:sencilla}
 \end{center}
 \end{small}
 \end{figure}
+
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+%$ \inference{ S = \tagtype(T) & v = \buscar(x, [s], S)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
+%&\\
+$\inference{v_1 = \buscar(x_1, [s_1],\funt)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
+&\\
+$\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
+&\\
+$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
+&\\
+%$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+%&\\
+$ \inference {c_1 \tto c_1' & \noval{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\\
+$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+&\\
+$ \inference {c \tto c' & \noval{c}}{\conf{\absST{x}{t_2}} \ c \tto \conf{\absST{x}{t_2}} \ c'}$&$\rulename{App2}  $\\
+&\\
+$ \inference {c_2 \tto c_2' & \noval{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
+&\\
+$ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  $\\
+&\\
+%$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
+%$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
+%&\\
+%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
+%&\\
+%$ \inference {c \tto c'}{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
+&\\
+\hline
+\end{tabular}
+\caption{Configuration reduction rules.}
+\label{tabla:sencilla}
+\end{center}
+\end{small}
+\end{figure}
+
+
 \end{document}
