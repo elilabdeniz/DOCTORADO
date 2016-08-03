@@ -61,6 +61,10 @@
 \newcommand{\negacion}[1]{\mathsf{not} \ #1}
 \newcommand{\suma}[1]{\mathsf{add1} \ #1}
 
+\newcommand{\oletPT}[3]{\mathsf{mlet} \ x : #1 = #2 \ \mathsf{in}  \ #3}
+\newcommand{\absDT}{(\lambda x. \ t_2) ^{T_1 \to T_2}}
+\newcommand{\absSTT}[2]{(\lambda #1. \ #2)^{T \to T}}
+
 \newcommand{\lab}{\mathsf{tag}}
 \newcommand{\undefmy}{\mathsf{undef}}
 \newcommand{\truet}{\mathsf{true}}
@@ -71,6 +75,7 @@
 \newcommand{\selvt}{\mathsf{selvt}}
 \newcommand{\selvv}{\mathsf{selvv}}
 \newcommand{\filtrar}{\mathsf{filter}}
+\newcommand{\minsel}{\mathsf{minsel}}
 
 \newcommand{\tagval}{\mathsf{tagVal}}
 \newcommand{\tagtype}{\mathsf{tagType}}
@@ -117,7 +122,7 @@
 Characterization of the errors for \semanticA:
 \begin{itemize}
 \item Free variable error is detected if a variable is evaluated in the empty environment.
-\item Type error is detected if the operators $\negacion$ or $\suma$ are applied with parameters that are not of type $\boolt$ or $\intt$, respectively. Also, if the left side of the function application is not a lambda.
+\item Type error is detected if the operators $\negacion$ or $\suma$ are applied with parameters that are not boolean or numeric value, respectively. Also, if the left side of the function application is not a lambda.
 \end{itemize}
 
 
@@ -279,8 +284,8 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
 \end{itemize}
 Characterization of the errors for \semanticB:
 \begin{itemize}
-\item Free variable error is detected if a variable is evaluated in the empty environment.
-\item Type error is detected if the operators $\negacion$ or $\suma$ are applied with parameters that are not of type $\boolt$ or $\intt$, respectively. Also, if the left side of the function application is not a lambda.
+\item Free variable and type error are detected in the same cases that the \semanticA.
+\item Dispatch error is detected  if the operators $\negacion$ or $\suma$ are applied with overloaded parameters that do not have instance with tag $\boolt$ or $\intt$ in the environment, respectively. Also, if the left side of the function application is an overloaded variable, but does not exist an instance with tag $\funt$ in the environment.
 \end{itemize}
 
 
@@ -304,7 +309,7 @@ $S$&$::=$&&$\mathsf {tags}$\\
 \end{figure}
 
 
-\begin{figure}[]
+\begin{figure}[h]
 \begin{small}
 \begin{center}
 \begin{tabular}{|c r|}
@@ -315,11 +320,11 @@ $\cdots$&\\
 &\\
 %$ \inference{ S = \tagtype(T) & v = \buscar(x, [s], S)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
 %&\\
-$\inference{v_1 = \buscar(x_1, [s_1],\funt)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
+$\inference{ \buscar(x_1, [s_1],\funt, v_1)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
 &\\
-$\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
+$\inference{\buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
 &\\
-$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
+$\inference{\buscar(x, [s], \boolt, b)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
 &\\
 %$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 %&\\
@@ -352,7 +357,7 @@ $\cdots$&\\
 \label{definition:tcs}
 \mbox{}
 The relation $\buscar$ is defined  as follows:
-\[ \buscar  = \{(x, s, S', v)| x \mapsto v \in \mathsf{flat}(s) \wedge \lab(v) = S\}
+\[ \buscar  = \{(x, s, S, v)| x \mapsto v \in \mathsf{flat}(s) \wedge \lab(v) = S\}
 \]
 \end{definition}
 
@@ -399,7 +404,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 \hline
 \end{tabular}
 \hspace*{-2cm}
-\caption{Syntax of the \semanticB with ascriptions.}
+\caption{Syntax of the \semanticB \ with ascriptions.}
 \label{figure:sencilla}
 \end{center}
 \end{small}
@@ -418,7 +423,7 @@ $ \conf{\ascripS{t}} \tto \ascripS{t[s]}$&$\rulename{AscSub}$\\
 &\\
 $ \inference {\lab(v) = S}{\ascripS{v} \tto v} $&$\rulename{Asc} $\\
 &\\
-$ \inference{v = \buscar(x, [s], S)}{\ascripS{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
+$ \inference{\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulename{Asc1} $\\
 &\\
@@ -432,9 +437,22 @@ $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulen
 
 \subsection{\semanticC}
 
+
+\semanticC:
+\begin{itemize}\item Deterministic semantic. With the use of multi-values a program can reduce to a set of value.
+\item Type error means stuck.
+\item Dispatch error means stuck.
+\item Ambiguity error means stuck.
+\end{itemize}
+Characterization of the errors for \semanticC:
+\begin{itemize}
+\item Free variable and type error are detected in the same cases that the \semanticB \ with ascription.
+\item Ambiguity error is detected if the left side of the function application  have more than one instance with $\funt$ tag or in the right side have more than one value for the application. Strict detection of ambiguity. 
+\end{itemize}
+
 \setlength{\topmargin}{-25mm}
 \setlength{\textheight}{230mm}
-\begin{figure}[h]
+\begin{figure}[]
 \begin{small}
 %\begin{table}
 \begin{center}
@@ -443,6 +461,7 @@ $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulen
 \hline
 &&$\cdots$&\\
 $w$&$::=$&&$\mathsf {multi-value}$\\
+&&$v$&$\mathsf {value}$\\
 &&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
 &&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
@@ -461,7 +480,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 \end{small}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[]
 \begin{small}
 \begin{center}
 \begin{tabular}{|c r|}
@@ -489,7 +508,7 @@ $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 &\\
 %$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
 %&\\
-$ \inference {\filtrar(v, S) = w' & w' \neq \emptyset} {\ascripS{w} \tto w'} $&$\rulename{Asc} $\\
+$ \inference {\filtrar(w, S) = w' & w' \neq \emptyset} {\ascripS{w} \tto w'} $&$\rulename{Asc} $\\
 &\\
 ${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
 &\\
@@ -501,7 +520,7 @@ $\inference {\filtrar(w, \boolt)  = \{\overline{b}\} }{\negacion{w}\tto {\{ \ove
 %$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
 %&\\
 &\\
-$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+$ \inference {c \tto c'}{\ascripS{c} \tto \ascripS{c'} }$&$\rulename{Asc1} $\\
  &\\
 $ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
 &\\
@@ -524,11 +543,29 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \end{small}
 \end{figure}
 
+
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto w = \begin{cases} 
+      x \mapsto \{w\}& s =  \varnothing \wedge w = v\\
+      x \mapsto w & s =  \varnothing \wedge w \neq v\\
+      x \mapsto w' \cup \{w\}, s' & s = x \mapsto w', s' \wedge w = v\\
+      x \mapsto w' \cup w, s' & s = x \mapsto w', s' \wedge w \neq v\\
+      y \mapsto w', s' \oplus x \mapsto w & s = y \mapsto w', s'\\
+   \end{cases}
+\]
+\end{definition}
+
 \begin{definition}[$\filtrar(\cdot, \cdot)$]
 \label{definition:tcs}
 \mbox{}
 The function $\filtrar$ is defined  as follows:
-\[ \filtrar(w, S) = \{v \in w | \lab(v) = S\}
+\[ \filtrar(w, S) = \begin{cases}
+ \{w\} & w = v \wedge \lab(w) = S\\
+ \{\overline{v}\} & v_i \in w \wedge \lab(v_i) = S \\
+ \end{cases} 
 \]
 \end{definition}
 
@@ -537,18 +574,20 @@ The function $\filtrar$ is defined  as follows:
 \mbox{}
 The function $\buscar$ is defined  as follows:\\
  $\buscar(w_1, w_2) = (v_1, v_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt \ \wedge \ w_2 = \{ v_2 \}$
+ \end{definition}
 
-\end{definition}
+
+ 
 \subsection{\semanticD}
-
 \begin{itemize}
-\item Deterministic.
+\item Deterministic semantic. With the use of multi-values a program can reduce to a set of value.
 \item Type error detection.
 \item Dispatch error detection.
 \item Ambiguity error detection.
 \item Type annotation in lambda functions, $\mathsf{mlet}$ and ascription.
-\item More expressive than Semantic 3, with the use structural tags.
+\item More expressive than \semanticC, with the use structural tags.
 \item Do not support context-dependent overloading.
+\item Como no esta verificacda la informacion de tipo, no se puede decir nada acerca de la semantica.
 \end{itemize}
 
 \setlength{\topmargin}{-25mm}
@@ -566,10 +605,10 @@ $t$&$::=$&&$\mathsf {terms}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf {numeric \ value}$\\
 &&$op$&$\mathsf{operator}$\\
-&&$\absST {x}{t}$&\ $\mathsf {abstraction}$\\
+&&$\absSTT {x}{t}$&\ $\mathsf {abstraction}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\app {t}{t}$&$\mathsf {application}$\\
-&&$\oletD$&$\mathsf {overloading \ let}$\\
+&&$\oletPT{T}{t}{t}$&$\mathsf {overloading \ let}$\\
 &&$\ascrip {t}$&$\mathsf {ascription}$\\
 %&&$op \ t$&$\mathsf {operator \ application}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
@@ -590,27 +629,29 @@ $T$&$::=$&&$\mathsf {types}$\\
 \end{tabular}
 & \begin{tabular}{l c l r}
 &&&\\
-$v$&$::=$&&$\mathsf {configuration-values}$\\
+$v$&$::=$&&$\mathsf {values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
 &&$op$&$\mathsf{operator}$\\
-&&$\conf{\absST {x}{t}}$&$\mathsf{closure}$\\
+&&$\conf{\absSTT {x}{t}}$&$\mathsf{closure}$\\
 &&&\\
 $w$&$::=$&&$\mathsf {multi-value}$\\
+&&$v$&$\mathsf {value}$\\
 &&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
 &&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
 &&$w$&\\
 &&$t[s]$&\\
 &&$c \ c $&\\
-&&$\oletP {T}{c}{c}$&\\
+&&$\oletPT{T}{c}{c}$&\\
 &&$\ascrip{c}$&\\
 %&&$\suma{c}$&\\
 %&&$\negacion{c}$&\\
 %&&$\mathsf{error}$&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$\subxDT$&$\mathsf {variable \ substitution}$\\
+&&$\subx$&$\mathsf {variable \ substitution}$\\
+%&&$\subxDT$&$\mathsf {variable \ substitution}$\\
 &&&\\
 \end{tabular}\\
 \hline
@@ -631,26 +672,15 @@ $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &\\
 &\framebox {$c \tto c$}\\
 &\\
-%$\truet[s] \tto \truet$&$\rulename{True}  $\\
-%&\\
-%$\falset[s] \tto \falset$&$\rulename{False}  $\\
-$b[s] \tto b$&$\rulename{Bool}  $\\
+$w[s] \tto w$&$\rulename{MultiValue}  $\\
 &\\
-$n[s] \tto n$&$\rulename{Num}  $\\
+$\confxW{x} \tto w$&$\rulename{VarOk}  $\\
 &\\
-$op [s] \tto op$&$\rulename{Op}  $\\
-%&\\
-%$\suma[s] \tto \suma$&$\rulename{Op2}  $\\
-%&\\
-%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
-%&\\
-%$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
-%&\\
-%$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
+$\inference {x \neq y} {\confyW{x} \tto x[s]}$&$\rulename{VarNext}  $\\s
 &\\
 $ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
 &\\
-$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+$ \conf{\oletPT{T_1}{t_1}{t_2}} \tto \oletPT{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
 &\\
 $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 &\\
@@ -658,72 +688,33 @@ $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 %&\\
 %$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
 %&\\
-$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
+$ \inference {\filtrar(w, S) = v} {\ascrip{w} \tto v} $&$\rulename{Asc} $\\
 &\\
-${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+$\inference {\filtrar(w, T_1) = v}{\oletPT{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
-$\conf{\absD} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+$\inference{((\absDT)[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
 &\\
-$\suma{n} \tto n + 1$&$\rulename{Sum}$\\
+$\inference{\filtrar(w, \intt) = n}{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
 &\\
-$\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
+$\inference{\filtrar(w, \boolt) = b}{\negacion{w} \tto \{ \neg \ b \} }$&$\rulename{Negation}$\\
+&\\
+$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+ &\\
+$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\\
+$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+&\\
+$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 &\\
 \hline
 \end{tabular}
-\caption{Configuration reduction rules.}
+\caption{Reduction rules for \semanticD.}
 \label{tabla:sencilla}
 \end{center}
 \end{small}
 \end{figure}
 
-
-\begin{figure}
-\begin{small}
-\begin{center}
-\begin{tabular}{|c r|}
-\hline
-&\\
-&\framebox {$c \tto c$}\\
-&\\
-$ \inference{ v = \buscar(x, [s], T)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
-&\\
-$\inference{ v = \buscar(x_1, [s_1], T_1)}{\oletP{T_1}{x_1[s_1]}{c_2} \tto \oletP{T_1}{v}{c_2}}$&$\rulename{LetVar} $\\
-&\\
-$\inference{v_2 = \buscar(x_2, [s_2], T_1)}{\conf{\absD} \ x_2[s_2] \tto \conf{\absD} \ v_2}$&$\rulename{AppVar1}$\\
-&\\
-$\inference{T = \tipo(v_2)& v_1 = \buscar(x_1, [s_1], T \to *)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar2}$\\
-&\\
-$\inference{(v_1, v_2) = \buscar(x_1, x_2, [s_1], [s_2])}{x_1[s_1] \ x_2[s_2] \tto v_1 \ v_2}$&$\rulename{AppVar3}$\\
-&\\
-$\inference{n = \buscar(x, [s], \intt)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
-&\\
-$\inference{ b = \buscar(x, [s], \boolt)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
-&\\
-$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
-&\\
-$ \inference {c_1 \tto c_1' & \novalvar{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
-&\\
-$\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}$\\
-&\\
-$ \inference {c \tto c' & \novalvar{c}}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
-&\\
-$ \inference {c_2 \tto c_2'  & \novalvar{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
-&\\
-%$\inference {c_1 \tto c_1'  & \novalvar{c_1}}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
-%&\\
-%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
-%&\\
-%$ \inference {c \tto c' & \novalvar{c} }{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
-%$\inference {c \tto c'  & \novalvar{c}}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
-%&\\
-\hline
-\end{tabular}
-\caption{Configuration reduction rules.}
-\label{tabla:sencilla}
-\end{center}
-\end{small}
-\end{figure}
-
+\begin{comment}
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
@@ -735,7 +726,47 @@ Given an environment  $s$ and a variable binding $x \mapsto (v_1:T_1)$, the oper
    \end{cases}
 \]
 \end{definition}
+\end{comment}
 
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto v_1 = \begin{cases} 
+      x \mapsto \{v_1\}& s =  \varnothing \\
+      x \mapsto \{\overline{v}\} \cup \{v_1\}, s' & s = x \mapsto \{\overline{v }\}, s'\\
+      y \mapsto \{\overline{v}\}, s' \oplus x \mapsto v_1 & s = y \mapsto \{\overline{v}\}, s'\\
+   \end{cases}
+\]
+\end{definition}
+
+
+\begin{definition}[$\lab$]
+\label{definition:tcs}
+\mbox{}
+The function $\lab$ is defined  as follows:
+\[ \lab(v) = \begin{cases} 
+      \intt & v = n \\
+      \boolt & v = b \\
+      T_1 \to T_2 & v  = (\absDT)[s]\\
+   \end{cases}
+\]
+\end{definition}
+
+\begin{definition}[$\filtrar(\cdot, \cdot)$]
+\label{definition:tcs}
+\mbox{}
+The function $\filtrar$ is defined  as follows:
+\[ \filtrar(w, T) = \begin{cases} 
+      w & w = v \\
+      v' & ! \exists v' \in w |\lab(v') = T\\
+   \end{cases}
+\]
+
+\end{definition}
+
+
+\begin{comment}
 \begin{definition}[$\mathsf{flat}$]
 \label{definition:tcs}
 \mbox{}
@@ -746,46 +777,170 @@ The function $\mathsf{flat}$ is defined  as follows:
    \end{cases}
 \]
 \end{definition}
+\end{comment}
+
 
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
 The function $\buscar$ is defined  as follows:
-\[ \buscar(x, s, S') = \begin{cases} 
-      v_i & s = x \mapsto \{(\overline{v : S})\}, s' \wedge S' = S_i\\
-      \buscar(x, s', S') & s = y \mapsto \{(\overline{v : S})\}, s'\\
-      \mathsf{error} &s =  \varnothing\\
-   \end{cases}
-\]
-
-\[ \buscar(x_1, x_2, s_1, s_2) = \begin{cases} 
-      (v_1, v_2) & !\exists x_1 \mapsto (v_1: T_1) \in \mathsf{flat}(s_1) \ \wedge \ !\exists x_2 \mapsto (v_2: T_1) \in \mathsf{flat}(s_2)\\
-      \mathsf{error} & otrw\\
+\[ \buscar(w_1, w_2) = \begin{cases} 
+      (w_1, w_2) & w_1 = v_1 \wedge w_2 = v_2\\
+      (w_1, v_2) & w_1 = v_1 \wedge \lab(w_1) = T_1 \to T_2 \ \wedge \  ! \exists v_2 \in w_2 |\lab(v_2) = T_1\\
+      (v_1, w_2) & w_2 = v_2 \wedge \lab(w_2) = T_1  \ \wedge \  ! \exists v_1 \in w_1 | \mathsf{dom}(\lab(v_1)) = T_1\\
+      (v_1, v_2) & ! \exists v_1 \in w_1 \ \wedge \ ! \exists v_2 \in w_2|\lab(v_1) = T_1 \to T_2 \wedge \lab(v_2) = T_1
    \end{cases}
 \]
 \end{definition}
 
-\begin{definition}[$\lab$]
+
+
+
+\subsection{Static semantic for \semanticD}
+
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\begin{tabular}{|l c l r|}
+\hline
+&$\cdots$&&\\
+$\mtP{T}$&$::=$&&$\mathsf {multi-types}$\\
+&&$\mtC{T}$&$\mathsf {multi-type}$\\
+&&&\\
+$\Gamma$&$::=$&&$\mathsf {typing \ contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\Gamma , x:T$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
+$\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
+&&$\varnothing$&$\mathsf {empty \ context}$\\
+&&$\emt,x: \mtP{T}$&$\mathsf {term \ variable \ binding}$\\
+&&&\\
+\hline
+\end{tabular}
+\caption{Syntax for \semanticD \ with static semantic. }
+\label{tabla:sencillaA}
+\end{center}
+\end{small}
+\end{figure}
+
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\hspace*{-3cm}
+\begin{tabular}{|l c r|}
+\hline
+%\multicolumn{2}{l}{$\mathsf {Term \ typing}$}&$\env t:T$\\
+&&\framebox {$\env t:T$}\\
+&&\\
+&$\env  b : \{\boolt\}$&$\rulename{TBool}$\\
+&&\\
+&$\env  n : \{\intt\}$&$\rulename{TInt}$\\
+&&\\
+&$\env  \negacion : \{\boolt \to \boolt\}$&$\rulename{TNegation}$\\
+&&\\
+&$\env  \suma : \{\intt \to \intt\}$&$\rulename{TSum}$\\
+&&\\
+&$\inference {x:T \in \Gamma}{\env x : \mtCu{T}}$&$\rulename{TVar\Gamma}$\\
+&&\\
+&$\inference {x:\mtD \in \emt}{\env x : \mtD}$&$\rulename{TVar\emt}$\\
+&&\\
+&$\inference {x \not \in dom(\Gamma \cup \emt) \\  & \envE t_2:T_2^{*} & T_2 \in T_2^{*}}{\tyC \absDT: \{T_1 \to T_2\}}$&$\rulename{TAbs}$\\
+&&\\
+&$\inference{\env t : \mtD & T \in  \mtD}{\env \ascrip{t} : \mtCu{T}}$&$\rulename{TAsc}$\\
+&&\\
+&$\inference{x \not \in dom(\Gamma) & \env t_1 : \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enve t_2 : \mtP{T_2}}{\env \oletPT{T_1}{t_1}{t_2} : \mtP{T_2}}$&$\rulename{TLet}$\\
+&&\\
+&$\inference {\env t_1 : T_1^{*} & \env t_2 : T_2^{*}  \\ & !\exists(T_1 \to T_2) \in T_1^{*}| !\exists(T_1) \in T_2^{*}}{\env \appD : \{T_2\}}$&$\rulename{TApp}$\\
+&&\\
+\hline
+\end{tabular}
+\hspace*{-2.8cm}
+\caption{Term typing rules.}
+\label{tabla:sencillaA}
+\end{center}
+
+\end{small}
+\end{figure}
+
+
+\begin{figure}
+\begin{small}
+\begin{center}
+\hspace*{-3cm}
+\begin{tabular}{|l c r|}
+\hline
+%\multicolumn{2}{l}{$\mathsf {Term \ typing}$}&$\env t:T$\\
+&&\framebox {$\env t:T$}\\
+&&\\
+&$\tyC  b : \{\boolt\}$&$\rulename{CTBool}$\\
+&&\\
+&$\tyC  b[s] : \{\boolt\}$&$\rulename{CSTBool}$\\
+&&\\
+&$\tyC  n : \{\intt\}$&$\rulename{CTInt}$\\
+&&\\
+&$\tyC  n[s] : \{\intt\}$&$\rulename{CSTInt}$\\
+&&\\
+&$\tyC  \negacion : \{\boolt \to \boolt\}$&$\rulename{CTNegation}$\\
+&&\\
+&$\tyC  \negacion[s] : \{\boolt \to \boolt\}$&$\rulename{CSTNegation}$\\
+&&\\
+&$\tyC  \suma : \{\intt \to \intt\}$&$\rulename{CTSum}$\\
+&&\\
+&$\tyC  \suma[s] : \{\intt \to \intt\}$&$\rulename{CSTSum}$\\
+&&\\
+&$\inference {x:T \in \Gamma}{\tyC x[s] : \mtCu{T}}$&$\rulename{CTVar\Gamma}$\\
+&&\\
+&$\inference {x:\mtD \in \emt(s)}{\tyC x[s] : \mtD}$&$\rulename{CTVar\emt}$\\
+&&\\
+&$\inference {x \not \in dom(\Gamma \cup \emt(s)) \\  & \Gamma, x : T_1 \vdash_c t_2[s] :T_2^{*} & T_2 \in T_2^{*}}{\tyC (\absDT)[s]: \{T_1 \to T_2\}}$&$\rulename{CTAbs}$\\
+&&\\
+&$\inference{\tyC t[s] :: T : \mtD }{\tyC (\ascrip{t})[s] : \mtD}$&$\rulename{CTAsc}$\\
+&&\\
+&$\inference{\tyC c : T^{*} & T \in  \mtD}{\tyC \ascrip{c} : \mtCu{T}}$&$\rulename{CSTAsc}$\\
+&&\\
+&$\inference{\tyC \oletPT{T_1}{t_1[s]}{t_2[s] : \mtP{T}}}{\tyC \conf{\oletPT{T_1}{t_1}{t_2}} : \mtP{T}}$&$\rulename{CT Let}$\\
+&&\\
+&$\inference{x \not \in dom(\Gamma) & \tyC c_1 : \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enveC t_2 : \mtP{T_2}}{\tyC \oletPT{T_1}{c_1}{t_2[s]} : \mtP{T_2}}$&$\rulename{CSTLet}$\\
+&&\\
+&$\inference {\tyC t_1[s] \ t_2[s] : \mtP{T}}{\tyC \conf{\appD} : \mtP{T}}$&$\rulename{CTCApp}$\\
+&&\\
+&$\inference {\tyC c_1 : T_1^{*} & \tyC c_2 : T_2^{*}  \\ & !\exists(T_1 \to T_2) \in T_1^{*}| !\exists(T_1) \in T_2^{*}}{\tyC c_1 \ c_2 : \{T_2\}}$&$\rulename{CSTApp}$\\
+&&\\
+\hline
+\end{tabular}
+\hspace*{-2.8cm}
+\caption{Configuration typing rules.}
+\label{tabla:sencillaA}
+\end{center}
+
+\end{small}
+\end{figure}
+
+\begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
-The function $\lab$ is defined  as follows:
-\[ \lab(v) = \begin{cases} 
-      \intt & v = n \\
-      \boolt & v = b \\
-      T_1 \to T_2 & v  = \absD\\
+Given a multi-type context $\emt$ and a pair $(x:T)$, the operator $\oplus$ is defined  as follows:
+\[ \emt \oplus (x:T) = \begin{cases} 
+      x:\mtCu{T}& \emt =  \varnothing \\
+      \emt',x:(\mtD \cup \mtCu{T}) & \emt = \emt',x:\mtD\\
+      \emt' \oplus (x:T),y:\mtD & \emt = \emt',y:\mtD\\
    \end{cases}
 \]
-
 \end{definition}
 
-
-
-
-
-
-
-
-
-
+\begin{definition}[$\Gamma(s)$]
+\label{definition:tcs}
+\mbox{}
+The typing context built from a substitution $s$, writing $\Gamma(s)$, it is defined as follows:
+\[ \Gamma(s) = \begin{cases} 
+     \varnothing & s =  \bullet \\
+      \Gamma(s'), x:T & s = (x,v):s' \ \land \ \tyC v : T 
+   \end{cases}
+\]
+\end{definition}
 
 \end{document}
