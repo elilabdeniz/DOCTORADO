@@ -84,6 +84,10 @@
 \newcommand{\buscar}{\mathsf{lookup}}
 \newcommand{\tipo}{\mathsf{tag}}
 
+\newcommand{\errorA}{\mathsf{error}}
+\newcommand{\nameerror}{\mathsf{NameError}}
+\newcommand{\typeerror}{\mathsf{TypeError}}
+
 \newcommand{\semanticA}{Flexible Language}
 \newcommand{\semanticB}{Tag Driven Language}
 \newcommand{\semanticC}{Strict Language}
@@ -149,53 +153,48 @@ $t$&$::=$&&$\mathsf {terms}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
 %&&$\negacion{t}$&$\mathsf {negation}$\\
 &&&\\
-$b$&$::=$&&$\mathsf {boolean \ value}$\\
-&&$\truet$&$\mathsf {true \ value}$\\
-&&$\falset$&$\mathsf {false \ value}$\\
-&&&\\
-$op$&$::=$&&$\mathsf {operators}$\\
-&&$\suma$&$\mathsf {sum}$\\
-&&$\negacion$&$\mathsf{negation} $\\
-\end{tabular}
-& \begin{tabular}{l c l r}
-&&&\\
-%$T$&$::=$&&$\mathsf {types}$\\
-%&&$\intt$&$\mathsf {type \ of \ integers}$\\
-%&&$\boolt$&$\mathsf {type \ of \ booleans}$\\
-%&&$T \to T$&$\mathsf {type \ of \ functions}$\\
-%&&&\\
 $v$&$::=$&&$\mathsf {values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
 &&$op$&$\mathsf{operator}$\\
 &&$\conf{\absST {x}{t}}$&$\mathsf{closure}$\\
 &&&\\
+$b$&$::=$&&$\mathsf {boolean \ value}$\\
+&&$\truet$&$\mathsf {true \ value}$\\
+&&$\falset$&$\mathsf {false \ value}$\\
+\end{tabular}
+& \begin{tabular}{l c l r}
+&&&\\
+$op$&$::=$&&$\mathsf {operators}$\\
+&&$\suma$&$\mathsf {sum}$\\
+&&$\negacion$&$\mathsf{negation} $\\
+&&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
 &&$v$&\\
 &&$t[s]$&\\
 &&$c \ c $&\\
 &&$\oletP {T}{c}{c}$&\\
-%&&$\ascrip{c}$&\\
-%&&$\suma{c}$&\\
-% &&$\negacion{c}$&\\
-%&&$\mathsf{error}$&\\
+&&$\errorA$&\\
+&&&\\
+$\errorA$&$::=$&&$\mathsf {errors}$\\
+&&$\nameerror$&$\mathsf {name \ error}$\\
+&&$\typeerror$&$\mathsf {type \ error}$\\
 &&&\\
 $s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
 &&$ \bullet$&$\mathsf {empty \ substitution}$\\
 &&$\subx$&$\mathsf {variable \ substitution}$\\
-&&&\\
-&&&\\
 \end{tabular}\\
 \hline
 \end{tabular}
 \hspace*{-2cm}
 \caption{Syntax of the \semanticA.}
-\label{figure:sencilla}
+\label{figure:sintax1}
 \end{center}
 %\end{table}
 \end{small}
 \end{figure}
 
+\begin{comment}
 \begin{figure}[h]
 \begin{small}
 \begin{center}
@@ -261,6 +260,132 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \end{center}
 \end{small}
 \end{figure}
+\end{comment}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+&\framebox {$c \tto c$}\\
+&\\
+$b[s] \tto b$&$\rulename{False}  $\\
+&\\
+$n[s] \tto n$&$\rulename{Num}  $\\
+&\\
+$op [s] \tto op$&$\rulename{Op}  $\\
+&\\
+%$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
+%&\\
+$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
+&\\
+$\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
+&\\
+%$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
+%&\\
+${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+&\\
+$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+&\\
+$\suma{n} \tto n + 1$&$\rulename{Sum}$\\
+&\\
+$\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
+&\\
+\hline
+\end{tabular}
+\caption{Reduction rules for \semanticA.}
+\label{tabla:rules1}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+&\\
+$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+&\\
+\hline
+\end{tabular}
+\caption{Substitution rules for \semanticA.}
+\label{tabla:substitutionRules}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+%&\\
+%&\framebox {$c \tto c$}\\
+&\\
+$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+&\\
+$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+&\\
+$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+&\\
+\hline
+\end{tabular}
+\caption{Congruence rules for \semanticA.}
+\label{tabla:congruenceRules}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+%&\\
+%&\framebox {$c \tto c$}\\
+&\\
+$ {\oletP{T_1}{\errorA}{c_2} \tto \errorA  }$&$\rulename{LetErr} $\\
+&\\
+${\errorA \ c_2 \tto \errorA} $&$\rulename{AppErr1}  $\\
+&\\
+$ {v \ \errorA \tto \errorA}$&$\rulename{AppErr2}  $\\
+&\\
+\hline
+\end{tabular}
+\caption{Propagation error rules for \semanticA.}
+\label{tabla:errorRules}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+$x[ \ ] \tto \nameerror$&$\rulename{NameError}  $\\
+&\\
+${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+&\\
+$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+&\\
+$\suma{n} \tto n + 1$&$\rulename{Sum}$\\
+&\\
+$\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
+&\\
+\hline
+\end{tabular}
+\caption{Error rules for \semanticA.}
+\label{tabla:rules1errors}
+\end{center}
+\end{small}
+\end{figure}
+
 
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
@@ -423,7 +548,7 @@ $ \conf{\ascripS{t}} \tto \ascripS{t[s]}$&$\rulename{AscSub}$\\
 &\\
 $ \inference {\lab(v) = S}{\ascripS{v} \tto v} $&$\rulename{Asc} $\\
 &\\
-$ \inference{\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
+$ \inference{\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{AscVar}$\\
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulename{Asc1} $\\
 &\\
@@ -902,7 +1027,7 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&\\
 &$\inference{\tyC c : T^{*} & T \in  \mtD}{\tyC \ascrip{c} : \mtCu{T}}$&$\rulename{CSTAsc}$\\
 &&\\
-&$\inference{\tyC \oletPT{T_1}{t_1[s]}{t_2[s] : \mtP{T}}}{\tyC \conf{\oletPT{T_1}{t_1}{t_2}} : \mtP{T}}$&$\rulename{CT Let}$\\
+&$\inference{\tyC \oletPT{T_1}{t_1[s]}{t_2[s] : \mtP{T}}}{\tyC \conf{\oletPT{T_1}{t_1}{t_2}} : \mtP{T}}$&$\rulename{CTLet}$\\
 &&\\
 &$\inference{x \not \in dom(\Gamma) & \tyC c_1 : \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enveC t_2 : \mtP{T_2}}{\tyC \oletPT{T_1}{c_1}{t_2[s]} : \mtP{T_2}}$&$\rulename{CSTLet}$\\
 &&\\
