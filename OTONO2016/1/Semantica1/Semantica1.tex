@@ -86,7 +86,10 @@
 
 \newcommand{\errorA}{\mathsf{error}}
 \newcommand{\nameerror}{\mathsf{NameError}}
-\newcommand{\typeerror}{\mathsf{TypeError}}
+\newcommand{\typeerror}{\mathsf{TagError}}
+\newcommand{\tagerror}{\mathsf{TypeError}}
+\newcommand{\dispatcherror}{\mathsf{DispatchError}}
+\newcommand{\ambiguityerror}{\mathsf{AmbiguityError}}
 
 \newcommand{\semanticA}{Flexible Language}
 \newcommand{\semanticB}{Tag Driven Language}
@@ -174,9 +177,9 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$t[s]$&\\
 &&$c \ c $&\\
 &&$\oletP {T}{c}{c}$&\\
-&&$\errorA$&\\
+&&$e$&\\
 &&&\\
-$\errorA$&$::=$&&$\mathsf {errors}$\\
+$e$&$::=$&&$\mathsf {errors}$\\
 &&$\nameerror$&$\mathsf {name \ error}$\\
 &&$\typeerror$&$\mathsf {type \ error}$\\
 &&&\\
@@ -348,11 +351,11 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 %&\\
 %&\framebox {$c \tto c$}\\
 &\\
-$ {\oletP{T_1}{\errorA}{c_2} \tto \errorA  }$&$\rulename{LetErr} $\\
+$ {\oletP{T_1}{e}{c_2} \tto e  }$&$\rulename{LetErr} $\\
 &\\
-${\errorA \ c_2 \tto \errorA} $&$\rulename{AppErr1}  $\\
+${e \ c_2 \tto e} $&$\rulename{AppErr1}  $\\
 &\\
-$ {v \ \errorA \tto \errorA}$&$\rulename{AppErr2}  $\\
+$ {v \ e \tto e}$&$\rulename{AppErr2}  $\\
 &\\
 \hline
 \end{tabular}
@@ -368,15 +371,13 @@ $ {v \ \errorA \tto \errorA}$&$\rulename{AppErr2}  $\\
 \begin{tabular}{|c r|}
 \hline
 &\\
-$x[ \ ] \tto \nameerror$&$\rulename{NameError}  $\\
+$x[ \ ] \tto \nameerror$&$\rulename{NameError}$\\
 &\\
-${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+$\inference {v_1 \neq \absST {x}{t}}{v_1 \ v_2 \tto \typeerror}$&$\rulename{TypeErrApp}$\\
 &\\
-$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+$\inference {v \neq n}{\suma{v} \tto \typeerror}$&$\rulename{TypeErrSum}$\\
 &\\
-$\suma{n} \tto n + 1$&$\rulename{Sum}$\\
-&\\
-$\negacion{b} \tto \neg \ b $&$\rulename{Negation}$\\
+$\inference {v \neq b}{\negacion{v} \tto  }$&$\rulename{TypeErrNegation}$\\
 &\\
 \hline
 \end{tabular}
@@ -414,21 +415,25 @@ Characterization of the errors for \semanticB:
 \end{itemize}
 
 
-\begin{figure}[]
+\begin{figure}[h]
 \begin{small}
 \begin{center}
 \begin{tabular}{|l c l r|}
 \hline
-&&$\cdots$&\\
 $S$&$::=$&&$\mathsf {tags}$\\
 &&$\intt$&$\mathsf {integer \ tag}$\\
 &&$\boolt$&$\mathsf {boolean \ tag}$\\
 &&$\funt$&$\mathsf {function \ tag}$\\
-&&$\cdots$&\\
+&&&\\
+$e$&$::=$&&$\mathsf {errors}$\\
+&&$\nameerror$&$\mathsf {name \ error}$\\
+&&$\typeerror$&$\mathsf {type \ error}$\\
+&&$\dispatcherror$&$\mathsf {dispatch \ error}$\\
+$\cdots$&&&\\
 \hline
 \end{tabular}
 \caption{Syntax of the \semanticB(Extends \semanticA).}
-\label{figure:sencilla}
+\label{figure:syntax2}
 \end{center}
 \end{small}
 \end{figure}
@@ -439,20 +444,26 @@ $S$&$::=$&&$\mathsf {tags}$\\
 \begin{center}
 \begin{tabular}{|c r|}
 \hline
-&\\
-&\framebox {$c \tto c$}\\
 $\cdots$&\\
-&\\
-%$ \inference{ S = \tagtype(T) & v = \buscar(x, [s], S)}{\ascrip{x[s]} \tto  \ascrip{v}} $&$\rulename{AscVar}$\\
-%&\\
 $\inference{ \buscar(x_1, [s_1],\funt, v_1)}{x_1[s_1] \ v_2 \tto v_1 \ v_2}$&$\rulename{AppVar}$\\
 &\\
 $\inference{\buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{SumVar}$\\
 &\\
 $\inference{\buscar(x, [s], \boolt, b)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
+\hline
+\end{tabular}
+\caption{Reduction rules for \semanticB (Extends \semanticA).}
+\label{tabla:reductionRules2}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
 &\\
-%$ \inference {c \tto c' & \novalvar{c}}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
-%&\\
 $ \inference {c_1 \tto c_1' & \noval{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
 &\\
 $\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
@@ -462,18 +473,30 @@ $ \inference {c \tto c' & \noval{c}}{\conf{\absST{x}{t_2}} \ c \tto \conf{\absST
 $ \inference {c_2 \tto c_2' & \noval{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  $\\
-&\\
-%$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
-%$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
-%&\\
-%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
-%&\\
-%$ \inference {c \tto c'}{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
-$\cdots$&\\
 \hline
 \end{tabular}
-\caption{Reduction rules for \semanticB (Extends \semanticA).}
-\label{tabla:sencilla}
+\caption{Congruence rules for \semanticB.}
+\label{tabla:congruenceRules2}
+\end{center}
+\end{small}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+$\cdots$&\\
+$\inference{ \neg \buscar(x_1, [s_1],\funt, v_1)}{x_1[s_1] \ v_2 \tto  \dispatcherror}$&$\rulename{DisErrApp}$\\
+&\\
+$\inference{\neg \buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \dispatcherror}$&$\rulename{DisErrSum}$\\
+&\\
+$\inference{\neg \buscar(x, [s], \boolt, b)}{\negacion{x[s]} \tto \dispatcherror}$&$\rulename{DisErrNegation}$\\
+\hline
+\end{tabular}
+\caption{Error rules for \semanticB (Extends \semanticA).}
+\label{tabla:errorRules2}
 \end{center}
 \end{small}
 \end{figure}
@@ -511,14 +534,13 @@ The function $\lab$ is defined  as follows:
 
 \subsection{\semanticB \ with ascription}
 
-\setlength{\topmargin}{-25mm}
-\setlength{\textheight}{230mm}
 \begin{figure}[h]
 \begin{small}
 \begin{center}
 \hspace*{-2cm}
 \begin{tabular}{|l c l r|}
 \hline
+$\cdots$&&&\\
 $t$&$::=$&&$\mathsf {terms}$\\
 &&$\cdots$&\\
 &&$\ascripS{t}$&$\mathsf {ascription}$\\
@@ -544,17 +566,23 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &\\
 &\framebox {$c \tto c$}\\
 $\cdots$&\\
-$ \conf{\ascripS{t}} \tto \ascripS{t[s]}$&$\rulename{AscSub}$\\
-&\\
 $ \inference {\lab(v) = S}{\ascripS{v} \tto v} $&$\rulename{Asc} $\\
+&\\
+$ \conf{\ascripS{t}} \tto \ascripS{t[s]}$&$\rulename{AscSub}$\\
 &\\
 $ \inference{\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{AscVar}$\\
 &\\
 $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulename{Asc1} $\\
 &\\
+$ {\ascripS{error} \tto error }$&$\rulename{AscErr} $\\
+&\\
+$ \inference {\lab(v) \neq S}{\ascripS{v} \tto \typeerror} $&$\rulename{TypeErrAsc} $\\
+&\\
+$ \inference{\neg\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{DisErrAsc}$\\
+&\\
 \hline
 \end{tabular}
-\caption{Reduction rules for \semanticB  \ with ascriptions.}
+\caption{Rules for \semanticB  \ with ascriptions.}
 \label{tabla:sencilla}
 \end{center}
 \end{small}
@@ -575,8 +603,6 @@ Characterization of the errors for \semanticC:
 \item Ambiguity error is detected if the left side of the function application  have more than one instance with $\funt$ tag or in the right side have more than one value for the application. Strict detection of ambiguity. 
 \end{itemize}
 
-\setlength{\topmargin}{-25mm}
-\setlength{\textheight}{230mm}
 \begin{figure}[]
 \begin{small}
 %\begin{table}
@@ -586,7 +612,7 @@ Characterization of the errors for \semanticC:
 \hline
 &&$\cdots$&\\
 $w$&$::=$&&$\mathsf {multi-value}$\\
-&&$v$&$\mathsf {value}$\\
+%&&$v$&$\mathsf {value}$\\
 &&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
 &&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
@@ -595,6 +621,14 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$c \ c $&\\
 &&$\oletP {T}{c}{c}$&\\
 &&$\ascripS{c}$&\\
+&&$e$&$\mathsf {error}$\\
+&&&\\
+$e$&$::=$&&$\mathsf {errors}$\\
+&&$\cdots$&\\
+%&&$\nameerror$&$\mathsf {name \ error}$\\
+%&&$\typeerror$&$\mathsf {type \ error}$\\
+%&&$\dispatcherror$&$\mathsf {dispatch \ error}$\\
+&&$\ambiguityerror$&$\mathsf {ambiguity \ error}$\\
 \hline
 \end{tabular}
 \hspace*{-2cm}
@@ -618,57 +652,102 @@ $w[s] \tto w$&$\rulename{MultiValue}  $\\
 $\confxW{x} \tto w$&$\rulename{VarOk}  $\\
 &\\
 $\inference {x \neq y} {\confyW{x} \tto x[s]}$&$\rulename{VarNext}  $\\
-%&\\
-%$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
 &\\
-$ \conf{\ascripS{t}} \tto \ascripS{t[s]}$&$\rulename{AscSub}$\\
-&\\
-$ \conf{\olet} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
-&\\
-$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
-%&\\
-%$\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
-%&\\
-%$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
-&\\
-%$ \ascrip{v} \tto v $&$\rulename{Asc} $\\
-%&\\
 $ \inference {\filtrar(w, S) = w' & w' \neq \emptyset} {\ascripS{w} \tto w'} $&$\rulename{Asc} $\\
 &\\
 ${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
 &\\
-$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+
+$\inference{ \filtrar(w_1, \funt) = \{\absST{x}{t_2} \}}{w_1 \ w_2 \tto \conf{[x \mapsto w_2]{t_2}}}$&$\rulename{App}$\\
 &\\
 $\inference {\filtrar(w, \intt)  = \{\overline{n}\} }{\suma{w} \tto \{ \overline{n + 1} \}}$&$\rulename{Sum}$\\
 &\\
 $\inference {\filtrar(w, \boolt)  = \{\overline{b}\} }{\negacion{w}\tto {\{ \overline{\neg \ b} \}}}$&$\rulename{Negation}$\\
-%$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
-%&\\
-&\\
-$ \inference {c \tto c'}{\ascripS{c} \tto \ascripS{c'} }$&$\rulename{Asc1} $\\
- &\\
-$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
-&\\
-$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
-&\\
-$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
-&\\
-%$\inference {c \tto c'}{op \ c \tto op \ c'} $&$\rulename{OpApp1}  $\\
-%$\inference {c_1 \tto c_1'}{\suma{c_1} \tto \suma{c_1'}} $&$\rulename{Sum1}  $\\
-%&\\
-%$ \inference {c \tto c'}{\suma{v}{c} \tto \suma{v}{c'}}$&$\rulename{Sum2}  $\\
-%&\\
-%$ \inference {c \tto c'}{\negacion{c} \tto \negacion{c'}}$&$\rulename{Negation1}  $\\
+
 &\\
 \hline
 \end{tabular}
 \caption{Reduction rules for \semanticC.}
-\label{tabla:sencilla}
+\label{tabla:reductionRulesStrict}
+\end{center}
+\end{small}
+\end{figure}
+
+The only rule that change is:
+$ \inference {c \tto c'}{w \ c \tto w \ c'}$ $\rulename{App2}  $\\
+
+\begin{figure}[]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+&\\
+$ \inference {\filtrar(w, S) = \{v\}} {\ascripS{w} \tto \{v\} } $&$\rulename{Asc} $\\
+&\\
+${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
+&\\
+%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+
+$\inference{\filtrar(w_1, \funt) = \{\absST{x}{t_2} \}}{w_1 \ w_2 \tto \conf{[x \mapsto w_2]{t_2}}}$&$\rulename{App}$\\
+&\\
+$\inference {\filtrar(w, \intt)  = \{n\} }{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
+&\\
+$\inference {\filtrar(w, \boolt)  = \{b\} }{\negacion{w}\tto {\{\neg \ b\}}}$&$\rulename{Negation}$\\
+
+&\\
+\hline
+\end{tabular}
+\caption{Reduction rules for \semanticC.}
+\label{tabla:reductionRulesStrictMore}
+\end{center}
+\end{small}
+\end{figure}
+
+\begin{figure}[]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c r|}
+\hline
+$\cdots$&\\
+$ \inference {\filtrar(w, S) = \{\ \}} {\ascripS{w} \tto \dispatcherror} $&$\rulename{DisErrAsc} $\\
+&\\
+${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{DisErrLet} $\\
+&\\
+%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+
+$\inference{ \filtrar(w_1, \funt) = \{ \ \}}{w_1 \ w_2 \tto \dispatcherror}$&$\rulename{DisErrApp}$\\
+&\\
+$\inference {\filtrar(w, \intt)  = \{\ \} }{\suma{w} \tto \dispatcherror}$&$\rulename{DisErrSum}$\\
+&\\
+$\inference {\filtrar(w, \boolt)  = \{ \ \} }{\negacion{w}\tto \dispatcherror}$&$\rulename{DisErrNegation}$\\
+&\\
+
+$ \inference {\filtrar(w, S) = \{\ \}} {\ascripS{w} \tto \ambiguityerror} $&$\rulename{AmbErrAsc} $\\
+&\\
+${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{AmbErrLet} $\\
+&\\
+%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+
+$\inference{ \filtrar(w_1, \funt) = \{ \ \}}{w_1 \ w_2 \tto \ambiguityerror}$&$\rulename{AmbErrApp}$\\
+&\\
+$\inference {\filtrar(w, \intt)  = \{\ \} }{\suma{w} \tto \ambiguityerror}$&$\rulename{AmbErrSum}$\\
+&\\
+$\inference {\filtrar(w, \boolt)  = \{ \ \} }{\negacion{w}\tto \ambiguityerror}$&$\rulename{AmbErrNegation}$\\
+&\\
+\hline
+\end{tabular}
+\caption{Error rules for \semanticC.}
+\label{tabla:errorRulesStrictMore}
 \end{center}
 \end{small}
 \end{figure}
 
 
+
+
+
+\begin{comment}
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
@@ -682,26 +761,49 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
    \end{cases}
 \]
 \end{definition}
+\end{comment}
+
+\begin{definition}[$\oplus$]
+\label{definition:tcs}
+\mbox{}
+Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
+\[ s \oplus x \mapsto w = \begin{cases} 
+      x \mapsto w & s =  \varnothing\\
+      x \mapsto w' \cup w, s' & s = x \mapsto w', s'\\
+      y \mapsto w', s' \oplus x \mapsto w & s = y \mapsto w', s'\\
+   \end{cases}
+\]
+\end{definition}
+
 
 \begin{definition}[$\filtrar(\cdot, \cdot)$]
 \label{definition:tcs}
 \mbox{}
 The function $\filtrar$ is defined  as follows:
-\[ \filtrar(w, S) = \begin{cases}
- \{w\} & w = v \wedge \lab(w) = S\\
- \{\overline{v}\} & v_i \in w \wedge \lab(v_i) = S \\
- \end{cases} 
+\[ \filtrar(w, S) = \{v| v \in w \wedge \lab(v) = S \}
 \]
 \end{definition}
 
+
+\begin{comment}
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
-The function $\buscar$ is defined  as follows:\\
- $\buscar(w_1, w_2) = (v_1, v_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt \ \wedge \ w_2 = \{ v_2 \}$
+The function $\buscar$ is defined  as follows:
+ \[ \buscar(w_1, w_2) = (v_1, v_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt \ \wedge \ w_2 = \{ v_2 \}
+ \]
  \end{definition}
+\end{comment}
 
 
+\begin{comment}
+\begin{definition}[$\buscar$]
+\label{definition:tcs}
+\mbox{}
+The function $\buscar$ is defined  as follows:
+ \[\buscar(w_1, w_2) = (v_1, w_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt\]
+ \end{definition}
+\end{comment}
  
 \subsection{\semanticD}
 \begin{itemize}
@@ -715,8 +817,6 @@ The function $\buscar$ is defined  as follows:\\
 \item Como no esta verificacda la informacion de tipo, no se puede decir nada acerca de la semantica.
 \end{itemize}
 
-\setlength{\topmargin}{-25mm}
-\setlength{\textheight}{230mm}
 \begin{figure}
 \begin{small}
 %\begin{table}
@@ -733,20 +833,20 @@ $t$&$::=$&&$\mathsf {terms}$\\
 &&$\absSTT {x}{t}$&\ $\mathsf {abstraction}$\\
 &&$x$&$\mathsf {variable}$\\
 &&$\app {t}{t}$&$\mathsf {application}$\\
-&&$\oletPT{T}{t}{t}$&$\mathsf {overloading \ let}$\\
+&&$\oletP{T}{t}{t}$&$\mathsf {overloading \ let}$\\
 &&$\ascrip {t}$&$\mathsf {ascription}$\\
 %&&$op \ t$&$\mathsf {operator \ application}$\\
 %&&$\suma{t}$&$\mathsf {sum}$\\
 %&&$\negacion{t}$&$\mathsf {negation}$\\
-&&&\\
-$b$&$::=$&&$\mathsf {boolean \ value}$\\
-&&$\truet$&$\mathsf {true \ value}$\\
-&&$\falset$&$\mathsf {false \ value}$\\
-&&&\\
-$op$&$::=$&&$\mathsf {operators}$\\
-&&$\suma$&$\mathsf {sum}$\\
-&&$\negacion$&$\mathsf{negation} $\\
-&&&\\
+%&&&\\
+%$b$&$::=$&&$\mathsf {boolean \ value}$\\
+%&&$\truet$&$\mathsf {true \ value}$\\
+%&&$\falset$&$\mathsf {false \ value}$\\
+%&&&\\
+%$op$&$::=$&&$\mathsf {operators}$\\
+%&&$\suma$&$\mathsf {sum}$\\
+%&&$\negacion$&$\mathsf{negation} $\\
+%&&&\\
 $T$&$::=$&&$\mathsf {types}$\\
 &&$\intt$&$\mathsf {type \ of \ integers}$\\
 &&$\boolt$&$\mathsf {type \ of \ booleans}$\\
@@ -760,10 +860,10 @@ $v$&$::=$&&$\mathsf {values}$\\
 &&$op$&$\mathsf{operator}$\\
 &&$\conf{\absSTT {x}{t}}$&$\mathsf{closure}$\\
 &&&\\
-$w$&$::=$&&$\mathsf {multi-value}$\\
-&&$v$&$\mathsf {value}$\\
-&&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
-&&&\\
+%$w$&$::=$&&$\mathsf {multi-value}$\\
+%%&&$v$&$\mathsf {value}$\\
+%&&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
+%&&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
 &&$w$&\\
 &&$t[s]$&\\
@@ -772,11 +872,11 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$\ascrip{c}$&\\
 %&&$\suma{c}$&\\
 %&&$\negacion{c}$&\\
-%&&$\mathsf{error}$&\\
-$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
-&&$ \bullet$&$\mathsf {empty \ substitution}$\\
-&&$\subx$&$\mathsf {variable \ substitution}$\\
-%&&$\subxDT$&$\mathsf {variable \ substitution}$\\
+%%&&$\mathsf{error}$&\\
+%$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+%&&$ \bullet$&$\mathsf {empty \ substitution}$\\
+%&&$\subx$&$\mathsf {variable \ substitution}$\\
+%%&&$\subxDT$&$\mathsf {variable \ substitution}$\\
 &&&\\
 \end{tabular}\\
 \hline
