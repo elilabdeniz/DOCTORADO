@@ -259,7 +259,7 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \hline
 \end{tabular}
 \caption{Reduction rules for \semanticA.}
-\label{tabla:sencilla}
+\label{tabla:REDUCTIONrULES123}
 \end{center}
 \end{small}
 \end{figure}
@@ -432,7 +432,7 @@ $e$&$::=$&&$\mathsf {errors}$\\
 $\cdots$&&&\\
 \hline
 \end{tabular}
-\caption{Syntax of the \semanticB(Extends \semanticA).}
+\caption{Syntax of the \semanticB.}
 \label{figure:syntax2}
 \end{center}
 \end{small}
@@ -452,7 +452,7 @@ $\inference{\buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \suma{n}}$&$\rulename{Su
 $\inference{\buscar(x, [s], \boolt, b)}{\negacion{x[s]} \tto \negacion \ b}$&$\rulename{NegationVar}$\\
 \hline
 \end{tabular}
-\caption{Reduction rules for \semanticB (Extends \semanticA).}
+\caption{Reduction rules for \semanticB.}
 \label{tabla:reductionRules2}
 \end{center}
 \end{small}
@@ -495,7 +495,7 @@ $\inference{\neg \buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \dispatcherror}$&$\
 $\inference{\neg \buscar(x, [s], \boolt, b)}{\negacion{x[s]} \tto \dispatcherror}$&$\rulename{DisErrNegation}$\\
 \hline
 \end{tabular}
-\caption{Error rules for \semanticB (Extends \semanticA).}
+\caption{Error rules for \semanticB.}
 \label{tabla:errorRules2}
 \end{center}
 \end{small}
@@ -552,7 +552,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 \end{tabular}
 \hspace*{-2cm}
 \caption{Syntax of the \semanticB \ with ascriptions.}
-\label{figure:sencilla}
+\label{figure:SYNTAXASCRIP}
 \end{center}
 \end{small}
 \end{figure}
@@ -583,7 +583,7 @@ $ \inference{\neg\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{Dis
 \hline
 \end{tabular}
 \caption{Rules for \semanticB  \ with ascriptions.}
-\label{tabla:sencilla}
+\label{tabla:rulesascrip}
 \end{center}
 \end{small}
 \end{figure}
@@ -632,8 +632,8 @@ $e$&$::=$&&$\mathsf {errors}$\\
 \hline
 \end{tabular}
 \hspace*{-2cm}
-\caption{Syntax of the \semanticC (Extends \semanticB \  with ascriptions).}
-\label{figure:sencilla}
+\caption{Syntax of the \semanticC.}
+\label{figure:SYNTAX4}
 \end{center}
 %\end{table}
 \end{small}
@@ -883,7 +883,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 \end{tabular}
 \hspace*{-2cm}
 \caption{Syntax of the \semanticD.}
-\label{figure:sencilla}
+\label{figure:syntaxoverloading}
 \end{center}
 %\end{table}
 \end{small}
@@ -913,15 +913,15 @@ $\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
 %&\\
 %$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
 %&\\
-$ \inference {\filtrar(w, S) = v} {\ascrip{w} \tto v} $&$\rulename{Asc} $\\
+$ \inference {\filtrar(w, S) = \{v\}} {\ascrip{w} \tto v} $&$\rulename{Asc} $\\
 &\\
-$\inference {\filtrar(w, T_1) = v}{\oletPT{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+$\inference {\filtrar(w, T_1) = \{v\}}{\oletPT{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
 $\inference{((\absDT)[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
 &\\
-$\inference{\filtrar(w, \intt) = n}{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
+$\inference{\filtrar(w, \intt) = \{n\}}{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
 &\\
-$\inference{\filtrar(w, \boolt) = b}{\negacion{w} \tto \{ \neg \ b \} }$&$\rulename{Negation}$\\
+$\inference{\filtrar(w, \boolt) = \{b\}}{\negacion{w} \tto \{ \neg \ b \} }$&$\rulename{Negation}$\\
 &\\
 $ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
  &\\
@@ -934,7 +934,7 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 \hline
 \end{tabular}
 \caption{Reduction rules for \semanticD.}
-\label{tabla:sencilla}
+\label{tabla:rulesoverloadingsemantic}
 \end{center}
 \end{small}
 \end{figure}
@@ -953,6 +953,7 @@ Given an environment  $s$ and a variable binding $x \mapsto (v_1:T_1)$, the oper
 \end{definition}
 \end{comment}
 
+\begin{comment}
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
@@ -964,7 +965,7 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
    \end{cases}
 \]
 \end{definition}
-
+\end{comment}
 
 \begin{definition}[$\lab$]
 \label{definition:tcs}
@@ -982,14 +983,10 @@ The function $\lab$ is defined  as follows:
 \label{definition:tcs}
 \mbox{}
 The function $\filtrar$ is defined  as follows:
-\[ \filtrar(w, T) = \begin{cases} 
-      w & w = v \\
-      v' & ! \exists v' \in w |\lab(v') = T\\
-   \end{cases}
+\[ \filtrar(w, T) = \{
+     v | v \in w |\lab(v) = T \}
 \]
-
 \end{definition}
-
 
 \begin{comment}
 \begin{definition}[$\mathsf{flat}$]
@@ -1004,7 +1001,7 @@ The function $\mathsf{flat}$ is defined  as follows:
 \end{definition}
 \end{comment}
 
-
+\begin{comment}
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
@@ -1017,7 +1014,16 @@ The function $\buscar$ is defined  as follows:
    \end{cases}
 \]
 \end{definition}
+\end{comment}
 
+\begin{definition}[$\buscar$]
+\label{definition:tcs}
+\mbox{}
+The function $\buscar$ is defined  as follows:
+\[ \buscar(w_1, w_2) =  
+  \{(v_1, v_2) | v_1 \in w_1 \ \wedge \ v_2 \in w_2 \ \wedge \ \lab(v_1) = T_1 \to T_2 \ \wedge \ \lab(v_2) = T_1\}
+\]
+\end{definition}
 
 
 
@@ -1045,7 +1051,7 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 \hline
 \end{tabular}
 \caption{Syntax for \semanticD \ with static semantic. }
-\label{tabla:sencillaA}
+\label{tabla:syntaxstatic}
 \end{center}
 \end{small}
 \end{figure}
@@ -1085,7 +1091,7 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 \end{tabular}
 \hspace*{-2.8cm}
 \caption{Term typing rules.}
-\label{tabla:sencillaA}
+\label{tabla:termtypingrule}
 \end{center}
 
 \end{small}
@@ -1139,7 +1145,7 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 \end{tabular}
 \hspace*{-2.8cm}
 \caption{Configuration typing rules.}
-\label{tabla:sencillaA}
+\label{tabla:confugurationtypingrule}
 \end{center}
 
 \end{small}
