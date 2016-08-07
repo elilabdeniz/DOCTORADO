@@ -1,4 +1,4 @@
-#lang play 
+#lang racket 
 (require redex)
 (require pict)
 (require "subst.rkt")
