@@ -29,25 +29,26 @@
   (X ::= variable-not-otherwise-mentioned))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OL⇓ OL
-    (W ::= B N CH (L ρ) O)
-    (WW :: = W (WW ρ))
-    (MM ::=
-        WW
-        X        
-       (MM MM)
-       (mlet (X) = MM in MM))
+    (W ::= B N CH O (L ρ))
+    ;(WW :: = W (WW ρ))
+    ;(MM ::=
+     ;   WW
+      ;  X        
+       ;(MM MM)
+       ;(mlet (X) = MM in MM))
        
     (ρ ::= ((X (W ...)) ...)))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OLρ OL⇓
-    (C ::=
-       WW
-       (MM ρ)
+     (C ::=
+       W
        (M ρ)
+       ;L
        ;(C :: T)
        (mlet (X) = C in C)
        (C C)
-       ER)
+       ;(C ρ)
+       ER )
     (ER ::= typeerror dispatcherror)
     (E ::= hole (E C) (W E)
        ;(E :: T)
@@ -133,11 +134,11 @@
      
      ;(--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
      ;-------------------------------------
-     (--> ((MM_1 MM_2) ρ) ((MM_1 ρ) (MM_2 ρ)) ρ-app)
+     (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
      
      ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      
-     (--> ((mlet (X) = MM_1 in MM_2) ρ) (mlet (X) = (MM_1 ρ) in (MM_2 ρ)) ρ-let)
+     (--> ((mlet (X) = M_1 in M_2) ρ) (mlet (X) = (M_1 ρ) in (M_2 ρ)) ρ-let)
      
      (--> (X ρ) W
           (judgment-holds (lookup7 ρ X W))
@@ -146,8 +147,8 @@
           )
      ;-------------------------------------
 
-     (--> (((λ (X) MM) ρ) W) 
-          ((subst (X W) MM ) ρ)
+     (--> (((λ (X) M) ρ) W) 
+          ((subst (X W) M ) ρ)
           app)
      
      ;(--> ((X_1 ρ_1) (X_2 ρ_2)) 

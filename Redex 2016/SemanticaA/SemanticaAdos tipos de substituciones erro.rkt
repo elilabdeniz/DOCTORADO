@@ -34,15 +34,14 @@
     (C ::=
        W
        (M ρ)
-       ;L
+       L
        ;(C :: T)
        (mlet (X) = C in C)
        (C C)
-       ;(C ρ)
+       (C ρ)
        ER )
     (ER ::= typeerror)
-    (W ::= B N CH O (L ρ))
-    ;(W ::= B N CH O (L ρ) ((λ (X) C) ρ))
+    (W ::= B N CH O (L ρ) ((λ (X) C) ρ))
     (ρ ::= ((X (W ...)) ...))
     (E ::= hole (E C) (W E)
        ;(E :: T)
@@ -61,20 +60,19 @@
      ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      (--> ((mlet (X) = M_1 in M_2) ρ) (mlet (X) = (M_1 ρ) in (M_2 ρ)) ρ-let)
 
-     ;(--> ((L ρ_1) ρ_2) (L (unirEnv ρ_1 ρ_2)) ρ-abs1)
-     ;(--> (((λ (X) C) ρ_1) ρ_2) ((λ (X) C) (unirEnv ρ_1 ρ_2)) ρ-abs2)
+     (--> ((L ρ_1) ρ_2) (L (unirEnv ρ_1 ρ_2)) ρ-abs1)
+     (--> (((λ (X) C) ρ_1) ρ_2) ((λ (X) C) (unirEnv ρ_1 ρ_2)) ρ-abs2)
      
      (--> ((C_1 C_2) ρ) ((C_1 ρ) (C_2 ρ)) ρ-Capp)
      ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
-     ;(--> ((mlet (X) = C_1 in C_2) ρ) (mlet (X) = (C_1 ρ) in (C_2 ρ)) ρ-Clet)
+     (--> ((mlet (X) = C_1 in C_2) ρ) (mlet (X) = (C_1 ρ) in (C_2 ρ)) ρ-Clet)
      
      (--> (X ρ) W
           (judgment-holds (lookup2 ρ X W))
           ρ-x)
      ;-------------------------------------
      (--> (((λ (X) M) ρ) W)
-          (M (ext ρ (X W)))
-          ;((subst (X W) M ) ρ)
+          ((subst (X W) M ) ρ)
           app)
      
      (--> (OB B) W_1
@@ -99,11 +97,11 @@
           (M (ext ρ (X W)))
           let)
 
-     ;(--> (mlet (X) = W in (C  ρ))
-          ;(C (ext ρ (X W)))
-          ;letC)
+     (--> (mlet (X) = W in (C  ρ))
+          (C (ext ρ (X W)))
+          letC)
 
-     (--> (mlet (X) = ER in C)
+     (--> (mlet (X) = ER in (M  ρ))
           ER
           letErr1)
      

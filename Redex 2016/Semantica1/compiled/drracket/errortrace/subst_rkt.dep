@@ -1,1 +1,1 @@
-("6.2.1" ("f078dd70ea53e2867c1e4b485568029ec0a5b0e8" . "b4650cd0e61331ab716a04791ac39f8014e11470") (collects #"racket" #"main.rkt") #"C:\\1ELIZABETH\\1DOC\\1MyRepo\\Redex 2016\\Semantica1\\shared.rkt" (collects #"racket" #"runtime-config.rkt"))
+("6.2.1" ("ede109780e26e2a6e5146edca599b02dab4d9f2a" . "2ae9fd0c6afcba96706257ddcc91f336df4e0f8b") #"F:\\2Elizabeth\\111DOC\\Redex 2016\\Semantica1\\shared.rkt" (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
