@@ -29,10 +29,10 @@
   (X ::= variable-not-otherwise-mentioned))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OL⇓ OL
-    (W ::= B N CH WW O)
-    (WW :: = ((λ (X) MM) ρ) (WW ρ))
+    (W ::= B N CH (L ρ) O)
+    (WW :: = W (WW ρ))
     (MM ::=
-        W
+        WW
         X        
        (MM MM)
        (mlet (X) = MM in MM))
@@ -41,7 +41,7 @@
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OLρ OL⇓
     (C ::=
-       W
+       WW
        (MM ρ)
        (M ρ)
        ;(C :: T)
@@ -263,7 +263,7 @@
            (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 )))))
            )
 
-      (--> (mlet (X) = ER in (M  ρ))
+      (--> (mlet (X) = ER in C)
           ER
           letErro)
      
@@ -283,6 +283,11 @@
           δNErr
           (side-condition (not (is-num? (term W)))))
 
+     (--> (W_1 W_2) typeerror
+          AppErr
+          (side-condition (not (or (is-closure1? (term W_1)) (is-closure2? (term W_1)))))
+          (side-condition (not (is-operator? (term W_1)))))
+
 
      (--> ((X_1 ρ_1) W_2) dispatcherror
           app13Err
@@ -295,6 +300,8 @@
      (--> (ON (X_2 ρ_2)) dispatcherror
           δN1Err
          (side-condition  (term  (predicado ρ_2 X_2 num))))
+
+     
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
@@ -634,6 +641,14 @@
 (define (is-num? t)
         (redex-match? OLρ  N t))
 
+(define (is-operator? t)
+        (redex-match? OLρ  O t))
+
+(define (is-closure1? t)
+        (redex-match? OLρ  (L ρ) t))
+
+(define (is-closure2? t)
+        (redex-match? OLρ  ((λ (X) C) ρ) t))
 
 (define-metafunction OLρT
     [(predicado(_ ... (any_x ()) _ ...) any_x any_s) #t]

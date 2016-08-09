@@ -220,6 +220,10 @@ class B extends A \{\} \\
 def m(x: A, y: B): Int = 1\\
 def m(x: B, y: A): Int = 2\\
 m(new B, new B)\\ }
+
+\subsection{Hindley/Milner system}
+%\ref{sub:HindleyMilner_system}
+
 \section{Overloading}\label{section:polymorphism}
 In the preset section we report some different works related to the overloading field. We start with type class, a powerful mechanism which allow overloading, combined with parametric polyphormism. Then we present an interesting work that explain overloading in object-oriented programming languages, with static or dynamic overloading.
 \subsection{Type classes}
@@ -290,6 +294,13 @@ instance E Char where e ...}
 
 
 Coherence establishes a single well-defined meaning for each expression. That is, a coherent semantics is such that, for any well-typed expression e:
+
+
+\subsubsection{A Second Look at Overloading}
+Odersky et al.~\cite{Odersky1995} propose an extension of the Hindley/Milner system that supports overloading and polymorphic records. They proof that the type system is sound respect to a standard untyped compositional semantics. Additionally, the show  that
+every typable term in this system has  a principal type. In this work 
+In our view, one of the most serious criticisms of type classes is that a program cannot be assigned a meaning independent of its types.
+
 
 
 \subsection{Overloading in Object Oriented Paradigm}

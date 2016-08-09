@@ -2,7 +2,7 @@
 (require redex)
 (require pict)
 (require "subst.rkt")
-
+;--------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language OL
   (M ::= NV
@@ -29,22 +29,24 @@
   (T (→ T T) num bool char)
   (X ::= variable-not-otherwise-mentioned))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-extended-language OL⇓ OL
-    (W ::= B N CH O (L ρ))
-    (ρ ::= ((X (W ...)) ...)))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-extended-language OLρ OL⇓
+(define-extended-language OLρ OL
     (C ::=
        W
        (M ρ)
+       L
        ;(C :: T)
        (mlet (X) = C in C)
        (C C)
+       (C ρ)
        ER )
     (ER ::= typeerror)
+    (W ::= B N CH O (L ρ) ((λ (X) C) ρ))
+    (ρ ::= ((X (W ...)) ...))
     (E ::= hole (E C) (W E)
        ;(E :: T)
        (mlet (X) = E in C)))
+;--------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------
 (define vρ
     (reduction-relation
@@ -52,11 +54,19 @@
      (--> (B ρ) B ρ-bool)
      (--> (N ρ) N ρ-num)
      (--> (CH ρ) CH ρ-char)
-     (--> (O ρ) O ρ-op)
+     (--> (O ρ) O ρ-op) 
      ;-------------------------------------
      (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
      ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      (--> ((mlet (X) = M_1 in M_2) ρ) (mlet (X) = (M_1 ρ) in (M_2 ρ)) ρ-let)
+
+     (--> ((L ρ_1) ρ_2) (L (unirEnv ρ_1 ρ_2)) ρ-abs1)
+     (--> (((λ (X) C) ρ_1) ρ_2) ((λ (X) C) (unirEnv ρ_1 ρ_2)) ρ-abs2)
+     
+     (--> ((C_1 C_2) ρ) ((C_1 ρ) (C_2 ρ)) ρ-Capp)
+     ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     (--> ((mlet (X) = C_1 in C_2) ρ) (mlet (X) = (C_1 ρ) in (C_2 ρ)) ρ-Clet)
+     
      (--> (X ρ) W
           (judgment-holds (lookup2 ρ X W))
           ρ-x)
@@ -87,9 +97,13 @@
           (M (ext ρ (X W)))
           let)
 
+     (--> (mlet (X) = W in (C  ρ))
+          (C (ext ρ (X W)))
+          letC)
+
      (--> (mlet (X) = ER in (M  ρ))
           ER
-          letErro)
+          letErr1)
      
      (--> (ER C)
           ER
@@ -106,11 +120,16 @@
      (--> (ON W) typeerror
           δNErr
           (side-condition (not (is-num? (term W)))))
+
+     (--> (W_1 W_2) typeerror
+          AppErr
+          (side-condition (not (or (is-closure1? (term W_1)) (is-closure2? (term W_1)))))
+          (side-condition (not (is-operator? (term W_1)))))
      
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
-
+;--------------------------------------------------------------------------------------------------------------------
 (define -->vρ
     (context-closure vρ OLρ E))
 
@@ -148,11 +167,49 @@
     [(ext any any_0 any_1 ...)
      (ext1 (ext any any_1 ...) any_0)])
 
+
+(define (is-closure1? t)
+        (redex-match? OLρ  (L ρ) t))
+
+(define (is-closure2? t)
+        (redex-match? OLρ  ((λ (X) C) ρ) t))
+
+
+(define (is-operator? t)
+        (redex-match? OLρ  O t))
+
+
 (define (is-bool? t)
         (redex-match? OLρ  B t))
 
 (define (is-num? t)
         (redex-match? OLρ  N t))
+
+(define-metafunction OLρ
+    [(unirEnv any ()) any]
+    [(unirEnv any ((any_x any_y) any_sig ...)) (unirEnv (unirEnvAux any (any_x any_y))(any_sig ...))]
+  )
+
+(define-metafunction OLρ
+    [(unirEnvAux (any_1 ... (any_x any_z) any_2 ...) (any_x any_y)) (any_1 ... (any_x (unirEnvAux2 any_z any_y)) any_2 ...)]
+    [(unirEnvAux (any ...) any_1) (any_1 any ...)]
+  )
+
+(define-metafunction OLρ
+    [(unirEnvAux2 any ()) any]
+    [(unirEnvAux2 any (any_1 any_2 ...)) (unirEnvAux2 (unirEnvAux3 any any_1) (any_2 ...))]
+  )
+
+(define-metafunction OLρ
+    [(unirEnvAux3 () any_v) (any_v)]
+    [(unirEnvAux3 (any_v any_sig ...) any_v) (any_v any_sig ...)]
+    [(unirEnvAux3 (any_w any_sig ...) any_v) (concat any_w (unirEnvAux3 (any_sig ...) any_v))]
+  )
+
+(define-metafunction OLρ
+    [(concat any ()) (any)]
+    [(concat any (any_w any_sig ...)) (any any_w any_sig ...)])
+
 ;--------------------------------------------------------------------------------------------------------------------
 #|(define-judgment-form REDEX
     #:mode (lookup I I O)
@@ -204,4 +261,33 @@
 (mlet (x ) = #f in
       (add1 x))) () )))
 
+
+(apply-reduction-relation* -->vρ  (term ((mlet (z ) = (λ (u_1 )  (add1 u_1)) in 
+(mlet (z ) = (λ (a_1 )  (not a_1))  in  
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () )))
+
+(apply-reduction-relation* -->vρ  (term
+                                     (
+(mlet (z) =  (λ (u_1 )  ((λ (a_5 )  a_5) u_1)) in 
+(mlet (z ) = (λ (a_1 )  ((λ (a_5 )  a_5) a_1))  in  
+(mlet (x ) = (λ (a_3 )  (not #t)) in 
+(mlet (x ) = (λ (a_4 )  (add1 1)) in  (z x))))) () )))
+
+(apply-reduction-relation* -->vρ  (term ((mlet (x ) = (λ (a_3 ) (not a_3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x x)))) () )))
+
+(apply-reduction-relation* -->vρ  (term
+((mlet(x ) = (λ (a_3 ) (not #t)) in 
+(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
+ (y x))) () )))
+
+ (redex-match? OLρ  (C C) (term
+ (((λ (a_5)  #t)
+  ()) (((λ (a_3)  #t) ())()))))
+
+ (redex-match? OLρ  (W C) (term
+ (((λ (a_5)  #t)
+  ()) (((λ (a_3)  #t) ())()))))
 |#
