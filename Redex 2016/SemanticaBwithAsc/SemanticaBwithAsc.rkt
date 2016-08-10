@@ -11,7 +11,7 @@
          X
          (M M)
          (mlet (X) = M in M)
-         ;(M :: T)
+         (M :: T)
          ;(add1 t)
          ;(not t)
          )
@@ -44,7 +44,7 @@
        W
        (M ρ)
        ;L
-       ;(C :: T)
+       (C :: T)
        (mlet (X) = C in C)
        (C C)
        ;(C ρ)
@@ -136,7 +136,7 @@
      ;-------------------------------------
      (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
      
-     ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     (--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      
      (--> ((mlet (X) = M_1 in M_2) ρ) (mlet (X) = (M_1 ρ) in (M_2 ρ)) ρ-let)
      
@@ -145,7 +145,7 @@
           ρ-x
           ;(side-condition(term (construirEnvCond ρ)))
           )
-
+     
      (--> (X ρ) nameerror
           ρ-xErr
           (side-condition  (term  (predicado1 ρ X))))
@@ -199,11 +199,11 @@
           (judgment-holds (δN (ON N) W_1))
           δN)
      
-     ;(--> (W :: T) W asc)
+     (--> (W :: T) W asc)
      
-     ;(--> ((X ρ) :: T) W
-          ;(judgment-holds (lookup4 ρ X T W))
-          ;asc11)
+     (--> ((X ρ) :: T) W
+          (judgment-holds (lookup6 ρ X T W))
+          asc11)
      
      (--> (mlet (X) = W in (M  ρ))
           (M (ext ρ (X  W)))
@@ -228,13 +228,13 @@
           ;(side-condition (not (is-variable? (term (primero  C_1)))))
           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1))))))
 
-     ;(--> (C :: T)
-           ;(C_3 :: T)
-           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C)) C_3))
-           ;asc_1
-           ;(side-condition (not (is-value? (term C))))
-           ;(side-condition (not (is-variable? (term (primero  C)))))
-           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C ))))))
+     (--> (C :: T)
+           (C_3 :: T)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C)) C_3))
+           asc_1
+           (side-condition (not (is-value? (term C))))
+           (side-condition (not (is-variable? (term (primero  C)))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C ))))))
 
       (--> (C_1 C_2)
            (C_3 C_2)
@@ -307,6 +307,13 @@
           δN1Err
          (side-condition  (term  (predicado ρ_2 X_2 num))))
 
+     (--> ((X ρ) :: T) dispatcherror
+          asc11Err
+          (side-condition  (term  (predicado ρ X T))))
+
+    (--> ((X ρ) :: T) nameerror
+          asc11NErr
+          (side-condition  (term  (predicado1 ρ X))))
 
      (--> ((X_1 ρ_1) W_2) nameerror
           app13NErr
@@ -319,8 +326,6 @@
      (--> (ON (X_2 ρ_2)) nameerror
           δN1NErr
          (side-condition  (term  (predicado1 ρ_2 X_2))))
-
-     
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
@@ -528,6 +533,10 @@
     [(tagi not) fun]
     [(tagi W) fun]
   )
+
+(define-metafunction OLρT
+    [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
+    [(predicado1 any any_x) #t])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language REDEX)
 
@@ -674,12 +683,14 @@
     [(predicado(_ ... (any_x (any_v any_v1  ...)) _ ...) any_x any_s) ,(if (term (igtag(tagi any_v) any_s))
                                                                      #f
                                                                      (term (predicado((any_x (any_v1  ...))) any_x any_s)))]
-    [(predicado any any_x any_s) #f] )
+  [(predicado any any_x any_s) #f])
 
 (define-metafunction OLρT
     [(igtag T T) #t]
     [(igtag T_1 T_2) #f]
   )
+
+
 ;--------------------------------------------------------------------------------------------------------------------
 (define (types? C)
   (judgment-holds (types () ,C : (T))))

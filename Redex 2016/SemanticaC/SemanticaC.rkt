@@ -11,7 +11,7 @@
          X
          (M M)
          (mlet (X) = M in M)
-         ;(M :: T)
+         (M :: T)
          ;(add1 t)
          ;(not t)
          )
@@ -28,28 +28,21 @@
   (T fun num bool str)
   (X ::= variable-not-otherwise-mentioned))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-extended-language OL⇓ OL
-    (W ::= B N CH O (L ρ))
-    ;(WW :: = W (WW ρ))
-    ;(MM ::=
-     ;   WW
-      ;  X        
-       ;(MM MM)
-       ;(mlet (X) = MM in MM))
-       
-    (ρ ::= ((X (W ...)) ...)))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-extended-language OLρ OL⇓
+(define-extended-language OLρ OL
      (C ::=
        W
        (M ρ)
        ;L
-       ;(C :: T)
+       (C :: T)
        (mlet (X) = C in C)
        (C C)
        ;(C ρ)
        ER )
-    (ER ::= nameerror typeerror dispatcherror)
+    (WW ::= B N CH O (L ρ))
+    (W :: = WW (WW ...))
+    (ER ::= nameerror typeerror dispatcherror ambiguityerror)
+    (ρ ::= ((X (W ...)) ...))
     (E ::= hole (E C) (W E)
        ;(E :: T)
        (mlet (X) = E in C)))
@@ -131,12 +124,14 @@
      (--> (CH ρ) CH ρ-str)
      
      (--> (O ρ) O ρ-op)
+
+     (--> ((WW ...) ρ) (WW ...) ρ-mvalue)
      
      ;(--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
      ;-------------------------------------
      (--> ((M_1 M_2) ρ) ((M_1 ρ) (M_2 ρ)) ρ-app)
      
-     ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
+     (--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      
      (--> ((mlet (X) = M_1 in M_2) ρ) (mlet (X) = (M_1 ρ) in (M_2 ρ)) ρ-let)
      
@@ -145,64 +140,35 @@
           ρ-x
           ;(side-condition(term (construirEnvCond ρ)))
           )
-
+     
      (--> (X ρ) nameerror
           ρ-xErr
           (side-condition  (term  (predicado1 ρ X))))
      ;-------------------------------------
 
-      (--> (((λ (X) M) ρ) W)
-          (M (ext ρ (X W)))
+      ;(--> (((λ (X) M) ρ) W)
+          ;(M (ext ρ (X W)))
           ;((subst (X W) M ) ρ)
-          app)
-     
-     ;(--> ((X_1 ρ_1) (X_2 ρ_2)) 
-          ;(W_1 W_2)
-          ;(judgment-holds (lookup3 ρ_1 X_1 W_1 T_1))
-          ;(judgment-holds (lookup4 ρ_2 X_2 T_1 W_2))
-          ;app11)
-     
-     ;(--> (((λ (X T) M) ρ) (X_2 ρ_2)) 
-          ;(((λ (X T) M) ρ) W_2)
-          ;(judgment-holds (lookup4 ρ_2 X_2 T W_2))
-         ;app12)
-     
-     (--> ((X_1 ρ_1) W_2) 
-          (W_1 W_2)
-          (judgment-holds (lookup6 ρ_1 X_1 fun W_1))
-          app13)
-     
-     ;(--> (OB W ...) W_1
-          ;(judgment-holds (δB (OB W ...) W_1))
-          ;δB)
-     
-     ;(--> (ON W ...) W_1
-          ;(judgment-holds (δN (ON W ...) W_1))
-          ;δN)
+          ;app)
 
-     (--> (OB (X_2 ρ_2)) W_2
-         (judgment-holds (lookup6 ρ_2 X_2 bool W_1))
-          (judgment-holds (δB (OB  W_1) W_2))          
-          δB1)
-     
-     (--> (ON (X_2 ρ_2)) W_2
-          (judgment-holds (lookup6 ρ_2 X_2 num W_1))
-          (judgment-holds (δN (ON W_1) W_2))
-          δN1)
+     (--> (W_1 W_2)
+          (matchear (filter W_1 fun) W_2)
+          ;(M (ext ρ (X W_2)))
+          ;((subst (X W) M ) ρ)
+          app
+          (side-condition (equal? (term (cantidad (filter W_1 fun))) 1)))
 
      
-     (--> (OB B) W_1
-          (judgment-holds (δB (OB B) W_1))
+     (--> (OB W) (aplicar (filter W bool) OB)
           δB)
 
-     (--> (ON N) W_1
-          (judgment-holds (δN (ON N) W_1))
+     (--> (ON W) (aplicar (filter W num) ON)
           δN)
      
-     ;(--> (W :: T) W asc)
+     (--> (W :: T) (filter W T) asc)
      
      ;(--> ((X ρ) :: T) W
-          ;(judgment-holds (lookup4 ρ X T W))
+          ;(judgment-holds (lookup6 ρ X T W))
           ;asc11)
      
      (--> (mlet (X) = W in (M  ρ))
@@ -228,46 +194,54 @@
           ;(side-condition (not (is-variable? (term (primero  C_1)))))
           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1))))))
 
-     ;(--> (C :: T)
-           ;(C_3 :: T)
-           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C)) C_3))
-           ;asc_1
-           ;(side-condition (not (is-value? (term C))))
+     (--> (C :: T)
+           (C_3 :: T)
+           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C)) C_3))
+           asc_1
+           (side-condition (not (is-value? (term C))))
            ;(side-condition (not (is-variable? (term (primero  C)))))
-           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C ))))))
+           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C ))))))
 
       (--> (C_1 C_2)
            (C_3 C_2)
            (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_1)) C_3))
            app_1
            (side-condition (not (is-value? (term C_1))))
-           (side-condition (not (is-variable? (term (primero  C_1)))))
+           ;(side-condition (not (is-variable? (term (primero  C_1)))))
            (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1 ))))))
       
-      (--> (((λ (X) M) ρ) C_2)
-           (((λ (X) M) ρ) C_3)
+      ;(--> (((λ (X) M) ρ) C_2)
+           ;(((λ (X) M) ρ) C_3)
+           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
+           ;app_2
+           ;(side-condition (not (is-value? (term C_2))))
+           ;(side-condition (not (is-variable? (term (primero C_2)))))
+           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
+
+      (--> (W_1 C_2)
+           (W_1 C_3)
            (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
            app_2
            (side-condition (not (is-value? (term C_2))))
            ;(side-condition (not (is-variable? (term (primero C_2)))))
            (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
 
-      (--> ((X ρ) C_2)
-           ((X ρ)  C_3)
-           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
-           app_3
-           (side-condition (not (is-value? (term C_2))))
+      ;(--> ((X ρ) C_2)
+           ;((X ρ)  C_3)
+           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
+           ;app_3
+           ;(side-condition (not (is-value? (term C_2))))
            ;(side-condition (not (is-variable?  (term (primero C_2)))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
+           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
 
-      (--> (O C_2)
-           (O C_3)
-           (judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
-           app_2O
-           (side-condition (not (is-value? (term C_2))))
-           (side-condition (not (is-variable? (term (primero  C_2)))))
-           (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 )))))
-           )
+      ;(--> (O C_2)
+           ;(O C_3)
+           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
+           ;app_2O
+           ;(side-condition (not (is-value? (term C_2))))
+           ;(side-condition (not (is-variable? (term (primero  C_2)))))
+           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 )))))
+           ;)
 
       (--> (mlet (X) = ER in C)
           ER
@@ -307,6 +281,13 @@
           δN1Err
          (side-condition  (term  (predicado ρ_2 X_2 num))))
 
+     (--> ((X ρ) :: T) dispatcherror
+          asc11Err
+          (side-condition  (term  (predicado ρ X T))))
+
+    (--> ((X ρ) :: T) nameerror
+          asc11NErr
+          (side-condition  (term  (predicado1 ρ X))))
 
      (--> ((X_1 ρ_1) W_2) nameerror
           app13NErr
@@ -319,8 +300,6 @@
      (--> (ON (X_2 ρ_2)) nameerror
           δN1NErr
          (side-condition  (term  (predicado1 ρ_2 X_2))))
-
-     
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
@@ -526,8 +505,12 @@
     [(tagi CH) str]
     [(tagi add1) fun]
     [(tagi not) fun]
-    [(tagi W) fun]
+    [(tagi WW) fun]
   )
+
+(define-metafunction OLρT
+    [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
+    [(predicado1 any any_x) #t])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language REDEX)
 
@@ -589,7 +572,7 @@
 (define-judgment-form REDEX
     #:mode (lookup7 I I O)
     #:contract (lookup7 ((any any) ...) any any)
-    [(lookup7 (_ ... (any_x (_ ...  any_v _ ...)) _ ...) any_x any_v)])
+    [(lookup7 (_ ... (any_x any_y) _ ...) any_x any_y)])
 
 
 (define-metafunction REDEX
@@ -674,12 +657,36 @@
     [(predicado(_ ... (any_x (any_v any_v1  ...)) _ ...) any_x any_s) ,(if (term (igtag(tagi any_v) any_s))
                                                                      #f
                                                                      (term (predicado((any_x (any_v1  ...))) any_x any_s)))]
-    [(predicado any any_x any_s) #f] )
+  [(predicado any any_x any_s) #f])
 
 (define-metafunction OLρT
     [(igtag T T) #t]
     [(igtag T_1 T_2) #f]
   )
+
+
+(define-metafunction OLρT
+    [(filter() T) ()]
+    [(filter WW T) ,(if (term (igtag(tagi WW) T))
+                                                                     (term (WW))
+                                                                     (term ()))]
+    [(filter(WW WW_1 ...) T) ,(if (term (igtag(tagi WW) T))
+                                                                     (term (concat WW (filter  (WW_1 ...) T)))
+                                                                     (term (filter  (WW_1 ...) T)))])
+
+(define-metafunction OLρT
+  [(matchear (((λ (X) M) ρ)) W_2) (M (ext ρ (X W_2)))] 
+  [(matchear (O) W_2) (O W_2)])
+
+
+(define-metafunction OLρT
+    [(aplicar() O) ()]
+    [(aplicar WW O) (aplicar1 WW O)]
+    [(aplicar(WW WW_1 ...) O) (concat (aplicar1 WW O) (aplicar (WW_1 ...) O))])
+
+(define-metafunction OLρT
+  [(aplicar1  N add1) ,(add1 (term N))]
+  [(aplicar1  B not) ,(not (term B))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define (types? C)
   (judgment-holds (types () ,C : (T))))

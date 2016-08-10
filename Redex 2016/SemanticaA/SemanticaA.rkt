@@ -31,16 +31,16 @@
 ;--------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OLρ OL
-    (C ::=
-       W
-       (M ρ)
-       ;L
-       ;(C :: T)
-       (mlet (X) = C in C)
-       (C C)
-       ;(C ρ)
-       ER )
-    (ER ::= typeerror)
+  (C ::=
+     W
+     (M ρ)
+     ;L
+     ;(C :: T)
+     (mlet (X) = C in C)
+     (C C)
+     ;(C ρ)
+     ER )
+    (ER ::= typeerror nameerror)
     (W ::= B N CH O (L ρ))
     ;(W ::= B N CH O (L ρ) ((λ (X) C) ρ))
     (ρ ::= ((X (W ...)) ...))
@@ -71,6 +71,10 @@
      (--> (X ρ) W
           (judgment-holds (lookup2 ρ X W))
           ρ-x)
+
+     (--> (X ρ) nameerror
+          ρ-xErr
+          (side-condition  (term  (predicado1 ρ X))))
      ;-------------------------------------
      (--> (((λ (X) M) ρ) W)
           (M (ext ρ (X W)))
@@ -150,6 +154,13 @@
     [(δB (not B) ,(not (term B)))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language REDEX)
+
+
+
+(define-metafunction OLρ
+    [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
+    [(predicado1 any any_x) #t])
+
 
 (define-judgment-form REDEX
     #:mode (lookup2 I I O)
