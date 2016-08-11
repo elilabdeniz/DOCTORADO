@@ -40,7 +40,7 @@
        ;(C ρ)
        ER )
     (WW ::= B N CH O (L ρ))
-    (W :: = WW (WW ...))
+    (W :: = WW (WW WW_1 ...))
     (ER ::= nameerror typeerror dispatcherror ambiguityerror)
     (ρ ::= ((X (W ...)) ...))
     (E ::= hole (E C) (W E)
@@ -117,6 +117,8 @@
 (define vρ
     (reduction-relation
      OLρT #:domain C
+     ;(--> (WW) WW value)
+     
      (--> (B ρ) B ρ-bool)
      
      (--> (N ρ) N ρ-num)
@@ -146,13 +148,13 @@
           (side-condition  (term  (predicado1 ρ X))))
      ;-------------------------------------
 
-      ;(--> (((λ (X) M) ρ) W)
-          ;(M (ext ρ (X W)))
-          ;((subst (X W) M ) ρ)
-          ;app)
+      (--> (((λ (X) M) ρ) W)
+          (M (ext ρ (X W)))
+          appV)
 
-     (--> (W_1 W_2)
-          (matchear (filter W_1 fun) W_2)
+      
+     (--> ((WW_1 ...) W_2)
+          (matchear (filter (WW_1 ...) fun) W_2)
           ;(M (ext ρ (X W_2)))
           ;((subst (X W) M ) ρ)
           app
@@ -160,16 +162,15 @@
 
      
      (--> (OB W) (aplicar (filter W bool) OB)
-          δB)
+          δB
+          (side-condition (> (term (cantidad (filter W bool))) 0)))
 
      (--> (ON W) (aplicar (filter W num) ON)
-          δN)
+          δN
+          (side-condition (> (term (cantidad (filter W num))) 0)))
      
-     (--> (W :: T) (filter W T) asc)
-     
-     ;(--> ((X ρ) :: T) W
-          ;(judgment-holds (lookup6 ρ X T W))
-          ;asc11)
+     (--> (W :: T) (filter W T) asc
+          (side-condition (> (term (cantidad (filter W T))) 0)))
      
      (--> (mlet (X) = W in (M  ρ))
           (M (ext ρ (X  W)))
@@ -177,14 +178,6 @@
           ;(side-condition (definido? ρ))  
           ;(side-condition (not (is-value? (term M))))
           )
-
-     ;(--> (mlet (X) = (X_1 ρ_1) in (M  ρ))
-          ;(M (ext ρ (X (T W))))
-          ;(judgment-holds (lookup4 ρ_1 X_1 T W))
-          ;let11
-          ;(side-condition (definido? ρ))  
-          ;(side-condition (not (is-value? (term M))))
-          ;)
      ;-------------------------------------
      (--> (mlet (X) = C_1 in C_2)
           (mlet (X) =  C_3 in C_2)
@@ -209,14 +202,6 @@
            (side-condition (not (is-value? (term C_1))))
            ;(side-condition (not (is-variable? (term (primero  C_1)))))
            (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_1 ))))))
-      
-      ;(--> (((λ (X) M) ρ) C_2)
-           ;(((λ (X) M) ρ) C_3)
-           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
-           ;app_2
-           ;(side-condition (not (is-value? (term C_2))))
-           ;(side-condition (not (is-variable? (term (primero C_2)))))
-           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
 
       (--> (W_1 C_2)
            (W_1 C_3)
@@ -225,24 +210,8 @@
            (side-condition (not (is-value? (term C_2))))
            ;(side-condition (not (is-variable? (term (primero C_2)))))
            (side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
-
-      ;(--> ((X ρ) C_2)
-           ;((X ρ)  C_3)
-           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
-           ;app_3
-           ;(side-condition (not (is-value? (term C_2))))
-           ;(side-condition (not (is-variable?  (term (primero C_2)))))
-           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 ))))))
-
-      ;(--> (O C_2)
-           ;(O C_3)
-           ;(judgment-holds (escoger ,(apply-reduction-relation vρ (term C_2)) C_3))
-           ;app_2O
-           ;(side-condition (not (is-value? (term C_2))))
-           ;(side-condition (not (is-variable? (term (primero  C_2)))))
-           ;(side-condition (term (novacio? ,(apply-reduction-relation vρ (term C_2 )))))
            ;)
-
+      ;-------------------------------------
       (--> (mlet (X) = ER in C)
           ER
           letErro)
@@ -254,7 +223,10 @@
      (--> (W ER)
           ER
           AppErr2)
-
+     
+     (--> (ER :: T) ER
+          AscErr)
+     ;-------------------------------------
      (--> (OB W) typeerror
           δBErr
           (side-condition (not (is-bool? (term W)))))
@@ -263,44 +235,40 @@
           δNErr
           (side-condition (not (is-num? (term W)))))
 
-     (--> (W_1 W_2) typeerror
+     #|(--> (W_1 W_2) typeerror
           AppErr
           (side-condition (not (or (is-closure1? (term W_1)) (is-closure2? (term W_1)))))
           (side-condition (not (is-operator? (term W_1)))))
-
-
-     (--> ((X_1 ρ_1) W_2) dispatcherror
-          app13Err
-          (side-condition  (term  (predicado ρ_1 X_1 fun))))
-
-     (--> (OB (X_2 ρ_2)) dispatcherror          
-          δB1Err
-          (side-condition  (term  (predicado ρ_2 X_2 bool))))
      
-     (--> (ON (X_2 ρ_2)) dispatcherror
-          δN1Err
-         (side-condition  (term  (predicado ρ_2 X_2 num))))
+     (--> (W :: T) typeerror
+          ascErrT
+          (side-condition (not(equal? (term (tagi   W)) (term T)))))|#
 
-     (--> ((X ρ) :: T) dispatcherror
-          asc11Err
-          (side-condition  (term  (predicado ρ X T))))
-
-    (--> ((X ρ) :: T) nameerror
-          asc11NErr
-          (side-condition  (term  (predicado1 ρ X))))
-
-     (--> ((X_1 ρ_1) W_2) nameerror
-          app13NErr
-          (side-condition  (term  (predicado1 ρ_1 X_1))))
-
-     (--> (OB (X_2 ρ_2)) nameerror          
-          δB1NErr
-          (side-condition  (term  (predicado1 ρ_2 X_2))))
-     
-     (--> (ON (X_2 ρ_2)) nameerror
-          δN1NErr
-         (side-condition  (term  (predicado1 ρ_2 X_2))))
      ;-------------------------------------
+     (--> (W_1 W_2)
+          dispatcherror
+          appErrD
+          (side-condition (equal? (term (cantidad (filter W_1 fun))) 0)))
+
+     
+     (--> (OB W) dispatcherror
+          δBErrD
+          (side-condition (equal? (term (cantidad (filter W bool))) 0)))
+
+     (--> (ON W) dispatcherror
+          δNErrD
+          (side-condition (equal? (term (cantidad (filter W num))) 0)))
+
+     (--> (W_1 W_2)
+          ambiguityerror
+          appErrA
+          (side-condition (> (term (cantidad (filter W_1 fun))) 1)))
+
+     (--> (W :: T) dispatcherror
+          AscErrD
+          (side-condition (equal? (term (cantidad (filter W T))) 0)))
+     
+
      ))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-judgment-form OLρT

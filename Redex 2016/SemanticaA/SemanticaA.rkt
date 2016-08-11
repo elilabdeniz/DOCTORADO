@@ -129,7 +129,7 @@
 
      (--> (W_1 W_2) typeerror
           AppErr
-          (side-condition (not (or (is-closure1? (term W_1)) (is-closure2? (term W_1)))))
+          (side-condition (not  (is-closure1? (term W_1))))
           (side-condition (not (is-operator? (term W_1)))))
      
      ;-------------------------------------
@@ -184,8 +184,8 @@
 (define (is-closure1? t)
         (redex-match? OLρ  (L ρ) t))
 
-(define (is-closure2? t)
-        (redex-match? OLρ  ((λ (X) C) ρ) t))
+;(define (is-closure2? t)
+        ;(redex-match? OLρ  ((λ (X) C) ρ) t))
 
 
 (define (is-operator? t)

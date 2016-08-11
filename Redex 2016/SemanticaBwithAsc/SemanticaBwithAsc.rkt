@@ -199,7 +199,9 @@
           (judgment-holds (δN (ON N) W_1))
           δN)
      
-     (--> (W :: T) W asc)
+     (--> (W :: T) W
+          asc
+          (side-condition (equal? (term (tagi   W)) (term T))))
      
      (--> ((X ρ) :: T) W
           (judgment-holds (lookup6 ρ X T W))
@@ -288,6 +290,10 @@
      (--> (ON W) typeerror
           δNErr
           (side-condition (not (is-num? (term W)))))
+
+     (--> (W :: T) typeerror
+          ascErrT
+          (side-condition (not(equal? (term (tagi   W)) (term T)))))
 
      (--> (W_1 W_2) typeerror
           AppErr
