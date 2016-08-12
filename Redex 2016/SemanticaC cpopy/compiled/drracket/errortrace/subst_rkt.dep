@@ -1,1 +1,0 @@
-("6.6" ("ede109780e26e2a6e5146edca599b02dab4d9f2a" . "bd88ce60ebef9724ca863ae28e95c5462ddbba97") #"C:\\1Elizabeth\\DOCTORADO\\Redex 2016\\SemanticaA\\shared.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))

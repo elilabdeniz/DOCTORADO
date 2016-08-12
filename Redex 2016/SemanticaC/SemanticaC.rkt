@@ -12,8 +12,6 @@
          (M M)
          (mlet (X) = M in M)
          (M :: T)
-         ;(add1 t)
-         ;(not t)
          )
   (V ::= B N CH L O) 
   (B ::= #t #f)
@@ -33,18 +31,16 @@
      (C ::=
        W
        (M ρ)
-       ;L
        (C :: T)
        (mlet (X) = C in C)
        (C C)
-       ;(C ρ)
        ER )
     (WW ::= B N CH O (L ρ))
-    (W :: = WW (WW WW_1 ...))
+    (W :: = WW (mv WW WW_1 ...))
     (ER ::= nameerror typeerror dispatcherror ambiguityerror)
-    (ρ ::= ((X (W ...)) ...))
+    (ρ ::= ((X W) ...))
     (E ::= hole (E C) (W E)
-       ;(E :: T)
+       (E :: T)
        (mlet (X) = E in C)))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-extended-language OLρT OLρ
@@ -127,7 +123,7 @@
      
      (--> (O ρ) O ρ-op)
 
-     (--> ((WW ...) ρ) (WW ...) ρ-mvalue)
+     (--> ((mv WW ...) ρ) (mv WW ...) ρ-mvalue)
      
      ;(--> (((λ (X T) M) ρ) I) ((λ (X T) M) ρ) ρ-abs)
      ;-------------------------------------
@@ -149,31 +145,29 @@
      ;-------------------------------------
 
       (--> (((λ (X) M) ρ) W)
-          (M (ext ρ (X W)))
-          appV)
+          (M (extE ρ (X W)))
+          app)
 
       
-     (--> ((WW_1 ...) W_2)
-          (matchear (filter (WW_1 ...) fun) W_2)
-          ;(M (ext ρ (X W_2)))
-          ;((subst (X W) M ) ρ)
-          app
-          (side-condition (equal? (term (cantidad (filter W_1 fun))) 1)))
+     (--> ((mv WW_1 ...) W_2)
+          (matchear (filter (mv WW_1 ...) fun) W_2)
+          appF
+          (side-condition (equal? (term (cantidad (filter (mv WW_1 ...) fun))) 2)))
 
      
      (--> (OB W) (aplicar (filter W bool) OB)
           δB
-          (side-condition (> (term (cantidad (filter W bool))) 0)))
+          (side-condition (> (term (cantidad (filter W bool))) 1)))
 
      (--> (ON W) (aplicar (filter W num) ON)
           δN
-          (side-condition (> (term (cantidad (filter W num))) 0)))
+          (side-condition (> (term (cantidad (filter W num))) 1)))
      
      (--> (W :: T) (filter W T) asc
-          (side-condition (> (term (cantidad (filter W T))) 0)))
+          (side-condition (> (term (cantidad (filter W T))) 1)))
      
      (--> (mlet (X) = W in (M  ρ))
-          (M (ext ρ (X  W)))
+          (M (extE ρ (X  W)))
           let
           ;(side-condition (definido? ρ))  
           ;(side-condition (not (is-value? (term M))))
@@ -227,49 +221,48 @@
      (--> (ER :: T) ER
           AscErr)
      ;-------------------------------------
-     (--> (OB W) typeerror
+     (--> (OB WW) typeerror
           δBErr
-          (side-condition (not (is-bool? (term W)))))
+          (side-condition (not (is-bool? (term WW)))))
 
-     (--> (ON W) typeerror
+     (--> (ON WW) typeerror
           δNErr
-          (side-condition (not (is-num? (term W)))))
+          (side-condition (not (is-num? (term WW)))))
 
-     #|(--> (W_1 W_2) typeerror
+     (--> (WW_1 W_2) typeerror
           AppErr
-          (side-condition (not (or (is-closure1? (term W_1)) (is-closure2? (term W_1)))))
-          (side-condition (not (is-operator? (term W_1)))))
+          (side-condition (not (or (is-closure1? (term WW_1)) (is-closure2? (term WW_1)))))
+          (side-condition (not (is-operator? (term WW_1)))))
      
-     (--> (W :: T) typeerror
+     (--> (WW :: T) typeerror
           ascErrT
-          (side-condition (not(equal? (term (tagi   W)) (term T)))))|#
+          (side-condition (not(equal? (term (tagi WW)) (term T)))))
 
      ;-------------------------------------
-     (--> (W_1 W_2)
+     (--> ((mv WW_1 ...) W_2)
           dispatcherror
           appErrD
-          (side-condition (equal? (term (cantidad (filter W_1 fun))) 0)))
+          (side-condition (equal? (term (cantidad (filter (mv WW_1 ...) fun))) 1)))
 
      
-     (--> (OB W) dispatcherror
+     (--> (OB (mv WW ...)) dispatcherror
           δBErrD
-          (side-condition (equal? (term (cantidad (filter W bool))) 0)))
+          (side-condition (equal? (term (cantidad (filter (mv WW ...) bool))) 1)))
 
-     (--> (ON W) dispatcherror
+     (--> (ON (mv WW ...)) dispatcherror
           δNErrD
-          (side-condition (equal? (term (cantidad (filter W num))) 0)))
-
-     (--> (W_1 W_2)
+          (side-condition (equal? (term (cantidad (filter (mv WW ...) num))) 1)))
+     
+    
+      (--> ((mv WW ...) :: T) dispatcherror
+          AscErrD
+          (side-condition (equal? (term (cantidad (filter (mv WW ...) T))) 1)))
+     
+     (--> ((mv WW_1 ...) W_2)
           ambiguityerror
           appErrA
-          (side-condition (> (term (cantidad (filter W_1 fun))) 1)))
-
-     (--> (W :: T) dispatcherror
-          AscErrD
-          (side-condition (equal? (term (cantidad (filter W T))) 0)))
-     
-
-     ))
+          (side-condition (> (term (cantidad (filter (mv WW_1 ...)  fun))) 2)))
+))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-judgment-form OLρT
     #:mode (types I I I O)
@@ -537,10 +530,11 @@
     [(lookup5 (_ ... (any (_ ... ((→ any_t1 any_t2) any_v) _ ...)) _ ...) any any_v)])
 
 
-(define-judgment-form REDEX
+(define-judgment-form OLρT
     #:mode (lookup7 I I O)
     #:contract (lookup7 ((any any) ...) any any)
-    [(lookup7 (_ ... (any_x any_y) _ ...) any_x any_y)])
+    [(lookup7 (_ ... (any_x WW) _ ...) any_x WW)]
+    [(lookup7 (_ ... (any_x (mv WW ...)) _ ...) any_x (mv WW ...))])
 
 
 (define-metafunction REDEX
@@ -583,6 +577,29 @@
     [(ext any) any]
     [(ext any any_0 any_1 ...)
      (ext1 (ext any any_1 ...) any_0)])
+
+
+
+(define-metafunction OLρT
+    ext1E : ((any (any ...)) ...) (any any) -> ((any (any ...)) ...)
+  
+    [(ext1E (any_0 ... (any_x (mw any_v0 ...)) any_1 ...) (any_x WW))
+     
+     (any_0 ... (any_x (mv WW any_v0 ...)) any_1 ...)]
+
+  [(ext1E (any_0 ... (any_x (mw any_v0 ...)) any_1 ...) (any_x (WW ...)))
+     
+     (any_0 ... (any_x (mv WW ... any_v0 ...)) any_1 ...)]
+  
+    [(ext1E (any_0 ...) (any_x any_p))
+     ((any_x any_p) any_0 ...)])
+
+(define-metafunction OLρT
+    extE : ((any any) ...) (any any) ... -> ((any any) ...)
+    [(extE any) any]
+    [(extE any any_0 any_1 ...)
+     (ext1E (extE any any_1 ...) any_0)])
+
 
 (define-metafunction REDEX
     [(definido? ()) #t]
@@ -636,11 +653,14 @@
 (define-metafunction OLρT
     [(filter() T) ()]
     [(filter WW T) ,(if (term (igtag(tagi WW) T))
-                                                                     (term (WW))
-                                                                     (term ()))]
+                                                                     (term (mv WW))
+                                                                     (term (mv )))]
     [(filter(WW WW_1 ...) T) ,(if (term (igtag(tagi WW) T))
-                                                                     (term (concat WW (filter  (WW_1 ...) T)))
-                                                                     (term (filter  (WW_1 ...) T)))])
+                                                                     (term (concat WW (filter  (mv WW_1 ...) T)))
+                                                                     (term (filter  (WW_1 ...) T)))]
+  [(filter(mv WW WW_1 ...) T) ,(if (term (igtag(tagi WW) T))
+                                                                     (term (concat mv (concat WW (filter  (WW_1 ...) T))))
+                                                                     (term (concat mv(filter  (WW_1 ...) T))))])
 
 (define-metafunction OLρT
   [(matchear (((λ (X) M) ρ)) W_2) (M (ext ρ (X W_2)))] 
@@ -650,7 +670,8 @@
 (define-metafunction OLρT
     [(aplicar() O) ()]
     [(aplicar WW O) (aplicar1 WW O)]
-    [(aplicar(WW WW_1 ...) O) (concat (aplicar1 WW O) (aplicar (WW_1 ...) O))])
+    [(aplicar(WW WW_1 ...) O) (concat (aplicar1 WW O) (aplicar (WW_1 ...) O))]
+    [(aplicar(mv WW WW_1 ...) O) (concat mv (concat (aplicar1 WW O) (aplicar (WW_1 ...) O)))])
 
 (define-metafunction OLρT
   [(aplicar1  N add1) ,(add1 (term N))]
@@ -699,6 +720,15 @@
 (mlet (x ) = (λ (a_4 ) (add1 1)) in 
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z y)(x t)))))))))) () )))
+
+(apply-reduction-relation* vρ  (term (
+(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))) () )))
 
 (apply-reduction-relation* vρ  (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in

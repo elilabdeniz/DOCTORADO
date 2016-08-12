@@ -473,6 +473,11 @@
   [(esta? T* T) #f])
 
 
+
+(define-metafunction OLρT
+    [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
+    [(predicado1 any any_x) #t])
+
 (define-metafunction OLρT
   [(construirEnvCond ((X ((T W) ...)) any_0 ...)) ,(and (term (construirEnvAuxCond ((T W) ...)))
                                                       (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
