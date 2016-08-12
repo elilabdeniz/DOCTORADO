@@ -157,14 +157,14 @@
      
      (--> (OB W) (aplicar (filter W bool) OB)
           δB
-          (side-condition (> (term (cantidad (filter W bool))) 1)))
+          (side-condition (equal? (term (cantidad (filter W bool))) 2)))
 
      (--> (ON W) (aplicar (filter W num) ON)
           δN
-          (side-condition (> (term (cantidad (filter W num))) 1)))
+          (side-condition (equal? (term (cantidad (filter W num))) 2)))
      
      (--> (W :: T) (filter W T) asc
-          (side-condition (> (term (cantidad (filter W T))) 1)))
+          (side-condition (equal? (term (cantidad (filter W T))) 2)))
      
      (--> (mlet (X) = W in (M  ρ))
           (M (extE ρ (X  W)))
@@ -262,6 +262,21 @@
           ambiguityerror
           appErrA
           (side-condition (> (term (cantidad (filter (mv WW_1 ...)  fun))) 2)))
+
+     (--> (OB W)
+          ambiguityerror
+          δBErrA
+          (side-condition (> (term (cantidad (filter W bool))) 2)))
+
+     (--> (ON W)
+          ambiguityerror
+          δNErrA
+          (side-condition (> (term (cantidad (filter W num))) 2)))
+     
+     (--> (W :: T)
+          ambiguityerror
+          ascErrA
+          (side-condition (> (term (cantidad (filter W T))) 2)))
 ))
 ;--------------------------------------------------------------------------------------------------------------------
 (define-judgment-form OLρT
