@@ -558,10 +558,8 @@
   (define I  (term (tipoConf ,CI)))
   (if (types? C)
       (let ((T_1 (first(first (ObtTypes C)))))
-            (if (or  (term (consistentType?  ,T_1  ,I)) (equal?  I CI)) 
                  (or (w? C)
-          (reduces? (term (,C ,T_1))))
-          #t))
+          (reduces? (term (,C ,T_1)))))
       #t))
 
 

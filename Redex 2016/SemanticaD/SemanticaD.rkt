@@ -82,9 +82,11 @@
     [--------------------------- opN1
      (⊢ A Γ ON1 : ((→ num num)))]
   
-    [(⊢ A Γ M_1 : T*_1)
+    [
+     
+     (⊢ A Γ M_1 : T*_1)
      (⊢ A Γ M_2 : T*_2)
-     (side-condition (novacio? (codominio (minsel T*_1 T*_2 T*_1))))
+     (side-condition ,(equal? (term (cantidad (codominio (minsel T*_1 T*_2 T*_1)))) 1))
      -------------------------------------------------------------- app
      (⊢ A Γ (M_1 M_2) :  (codominio (minsel T*_1 T*_2 T*_1)))]
 
@@ -93,22 +95,24 @@
     ----------------------- asc
     (⊢ A Γ (M :: T) : (T))]
 
-     [(⊢ A Γ M_1 : T*_1)
-     (side-condition (esta? T*_1 T_1))
+     [(⊢ A Γ M_1 : (T_1))
+     ;(side-condition (esta? T*_1 T_1))
      (side-condition (definido? A))
      (side-condition (noisin? X (sacar Γ)))
      (⊢ (ext A (X T_1)) Γ M_2 : T*_2)
      --------------------------------------- let
-     (⊢ A Γ (mlet (X T_1) = M_1 in M_2) : T*_2)]
+     (⊢ A Γ (mlet (X) = M_1 in M_2) : T*_2)]
   
     [(unique X)
      (side-condition (definido? Γ))
-     (⊢ A (extT Γ (X T)) M : T*)
+     (⊢ A (extT Γ (X T_1)) M : T*)
      (side-condition (noisin? X (sacar Γ)))
      (side-condition (noisin? X (sacar A)))
+     ;(side-condition (is-typefunc? (term T)))
      (side-condition (novacio? T*))
+     (side-condition (esta? T* T_2))
      ------------------------------------------ λ
-     (⊢ A Γ (λ (X T) M) : (distribuir T T*))])
+     (⊢ A Γ (λ (X (→ T_1 T_2)) M) : ((→ T_1 T_2)))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define vρ
     (reduction-relation
@@ -143,16 +147,15 @@
           ρ-xErr
           (side-condition  (term  (predicado1 ρ X))))
      ;-------------------------------------
-
       (--> (((λ (X T) M) ρ) W)
-          (M (extEL ρ (X W)))
+          ((M (extEL ρ (X W))) :: (cod T))
           app)
 
       
      (--> ((mv WW_1 ...) W_2)
-          (matchear (filter (mv WW_1 ...) fun) W_2)
+          (matchear (sel (mv WW_1 ...) W_2))
           appF
-          (side-condition (equal? (term (cantidad (filter (mv WW_1 ...) fun))) 2)))
+          (side-condition (equal? (term (cantidad (sel (mv WW_1 ...) W_2))) 1)))
 
      
      (--> (OB W) (aplicar (filter W bool) OB)
@@ -242,7 +245,7 @@
      (--> ((mv WW_1 ...) W_2)
           dispatcherror
           appErrD
-          (side-condition (equal? (term (cantidad (filter (mv WW_1 ...) fun))) 1)))
+          (side-condition (equal? (term (cantidad (sel (mv WW_1 ...) W_2))) 0)))
 
      
      (--> (OB (mv WW ...)) dispatcherror
@@ -261,7 +264,7 @@
      (--> ((mv WW_1 ...) W_2)
           ambiguityerror
           appErrA
-          (side-condition (> (term (cantidad (filter (mv WW_1 ...)  fun))) 2)))
+          (side-condition (> (term (cantidad (sel (mv WW_1 ...) W_2))) 1)))
 
      (--> (OB W)
           ambiguityerror
@@ -328,7 +331,7 @@
 
     [(types Γ C_1 : T*_1)
      (types Γ C_2 : T*_2)
-     (side-condition (novacio? (codominio (minsel T*_1 T*_2 T*_1))))
+      (side-condition ,(equal? (term (cantidad (codominio (minsel T*_1 T*_2 T*_1)))) 1))
      --------------------------------------------------------------- c-app
      (types Γ (C_1 C_2) : (codominio (minsel T*_1 T*_2 T*_1)))]
 
@@ -343,32 +346,40 @@
     (types Γ (C :: T) : (T))]
 
     [(side-condition (noisin? X (sacar Γ)))
-     (types Γ (mlet (X T_1) = (M_1 ρ) in (M_2 ρ)) : T*)
+     (types Γ (mlet (X) = (M_1 ρ) in (M_2 ρ)) : T*)
     ----------------------------------------------------- let
-    (types Γ ((mlet (X T_1) = M_1 in M_2) ρ) : T*)]
+    (types Γ ((mlet (X) = M_1 in M_2) ρ) : T*)]
 
-    [(types Γ C_1 : T*_1)
-     (side-condition (esta? T*_1 T_1))
+    [(types Γ C_1 : (T_1))
+     ;(side-condition (esta? T*_1 T_1))
      (side-condition (construirEnvCond ρ))
      (side-condition (definido? ρ))
      (⊢ (ext (construirEnv ρ) (X T_1)) Γ M_2 : T*_2)     
     ------------------------------------------------------ c-let
-    (types Γ (mlet (X T_1) = C_1 in (M_2 ρ)) : T*_2)]
+    (types Γ (mlet (X) = C_1 in (M_2 ρ)) : T*_2)]
   
     [(unique X)
      (side-condition (construirEnvCond ρ))
      (side-condition (definido? Γ))
-     (⊢ (construirEnv ρ) (extT Γ (X T)) M : T*)
+     (⊢ (construirEnv ρ) (extT Γ (X T_1)) M : T*)
      (side-condition (noisin? X (sacar Γ)))
      (side-condition (noisin? X (sacar (construirEnv ρ))))
      (side-condition (novacio? T*))
+     (side-condition (esta? T* T_2))
      ------------------------------------------ λ
-     (types Γ ((λ (X T) M) ρ) : (distribuir T T*))])
+     (types Γ ((λ (X (→ T_1 T_2)) M) ρ) : ((→ T_1 T_2)))])
+
+
+
+
 ;--------------------------------------------------------------------------------------------------------------------
 (define value? (redex-match OLρI  W))
 
 (define (is-value? t)
         (redex-match? OLρT  W t))
+
+(define (is-typefunc? t)
+        (redex-match? OLρT  (→ T_1 T_2) t))
 
 (define (is-variable? t)
         (redex-match? OLρT  X t))
@@ -475,20 +486,50 @@
   [(codominio ((→ T_1 T_2) any ...)) (concat T_2 (codominio (any ...)))]
   [(codominio (any_1 any ...))  (codominio (any ...))])
 
+(define-metafunction OLT
+  [(dominio (→ T_1 T_2)) T_1]
+  [(dominio any ) #f])
+
+(define-metafunction OLT
+  [(cod (→ T_1 T_2)) T_2]
+  [(cod any ) #f])
+
 (define-metafunction OLρT
     [(tagi B) bool]
     [(tagi N) num]
     [(tagi CH) str]
     [(tagi add1) (→ num num)]
     [(tagi not) (→ bool bool)]
+    [(tagi ((λ (X T) M) ρ)) T]
     [(tagi (λ (X T) M)) T]
   )
  
 (define-metafunction OLρT
     [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
     [(predicado1 any any_x) #t])
+
+(define-metafunction OLρT
+  [(sel1 () any_v ) ()]
+  [(sel1 (any_1 any_2 ...) any_v) ,(if (equal? (term (dominio(tagi any_1))) (term (tagi any_v)) )
+                                                                     (term (concat (any_1 any_v) (sel1  (any_2 ...) any_v)))
+                                                                     (term (sel1  (any_2 ...) any_v)))])
+
+
+(define-metafunction OLρT
+  [(sel any (mv )) ()]
+  [(sel (mv any ...) WW) (sel1 (any ...) WW)]
+  [(sel (mv any ...) (mv WW_1 WW_2 ...))  (appeenndd (sel1 (any ...) WW_1) (sel (mv any ...) (mv WW_2 ...)))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language REDEX)
+
+
+(define-metafunction REDEX
+    ;appeenndd : any (any ...) -> (any ...)
+    [(appeenndd  () any) any]
+    [(appeenndd (any_1 any_2 ...) any) (concat any_1 (appeenndd (any_2 ...) any))])
+
+
+
 
 (define-relation REDEX
     unique ⊆ any × ...
@@ -708,8 +749,7 @@
                                                                      (term (concat mv(filter  (WW_1 ...) T))))])
 
 (define-metafunction OLρT
-  [(matchear (mv ((λ (X T) M) ρ)) W_2) (M (extEL ρ (X W_2)))] 
-  [(matchear (mv O) W_2) (O W_2)])
+  [(matchear ((WW_1 WW_2))) ((WW_1 WW_2) :: (cod (tagi WW_1)))])
 
 
 (define-metafunction OLρT
@@ -728,109 +768,105 @@
 (define (ObtTypes C)
   (judgment-holds (types () ,C : T*) T*))
  
-(define w? (redex-match OLρI W))
+(define w? (redex-match OLρI (WW)))
 
 (define (reduces? CI)
   (not (null? (apply-reduction-relation
                vρ
                (term ,CI)))))
 
-(define (progress-holds? CI)
-  (define C  (term (configuration1 ,CI)))
-  (define I  (term (tipoConf ,CI)))
+(define (progress-holds? C)
+  ;(define C  (term (configuration1 ,CI)))
+  ;(define I  (term (tipoConf ,CI)))
   (if (types? C)
       (let ((T_1 (first(first (ObtTypes C)))))
-            (if (or  (term (consistentType?  ,T_1  ,I)) (equal?  I CI)) 
-                 (or (w? C)
-          (reduces? (term (,C ,T_1))))
-          #t))
+            (or (w? C)
+          (reduces? (term (,C ,T_1)))))
+          
       #t))
 
 
 #|
-(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a3 ) (not #t)) in 
+(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a3 (→ bool bool)) (not #t)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in (not x)))) () )))
 
 
-(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a_3 ) (not #t)) in 
+(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a_3 (→ bool bool)) (not #t)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in x))) () )))
 
-(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 3))) in 
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 (→ num (→ num num))) (λ (u_2 (→ num num)) (add1 3))) in 
+(mlet (z ) = (λ (a_1 (→ bool (→ bool bool))) (λ (a_2 (→ bool bool)) (not #t)))  in 
 (mlet (y ) = #t in 
 (mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
-(mlet (x ) = (λ (a_4 ) (add1 1)) in 
+(mlet (x ) = (λ (a_3 (→ bool bool)) (not #t)) in 
+(mlet (x ) = (λ (a_4 (→ num num)) (add1 1)) in 
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z y)(x t)))))))))) () )))
 
 (apply-reduction-relation* vρ  (term (
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(mlet (z ) = (λ (a_1 (→ bool (→ bool bool))) (λ (a_2 (→ bool bool)) (not #t)))  in 
 (mlet (y ) = #t in 
 (mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
-
+(mlet (x ) = (λ (a_3 (→ bool bool)) (not #t)) in
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))) () )))
 
-(apply-reduction-relation* vρ  (term ((mlet (x ) = 2 in 
-(mlet (x ) = #f in
-      ((λ (a_3 ) x) 5))) () )))
-
-(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a3 ) (not #t)) in 
-(mlet (x ) = #f in (add1 x))) () )))
-
-(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 )  (add1 u_1)) in 
-(mlet (z ) = (λ (a_1 )  (not a_1))  in  
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
-(mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () )))
-
-
-
-
-(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 3))) in 
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
-(mlet (y ) = #t in 
-(mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
-(mlet (x ) = (λ (a_4 ) (add1 1)) in 
-(mlet (t ) = 2 in 
-(mlet (t ) = #f in ((z y)(x t)))))))))) () )))
-
-(apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a_3 ) (not #t)) in 
-(mlet (x ) = 2 in 
-(mlet (x ) = #f in x))) () )))
 
 (apply-reduction-relation* vρ  (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in
-      ((λ (a_3 ) x) 5))) () )))
+      ((λ (a_3 (→  num num )) x) 5))) () )))
 
-(apply-reduction-relation*  vρ  (term ((mlet (x ) = 2 in 
+
+(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 (→  num num ))  (add1 u_1)) in 
+(mlet (z ) = (λ (a_1 (→  bool bool ))  (not a_1))  in  
+(mlet (x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = (λ (a_4 (→  num num )) (add1 1)) in  (z x))))) () )))
+
+
+
+(apply-reduction-relation* vρ  (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in
-      (add1 x))) () )))
+      ((λ (a_3 (→  num num )) x) 5))) () )))
 
 
-(apply-reduction-relation* vρ  (term ((mlet (z ) = (λ (u_1 )  (add1 u_1)) in 
-(mlet (z ) = (λ (a_1 )  (not a_1))  in  
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
-(mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () )))
 
-(apply-reduction-relation* vρ  (term
-                                     (
-(mlet (z) =  (λ (u_1 )  ((λ (a_5 )  a_5) u_1)) in 
-(mlet (z ) = (λ (a_1 )  ((λ (a_5 )  a_5) a_1))  in  
-(mlet (x ) = (λ (a_3 )  (not #t)) in 
-(mlet (x ) = (λ (a_4 )  (add1 1)) in  (z x))))) () )))
+
+(apply-reduction-relation* vρ  (term                                     (
+(mlet (z) =  (λ (u_1 (→  (→  str str ) (→  str str ) ))  ((λ (a_5 (→  str str ))  a_5) u_1)) in 
+(mlet (z ) = (λ (a_1 (→   (→  bool bool ) (→  bool bool )))  ((λ (a_5 (→  bool bool ))  a_5) a_1))  in  
+(mlet (x ) = (λ (a_3 (→  bool bool ))  (not #t)) in 
+(mlet (x ) = (λ (a_4 (→  num num ))  (add1 1)) in  (z x))))) () )))
 
 (apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a_3 ) (not a_3)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in (x x)))) () )))
 
 (apply-reduction-relation* vρ  (term
-((mlet(x ) = (λ (a_3 ) (not #t)) in 
-(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
+((mlet(x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
+(mlet (y ) = (λ (a_3 (→  (→  bool bool ) (→  bool bool ) )) (mlet (t ) = (λ (a_5 (→  bool bool )) (not #t)) in a_3)) in 
  (y x))) () )))
+
+
+
+
+
+
+
+
+
+
+(judgment-holds (⊢ () () (λ (u1 (→ num (→ num num)) ) (λ (u2 (→ num num)) ((add1 3) :: num))) : T*) T*)
+
+
+(judgment-holds (⊢ () () (mlet (z) = (λ (u1 (→ num (→ num num)) ) (λ (u2 (→ num num)) ((add1 3) :: num))) in 
+(mlet (z ) = (λ (a1 (→ bool (→ bool bool))) (λ (a2 (→ bool bool)) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→ bool bool)) (not #t)) in 
+(mlet (x ) = (λ (a4 (→ str str)) "abcd") in 
+(mlet (t ) = "abc" in 
+(mlet (t ) = #f in ((z y)(x t)))))))))) : T*) T*)
 
 |#
