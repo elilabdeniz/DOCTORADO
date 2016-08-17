@@ -788,4 +788,12 @@
 (mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
  (y x))) () )))
 
+
+(render-reduction-relation	 	vρ	 
+ 	 	"SemanticaB3.pdf"	 
+ 	 	#:style  'compact-vertical)
+
+(render-language	 	OLρ	 
+ 	 	"SemanticaALanE.pdf"	 
+ 	 )
 |#

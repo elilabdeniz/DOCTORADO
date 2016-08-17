@@ -18,7 +18,7 @@
          )
   (V ::= B N CH L O) 
   (B ::= #t #f)
-  (CH ::= char)
+  (CH ::= string)
   (N ::= number)
   (L ::= (λ (X) M))
   (O ::= OB ON)
@@ -64,7 +64,7 @@
      ;(--> ((L ρ_1) ρ_2) (L (unirEnv ρ_1 ρ_2)) ρ-abs1)
      ;(--> (((λ (X) C) ρ_1) ρ_2) ((λ (X) C) (unirEnv ρ_1 ρ_2)) ρ-abs2)
      
-     (--> ((C_1 C_2) ρ) ((C_1 ρ) (C_2 ρ)) ρ-Capp)
+     ;(--> ((C_1 C_2) ρ) ((C_1 ρ) (C_2 ρ)) ρ-Capp)
      ;(--> ((M :: T) ρ) ((M ρ) :: T) ρ-asc)
      ;(--> ((mlet (X) = C_1 in C_2) ρ) (mlet (X) = (C_1 ρ) in (C_2 ρ)) ρ-Clet)
      
@@ -81,13 +81,9 @@
           ;((subst (X W) M ) ρ)
           app)
      
-     (--> (OB B) W_1
-          (judgment-holds (δB (OB B) W_1))
-          δB)
+     (--> (OB B) W_1 (judgment-holds (δB (OB B) W_1)) δB)
 
-     (--> (ON N) W_1
-          (judgment-holds (δN (add1 N) W_1))
-          δN)
+     (--> (ON N) W_1 (judgment-holds (δN (add1 N) W_1)) δN) 
      
      ;(--> (OB W ...) W_1
       ;    (judgment-holds (δB (OB W ...) W_1))
@@ -303,4 +299,12 @@
  (redex-match? OLρ  (W C) (term
  (((λ (a_5)  #t)
   ()) (((λ (a_3)  #t) ())()))))
+
+(render-reduction-relation	 	vρ	 
+ 	 	"SemanticaA.pdf"	 
+ 	 	#:style  'horizontal-side-conditions-same-line)
+
+(render-language	 	OLρ	 
+ 	 	"SemanticaALanE.pdf"	 
+ 	 )
 |#

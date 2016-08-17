@@ -35,8 +35,9 @@
        (mlet (X) = C in C)
        (C C)
        ER )
-    (WW ::= B N CH O (L ρ))
-    (W :: = WW (mv WW WW_1 ...))
+  (WWW ::= (WW) WW)
+  (WW ::= B N CH O (L ρ))
+    (W ::= WW (mv WW WW_1 ...))
     (ER ::= nameerror typeerror dispatcherror ambiguityerror)
     (ρ ::= ((X W) ...))
     (E ::= hole (E C) (W E)
@@ -440,14 +441,22 @@
 
 
 (define-metafunction OLρT
-  [(construirEnvCond ((X ((T W) ...)) any_0 ...)) ,(and (term (construirEnvAuxCond ((T W) ...)))
+  [(construirEnvCond ((X W) any_0 ...)) ,(and (term (construirEnvAuxCond W))
                                                       (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
   [(construirEnvCond ()) #t])
 
+
+
 (define-metafunction OLρT
-  [(construirEnvAuxCond  ((T W) any_0 ...)) ,(and   (judgment-holds (types () W : (_ ... T_1 _ ...))) (term (esta?  ,(first (ObtTypes (term W))) T))
-                                                      (term (construirEnvAuxCond (any_0 ...))) (term (noisin? T (sacar (any_0 ...)) )))]
-  [(construirEnvAuxCond ()) #t])
+  [(construirEnvAuxCond  WW) ,(and   (judgment-holds (types () WW : (_ ... T_1 _ ...))) (term (esta?  ,(first (ObtTypes (term WW))) (tagi WW))))]
+
+  [(construirEnvAuxCond  (mv  WW any_0 ...)) ,(and   (judgment-holds (types () WW : (_ ... T_1 _ ...))) (term (esta?  ,(first (ObtTypes (term WW))) (tagi WW)))
+                                                      (term (construirEnvAuxCond (mv any_0 ...))) (term (noisin? (tagi WW) (sacartagi (any_0 ...)) )))]
+  
+  [(construirEnvAuxCond (mv )) #t]
+
+  ;[(construirEnvAuxCond ()) #t]
+  )
 
 ;(define-metafunction OLρT
   ;[(construirEnvAuxCond  ((T W) any_0 ...)) ,(and  (term (esta?  ,(first (ObtTypes (term W))) T))
@@ -461,14 +470,16 @@
   ;[(construirEnvAuxCond ()) #t])
 
 (define-metafunction OLρT
-  [(construirEnv ((X ((T W) ...)) any_0 ...)) (concat (X (construirEnvAux ((T W) ...)))
+  [(construirEnv ((X W) any_0 ...)) (concat (X (construirEnvAux W))
                                                       (construirEnv (any_0 ...)))]
   [(construirEnv ()) ()])
 
 (define-metafunction OLρT
-  [(construirEnvAux  ((T W) any_0 ...)) (concat  T
-                                                      (construirEnvAux (any_0 ...)))]
-  [(construirEnvAux ()) ()])
+  [(construirEnvAux  WW)  ()]
+
+  [(construirEnvAux  (mv WW any_0 ...)) (concat  (tagi WW)
+                                                      (construirEnvAux (mv any_0 ...)))]
+  [(construirEnvAux (mv )) ()])
 
 
 #|(define-metafunction OLρT
@@ -695,6 +706,15 @@
     [(sacar ()) ()]
     [(sacar ((any_x any_y) any_0 ...)) (concat any_x (sacar  (any_0 ...)))])
 
+
+
+
+
+(define-metafunction REDEX
+    [(sacartagi ()) ()]
+    [(sacartagi ( any_x any_0 ...)) (concat (tagi any_x) (sacartagi  (any_0 ...)))])
+
+
  (define-metafunction REDEX
     extT1 : ((any any) ...) (any any) -> ((any any) ...)
     [(extT1 (any_0 ... (any_k any_v0) any_1 ...) (any_k any_v1))
@@ -768,22 +788,24 @@
 (define (ObtTypes C)
   (judgment-holds (types () ,C : T*) T*))
  
-(define w? (redex-match OLρI (WW)))
+(define w? (redex-match OLρT WWW))
 
-(define (reduces? CI)
+(define (reduces? C)
   (not (null? (apply-reduction-relation
                vρ
-               (term ,CI)))))
+               (term ,C)))))
 
 (define (progress-holds? C)
   ;(define C  (term (configuration1 ,CI)))
   ;(define I  (term (tipoConf ,CI)))
   (if (types? C)
-      (let ((T_1 (first(first (ObtTypes C)))))
             (or (w? C)
-          (reduces? (term (,C ,T_1)))))
+          (reduces? C))
           
       #t))
+
+
+
 
 
 #|
@@ -868,5 +890,8 @@
 (mlet (x ) = (λ (a4 (→ str str)) "abcd") in 
 (mlet (t ) = "abc" in 
 (mlet (t ) = #f in ((z y)(x t)))))))))) : T*) T*)
+
+
+(redex-check OLρT C (progress-holds? (term C)) #:attempts 10000000)
 
 |#

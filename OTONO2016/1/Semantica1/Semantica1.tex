@@ -76,6 +76,8 @@
 \newcommand{\selvv}{\mathsf{selvv}}
 \newcommand{\filtrar}{\mathsf{filter}}
 \newcommand{\minsel}{\mathsf{minsel}}
+\newcommand{\noisin}{\mathsf{noIsIn}}
+
 
 \newcommand{\tagval}{\mathsf{tagVal}}
 \newcommand{\tagtype}{\mathsf{tagType}}
@@ -86,8 +88,8 @@
 
 \newcommand{\errorA}{\mathsf{error}}
 \newcommand{\nameerror}{\mathsf{NameError}}
-\newcommand{\typeerror}{\mathsf{TagError}}
-\newcommand{\tagerror}{\mathsf{TypeError}}
+\newcommand{\typeerror}{\mathsf{TypeError}}
+\newcommand{\tagerror}{\mathsf{TagError}}
 \newcommand{\dispatcherror}{\mathsf{DispatchError}}
 \newcommand{\ambiguityerror}{\mathsf{AmbiguityError}}
 
@@ -122,13 +124,15 @@
 \semanticA:
 \begin{itemize}
 \item Non deterministic semantic, with branches that reduce to a value and other ending in error.
-\item Type error means stuck.
+\item Name error detection.
+\item Type error detection.
 \item Without any type information in the syntax of the language.
-\item Uses the explicit substitution in $\mathsf{mlet}$, and the implicit substitution in lambdas. In the case of the $\mathsf{mlet}$ is used the explicit substitution because the implicit substitution of a variable by a value would eliminate the overloading.
+\item Uses the explicit substitution. In the case of the $\mathsf{mlet}$ is used the explicit substitution because the implicit substitution of a variable by a value would eliminate the overloading.
 \end{itemize} 
 Characterization of the errors for \semanticA:
+
 \begin{itemize}
-\item Free variable error is detected if a variable is evaluated in the empty environment.
+\item Name error is detected if a variable is evaluated in the empty environment.
 \item Type error is detected if the operators $\negacion$ or $\suma$ are applied with parameters that are not boolean or numeric value, respectively. Also, if the left side of the function application is not a lambda.
 \end{itemize}
 
@@ -281,7 +285,7 @@ $op [s] \tto op$&$\rulename{Op}  $\\
 &\\
 %$x[ \ ] \tto \mathsf{error}$&$\rulename{ErrVarFail}$\\
 %&\\
-$\confx{x} \tto v_i$&$\rulename{VarOk}  $\\
+$\confx{x} \tto v_i$&$\rulename{VarOk}$\\
 &\\
 $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 &\\
@@ -289,7 +293,7 @@ $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 %&\\
 ${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
-$\conf{\absST{x}{t_2}} \ v \tto \conf{[x \mapsto v]{t_2}}$&$\rulename{App}$\\
+$\conf{\absST{x}{t_2}} \ v \tto \confext{t_2}$&$\rulename{App}$\\
 &\\
 $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
@@ -333,7 +337,7 @@ $ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }
 &\\
 $\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
 &\\
-$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+$ \inference {c_2 \tto c_2'}{v_1 \ c_2 \tto v_1 \ c_2'}$&$\rulename{App2}  $\\
 &\\
 \hline
 \end{tabular}
@@ -353,9 +357,9 @@ $ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
 &\\
 $ {\oletP{T_1}{e}{c_2} \tto e  }$&$\rulename{LetErr} $\\
 &\\
-${e \ c_2 \tto e} $&$\rulename{AppErr1}  $\\
+${e \ c_2 \tto e} $&$\rulename{App1Err}  $\\
 &\\
-$ {v \ e \tto e}$&$\rulename{AppErr2}  $\\
+$ {v \ e \tto e}$&$\rulename{App2Err}$\\
 &\\
 \hline
 \end{tabular}
@@ -373,11 +377,11 @@ $ {v \ e \tto e}$&$\rulename{AppErr2}  $\\
 &\\
 $x[ \ ] \tto \nameerror$&$\rulename{NameError}$\\
 &\\
-$\inference {v_1 \neq \absST {x}{t}}{v_1 \ v_2 \tto \typeerror}$&$\rulename{TypeErrApp}$\\
+$\inference {v_1 \neq \absST {x}{t} \vee v_1 \neq op}{v_1 \ v_2 \tto \typeerror}$&$\rulename{TypeErrApp}$\\
 &\\
 $\inference {v \neq n}{\suma{v} \tto \typeerror}$&$\rulename{TypeErrSum}$\\
 &\\
-$\inference {v \neq b}{\negacion{v} \tto  }$&$\rulename{TypeErrNegation}$\\
+$\inference {v \neq b}{\negacion{v} \tto \typeerror }$&$\rulename{TypeErrNegation}$\\
 &\\
 \hline
 \end{tabular}
@@ -400,17 +404,22 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
 \]
 \end{definition}
 
+
+
+
 \subsection{\semanticB}
 \semanticB:
 \begin{itemize}\item Non deterministic semantic, with branches that reduce to a value and other ending in error.
-\item Type error means stuck.
-\item Dispatch error means stuck.
+\item name error detection.
+\item Type error detection.
+\item Dispatch error detection.
 \item Without any type information in the syntax of the language.
 \item Semantic "tag driven", introducing flat tag.
+%\item In the case of n\_place operator, for detecting dispatch error, we need $2^n$ rules, thus is not recommendable. 
 \end{itemize}
 Characterization of the errors for \semanticB:
 \begin{itemize}
-\item Free variable and type error are detected in the same cases that the \semanticA.
+\item Name and type error are detected in the same cases that the \semanticA.
 \item Dispatch error is detected  if the operators $\negacion$ or $\suma$ are applied with overloaded parameters that do not have instance with tag $\boolt$ or $\intt$ in the environment, respectively. Also, if the left side of the function application is an overloaded variable, but does not exist an instance with tag $\funt$ in the environment.
 \end{itemize}
 
@@ -468,11 +477,11 @@ $ \inference {c_1 \tto c_1' & \noval{c_1}}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1
 &\\
 $\inference {c_1 \tto c_1' & \novalvar{c_1}}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
 &\\
-$ \inference {c \tto c' & \noval{c}}{\conf{\absST{x}{t_2}} \ c \tto \conf{\absST{x}{t_2}} \ c'}$&$\rulename{App2}  $\\
+$ \inference {c_2 \tto c_2' & \noval{c}}{\conf{\absST{x}{t_2}} \ c_2 \tto \conf{\absST{x}{t_2}} \ c'}$&$\rulename{App2}  $\\
 &\\
 $ \inference {c_2 \tto c_2' & \noval{c_2}}{x[s] \ c_2 \tto x[s] \ c_2'}$&$\rulename{App3}  $\\
 &\\
-$ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  $\\
+$ \inference {c_2 \tto c_2' & \novalvar{c_2}}{op \ c_2 \tto op \ c_2'}$&$\rulename{App4}  $\\
 \hline
 \end{tabular}
 \caption{Congruence rules for \semanticB.}
@@ -488,6 +497,12 @@ $ \inference {c \tto c' & \novalvar{c}}{op \ c \tto op \ c'}$&$\rulename{App4}  
 \begin{tabular}{|c r|}
 \hline
 $\cdots$&\\
+$\inference{ \noisin(x_1, [s_1])}{x_1[s_1] \ v_2 \tto  \nameerror}$&$\rulename{NameErrApp}$\\
+&\\
+$\inference{ \noisin(x, [s])}{\suma{x[s]} \tto \nameerror}$&$\rulename{NameErrSum}$\\
+&\\
+$\inference{ \noisin(x, [s])}{\negacion{x[s]} \tto \nameerror}$&$\rulename{NameErrNegation}$\\
+&\\
 $\inference{ \neg \buscar(x_1, [s_1],\funt, v_1)}{x_1[s_1] \ v_2 \tto  \dispatcherror}$&$\rulename{DisErrApp}$\\
 &\\
 $\inference{\neg \buscar(x, [s], \intt, n)}{\suma{x[s]} \tto \dispatcherror}$&$\rulename{DisErrSum}$\\
@@ -527,10 +542,16 @@ The function $\lab$ is defined  as follows:
 \[ \lab(v) = \begin{cases} 
       \intt & v = n \\
       \boolt & v = b \\
-      \funt & v = \absST{x}{t}\\
+      \funt & v = \absST{x}{t} \vee v = op\\
    \end{cases}
 \]
 \end{definition}
+
+
+
+
+
+
 
 \subsection{\semanticB \ with ascription}
 
@@ -576,6 +597,8 @@ $ \inference {c \tto c' & \novalvar{c}}{\ascripS{c} \tto \ascripS{c'} }$&$\rulen
 &\\
 $ {\ascripS{error} \tto error }$&$\rulename{AscErr} $\\
 &\\
+$ \inference {\noisin(x, [s])}{\ascripS{x[s]} \tto \nameerror} $&$\rulename{NameErrAsc} $\\
+&\\
 $ \inference {\lab(v) \neq S}{\ascripS{v} \tto \typeerror} $&$\rulename{TypeErrAsc} $\\
 &\\
 $ \inference{\neg\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{DisErrAsc}$\\
@@ -588,14 +611,17 @@ $ \inference{\neg\buscar(x, [s], S, v)}{\ascripS{x[s]} \tto  v} $&$\rulename{Dis
 \end{small}
 \end{figure}
 
+
+
 \subsection{\semanticC}
 
 
 \semanticC:
 \begin{itemize}\item Deterministic semantic. With the use of multi-values a program can reduce to a set of value.
-\item Type error means stuck.
-\item Dispatch error means stuck.
-\item Ambiguity error means stuck.
+\item Name error detection.
+\item Type error detection.
+\item Dispatch error detection.
+\item Ambiguity error detection.
 \end{itemize}
 Characterization of the errors for \semanticC:
 \begin{itemize}
@@ -612,7 +638,7 @@ Characterization of the errors for \semanticC:
 \hline
 &&$\cdots$&\\
 $w$&$::=$&&$\mathsf {multi-value}$\\
-%&&$v$&$\mathsf {value}$\\
+&&$v$&$\mathsf {value}$\\
 &&$\{\overline{v}\}$&$\mathsf {set \ of \ values}$\\
 &&&\\
 $c$&$::=$&&$\mathsf {configurations}$\\
@@ -622,6 +648,10 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$\oletP {T}{c}{c}$&\\
 &&$\ascripS{c}$&\\
 &&$e$&$\mathsf {error}$\\
+&&&\\
+$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+&&$ \bullet$&$\mathsf {empty \ substitution}$\\
+&&$x \mapsto w, s$&$\mathsf {variable \ substitution}$\\
 &&&\\
 $e$&$::=$&&$\mathsf {errors}$\\
 &&$\cdots$&\\
@@ -647,7 +677,13 @@ $e$&$::=$&&$\mathsf {errors}$\\
 &\\
 &\framebox {$c \tto c$}\\
 &\\
-$w[s] \tto w$&$\rulename{MultiValue}  $\\
+$b[s] \tto b$&$\rulename{False}  $\\
+&\\
+$n[s] \tto n$&$\rulename{Num}  $\\
+&\\
+$op [s] \tto op$&$\rulename{Op}  $\\
+&\\
+$\{\overline{v}\} [s] \tto \{\overline{v}\} $&$\rulename{MultiValue}  $\\
 &\\
 $\confxW{x} \tto w$&$\rulename{VarOk}  $\\
 &\\
@@ -657,9 +693,9 @@ $ \inference {\filtrar(w, S) = w' & w' \neq \emptyset} {\ascripS{w} \tto w'} $&$
 &\\
 ${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
 &\\
-%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
-
-$\inference{ \filtrar(w_1, \funt) = \{\absST{x}{t_2} \}}{w_1 \ w_2 \tto \conf{[x \mapsto w_2]{t_2}}}$&$\rulename{App}$\\
+${(\absST{x}{t_2})[s] \ w \tto \confextW{t_2}}$&$\rulename{App}$\\
+&\\
+$\inference{ \filtrar(\{\overline{v}\} , \funt) = \{v_1\}}{\{\overline{v}\} \ w_2 \tto v_1 \ w_2}$&$\rulename{AppMultValue}$\\
 &\\
 $\inference {\filtrar(w, \intt)  = \{\overline{n}\} }{\suma{w} \tto \{ \overline{n + 1} \}}$&$\rulename{Sum}$\\
 &\\
@@ -683,17 +719,16 @@ $ \inference {c \tto c'}{w \ c \tto w \ c'}$ $\rulename{App2}  $\\
 \begin{tabular}{|c r|}
 \hline
 &\\
-$ \inference {\filtrar(w, S) = \{v\}} {\ascripS{w} \tto \{v\} } $&$\rulename{Asc} $\\
+$ \inference {\filtrar(w, S) = \{v\}} {\ascripS{w} \tto v } $&$\rulename{Asc} $\\
 &\\
-${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
-&\\
+%${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
+%&\\
 %$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
-
-$\inference{\filtrar(w_1, \funt) = \{\absST{x}{t_2} \}}{w_1 \ w_2 \tto \conf{[x \mapsto w_2]{t_2}}}$&$\rulename{App}$\\
+%$\inference{\filtrar(w_1, \funt) = \{\absST{x}{t_2} \}}{w_1 \ w_2 \tto \conf{[x \mapsto w_2]{t_2}}}$&$\rulename{App}$\\
+%&\\
+$\inference {\filtrar(w, \intt)  = \{n\} }{\suma{w} \tto n + 1}$&$\rulename{Sum}$\\
 &\\
-$\inference {\filtrar(w, \intt)  = \{n\} }{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
-&\\
-$\inference {\filtrar(w, \boolt)  = \{b\} }{\negacion{w}\tto {\{\neg \ b\}}}$&$\rulename{Negation}$\\
+$\inference {\filtrar(w, \boolt)  = \{b\} }{\negacion{w}\tto {\neg \ b}}$&$\rulename{Negation}$\\
 
 &\\
 \hline
@@ -710,30 +745,30 @@ $\inference {\filtrar(w, \boolt)  = \{b\} }{\negacion{w}\tto {\{\neg \ b\}}}$&$\
 \begin{tabular}{|c r|}
 \hline
 $\cdots$&\\
-$ \inference {\filtrar(w, S) = \{\ \}} {\ascripS{w} \tto \dispatcherror} $&$\rulename{DisErrAsc} $\\
-&\\
-${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{DisErrLet} $\\
-&\\
-%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
-
-$\inference{ \filtrar(w_1, \funt) = \{ \ \}}{w_1 \ w_2 \tto \dispatcherror}$&$\rulename{DisErrApp}$\\
-&\\
-$\inference {\filtrar(w, \intt)  = \{\ \} }{\suma{w} \tto \dispatcherror}$&$\rulename{DisErrSum}$\\
-&\\
-$\inference {\filtrar(w, \boolt)  = \{ \ \} }{\negacion{w}\tto \dispatcherror}$&$\rulename{DisErrNegation}$\\
-&\\
-
-$ \inference {\filtrar(w, S) = \{\ \}} {\ascripS{w} \tto \ambiguityerror} $&$\rulename{AmbErrAsc} $\\
-&\\
-${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{AmbErrLet} $\\
+$ \inference {\filtrar(\{\overline{v}\}, S) = \{\ \}} {\ascripS{\{\overline{v}\}} \tto \dispatcherror} $&$\rulename{DisErrAsc} $\\
+%&\\
+%${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{DisErrLet} $\\
 &\\
 %$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
 
-$\inference{ \filtrar(w_1, \funt) = \{ \ \}}{w_1 \ w_2 \tto \ambiguityerror}$&$\rulename{AmbErrApp}$\\
+$\inference{ \filtrar(\{\overline{v}\}, \funt) = \{ \ \}}{\{\overline{v}\} \ w_2 \tto \dispatcherror}$&$\rulename{DisErrApp}$\\
 &\\
-$\inference {\filtrar(w, \intt)  = \{\ \} }{\suma{w} \tto \ambiguityerror}$&$\rulename{AmbErrSum}$\\
+$\inference {\filtrar(\{\overline{v}\}, \intt)  = \{\ \} }{\suma{\{\overline{v}\}} \tto \dispatcherror}$&$\rulename{DisErrSum}$\\
 &\\
-$\inference {\filtrar(w, \boolt)  = \{ \ \} }{\negacion{w}\tto \ambiguityerror}$&$\rulename{AmbErrNegation}$\\
+$\inference {\filtrar(\{\overline{v}\}, \boolt)  = \{ \ \} }{\negacion{\{\overline{v}\}}\tto \dispatcherror}$&$\rulename{DisErrNegation}$\\
+&\\
+
+$ \inference {\filtrar(\{\overline{v}\}, S) = w \ \wedge \|w\| > 1} {\ascripS{\{\overline{v}\}} \tto \ambiguityerror} $&$\rulename{AmbErrAsc} $\\
+&\\
+%${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{AmbErrLet} $\\
+%&\\
+%$\inference{((\absST{x}{t_2})[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
+
+$\inference{ \filtrar(\{\overline{v}\}, \funt) = w \ \wedge \|w\| > 1}{\{\overline{v}\} \ w_2 \tto \ambiguityerror}$&$\rulename{AmbErrApp}$\\
+&\\
+$\inference {\filtrar(\{\overline{v}\}, \intt)  = w \ \wedge \|w\| > 1}{\suma{\{\overline{v}\}} \tto \ambiguityerror}$&$\rulename{AmbErrSum}$\\
+&\\
+$\inference {\filtrar(\{\overline{v}\}, \boolt)  = w \ \wedge \|w\| > 1}{\negacion{\{\overline{v}\}}\tto \ambiguityerror}$&$\rulename{AmbErrNegation}$\\
 &\\
 \hline
 \end{tabular}
@@ -767,10 +802,17 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
 \label{definition:tcs}
 \mbox{}
 Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
-\[ s \oplus x \mapsto w = \begin{cases} 
+\[ s \oplus_1 x \mapsto w = \begin{cases} 
       x \mapsto w & s =  \varnothing\\
       x \mapsto w' \cup w, s' & s = x \mapsto w', s'\\
       y \mapsto w', s' \oplus x \mapsto w & s = y \mapsto w', s'\\
+   \end{cases}
+\]
+
+\[ s \oplus_2 x \mapsto w = \begin{cases} 
+      x \mapsto w & s =  \varnothing\\
+      x \mapsto w' \cup w, s' & s = x \mapsto w', s'\\
+      y \mapsto w', s' \oplus_2 x \mapsto w & s = y \mapsto w', s'\\
    \end{cases}
 \]
 \end{definition}
