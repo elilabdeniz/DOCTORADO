@@ -96,11 +96,14 @@
     ----------------------- asc
     (⊢ A Γ (M :: T) : (T))]
 
-     [(⊢ A Γ M_1 : (T_1))
+     [;(⊢ A Γ M_1 : (T_1))
      ;(side-condition (esta? T*_1 T_1))
      (side-condition (definido? A))
      (side-condition (noisin? X (sacar Γ)))
-     (⊢ (ext A (X T_1)) Γ M_2 : T*_2)
+     ;(⊢ (ext A (X T_1)) Γ M_2 : T*_2)
+     (⊢ A Γ M_1 : T*_1)
+     (side-condition (sinElemRep  (extraerVar (extmult A (X T*_1)) X)))
+     (⊢ (extmult A (X T*_1)) Γ M_2 : T*_2)
      --------------------------------------- let
      (⊢ A Γ (mlet (X) = M_1 in M_2) : T*_2)]
   
@@ -351,11 +354,14 @@
     ----------------------------------------------------- let
     (types Γ ((mlet (X) = M_1 in M_2) ρ) : T*)]
 
-    [(types Γ C_1 : (T_1))
+
+
+  [ (types Γ C_1 : T*_1)
      ;(side-condition (esta? T*_1 T_1))
      (side-condition (construirEnvCond ρ))
      (side-condition (definido? ρ))
-     (⊢ (ext (construirEnv ρ) (X T_1)) Γ M_2 : T*_2)     
+     (side-condition (sinElemRep  (extraerVar (extmult (construirEnv ρ) (X T*_1)) X)))
+     (⊢ (extmult (construirEnv ρ) (X T*_1)) Γ M_2 : T*_2)     
     ------------------------------------------------------ c-let
     (types Γ (mlet (X) = C_1 in (M_2 ρ)) : T*_2)]
   
@@ -417,8 +423,14 @@
    ,(if (term (propiedad (→ T_1 T_2) (any_0 ... any_1 ...) (any_3 ... T_1 any_4 ...)))
         (term (concat (→ T_1 T_2) (minsel (any ...) (any_3 ... T_1 any_4 ...) (any_0 ... (→ T_1 T_2) any_1 ...))))
         (term (minsel (any ...) (any_3 ... T_1 any_4 ...) (any_0 ... (→ T_1 T_2) any_1 ...))))]
+
+  
   [(minsel ((→ T_1 T_2) any ...) any_2 any_1) (minsel (any ...) any_2 any_1)]
+
+  
   [(minsel (any_0 any_1 ...) any_3 any_2) (minsel (any_1 ...) any_3 any_2)]
+
+  
   [(minsel () any_2 any_1) ()])
 
 (define-metafunction OLT
@@ -644,6 +656,35 @@
     [(ext any) any]
     [(ext any any_0 any_1 ...)
      (ext1 (ext any any_1 ...) any_0)])
+
+
+
+(define-metafunction REDEX
+  [(sinElemRep ()) #t]
+  [(sinElemRep (any any_1 ...)) ,(if (term (isin? any (any_1 ... )))
+                                     #f
+                                     (term (sinElemRep (any_1 ...)))
+                                                                     )])
+
+
+(define-metafunction REDEX
+  [(extraerVar ((any_x any_y) any ... ) any_x) any_y]
+  [(extraerVar (any any_1 ...) any_x) (extraerVar (any_1 ...) any_x)])
+
+(define-metafunction REDEX
+    ;ext1 : ((any (any ...)) ...) (any any) -> ((any (any ...)) ...)
+    [(extmult1 (any_0 ... (any_x (any_v0 ...)) any_1 ...) (any_x any_p))
+     (any_0 ... (any_x (appeenndd any_p (any_v0 ...))) any_1 ...)]
+    [(extmult1 (any_0 ...) (any_x any_p))
+     ((any_x any_p) any_0 ...)])
+
+(define-metafunction REDEX
+    ;ext : ((any any) ...) (any any) ... -> ((any any) ...)_in
+  
+    [(extmult any) any]
+    [(extmult any any_0 any_1 ...)
+     (extmult1 (extmult any any_1 ...) any_0)])
+
 
 
 
@@ -893,5 +934,8 @@
 
 
 (redex-check OLρT C (progress-holds? (term C)) #:attempts 10000000)
+
+
+
 
 |#

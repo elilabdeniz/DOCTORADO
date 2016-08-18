@@ -527,7 +527,7 @@ The relation $\buscar$ is defined  as follows:
 \begin{definition}[$\mathsf{flat}$]
 \label{definition:tcs}
 \mbox{}
-The function $\mathsf{flat}$ is defined  as follows:
+The operator $\mathsf{flat}$ is defined  as follows:
 \[ \mathsf{flat}(s) = \begin{cases} 
       \varnothing & s =  \varnothing \\
       x \mapsto v_1 \cdots , x \mapsto v_n,\mathsf{flat} (s') & s = x \mapsto \{\overline{v}\}, s'\\
@@ -538,7 +538,7 @@ The function $\mathsf{flat}$ is defined  as follows:
 \begin{definition}[$\lab$]
 \label{definition:tcs}
 \mbox{}
-The function $\lab$ is defined  as follows:
+The operator $\lab$ is defined  as follows:
 \[ \lab(v) = \begin{cases} 
       \intt & v = n \\
       \boolt & v = b \\
@@ -693,7 +693,7 @@ $ \inference {\filtrar(w, S) = w' & w' \neq \emptyset} {\ascripS{w} \tto w'} $&$
 &\\
 ${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
 &\\
-${(\absST{x}{t_2})[s] \ w \tto \confextW{t_2}}$&$\rulename{App}$\\
+${(\absST{x}{t_2})[s] \ w \tto t_2 [x \mapsto w, s]}$&$\rulename{App}$\\
 &\\
 $\inference{ \filtrar(\{\overline{v}\} , \funt) = \{v_1\}}{\{\overline{v}\} \ w_2 \tto v_1 \ w_2}$&$\rulename{AppMultValue}$\\
 &\\
@@ -710,7 +710,7 @@ $\inference {\filtrar(w, \boolt)  = \{\overline{b}\} }{\negacion{w}\tto {\{ \ove
 \end{small}
 \end{figure}
 
-The only rule that change is:
+The only congruence rule that change is:
 $ \inference {c \tto c'}{w \ c \tto w \ c'}$ $\rulename{App2}  $\\
 
 \begin{figure}[]
@@ -782,46 +782,27 @@ $\inference {\filtrar(\{\overline{v}\}, \boolt)  = w \ \wedge \|w\| > 1}{\negaci
 
 
 
-\begin{comment}
+%\begin{comment}
 \begin{definition}[$\oplus$]
 \label{definition:tcs}
 \mbox{}
 Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
 \[ s \oplus x \mapsto w = \begin{cases} 
-      x \mapsto \{w\}& s =  \varnothing \wedge w = v\\
+      x \mapsto \{v\}& s =  \varnothing \wedge w = v\\
       x \mapsto w & s =  \varnothing \wedge w \neq v\\
-      x \mapsto w' \cup \{w\}, s' & s = x \mapsto w', s' \wedge w = v\\
+      x \mapsto w' \cup \{v\}, s' & s = x \mapsto w', s' \wedge w = v\\
       x \mapsto w' \cup w, s' & s = x \mapsto w', s' \wedge w \neq v\\
       y \mapsto w', s' \oplus x \mapsto w & s = y \mapsto w', s'\\
    \end{cases}
 \]
 \end{definition}
-\end{comment}
-
-\begin{definition}[$\oplus$]
-\label{definition:tcs}
-\mbox{}
-Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $\oplus$ is defined  as follows:
-\[ s \oplus_1 x \mapsto w = \begin{cases} 
-      x \mapsto w & s =  \varnothing\\
-      x \mapsto w' \cup w, s' & s = x \mapsto w', s'\\
-      y \mapsto w', s' \oplus x \mapsto w & s = y \mapsto w', s'\\
-   \end{cases}
-\]
-
-\[ s \oplus_2 x \mapsto w = \begin{cases} 
-      x \mapsto w & s =  \varnothing\\
-      x \mapsto w' \cup w, s' & s = x \mapsto w', s'\\
-      y \mapsto w', s' \oplus_2 x \mapsto w & s = y \mapsto w', s'\\
-   \end{cases}
-\]
-\end{definition}
+%\end{comment}
 
 
 \begin{definition}[$\filtrar(\cdot, \cdot)$]
 \label{definition:tcs}
 \mbox{}
-The function $\filtrar$ is defined  as follows:
+The operator $\filtrar$ is defined  as follows:
 \[ \filtrar(w, S) = \{v| v \in w \wedge \lab(v) = S \}
 \]
 \end{definition}
@@ -831,7 +812,7 @@ The function $\filtrar$ is defined  as follows:
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
-The function $\buscar$ is defined  as follows:
+The operator $\buscar$ is defined  as follows:
  \[ \buscar(w_1, w_2) = (v_1, v_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt \ \wedge \ w_2 = \{ v_2 \}
  \]
  \end{definition}
@@ -842,7 +823,7 @@ The function $\buscar$ is defined  as follows:
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
-The function $\buscar$ is defined  as follows:
+The operator $\buscar$ is defined  as follows:
  \[\buscar(w_1, w_2) = (v_1, w_2)  \  !\exists v_1 \in w_1|\lab(v_1) = \funt\]
  \end{definition}
 \end{comment}
@@ -856,7 +837,7 @@ The function $\buscar$ is defined  as follows:
 \item Type annotation in lambda functions, $\mathsf{mlet}$ and ascription.
 \item More expressive than \semanticC, with the use structural tags.
 \item Do not support context-dependent overloading.
-\item Como no esta verificacda la informacion de tipo, no se puede decir nada acerca de la semantica.
+\item Since it is not verified the type information, the evaluation  it is ...
 \end{itemize}
 
 \begin{figure}
@@ -893,14 +874,15 @@ $T$&$::=$&&$\mathsf {types}$\\
 &&$\intt$&$\mathsf {type \ of \ integers}$\\
 &&$\boolt$&$\mathsf {type \ of \ booleans}$\\
 &&$T \to T$&$\mathsf {type \ of \ functions}$\\
-\end{tabular}
-& \begin{tabular}{l c l r}
 &&&\\
 $v$&$::=$&&$\mathsf {values}$\\
 &&$b$&$\mathsf {boolean \ value}$\\
 &&$n$&$\mathsf{numeric \ value} $\\
 &&$op$&$\mathsf{operator}$\\
 &&$\conf{\absSTT {x}{t}}$&$\mathsf{closure}$\\
+
+\end{tabular}
+& \begin{tabular}{l c l r}
 &&&\\
 %$w$&$::=$&&$\mathsf {multi-value}$\\
 %%&&$v$&$\mathsf {value}$\\
@@ -912,6 +894,17 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 &&$c \ c $&\\
 &&$\oletPT{T}{c}{c}$&\\
 &&$\ascrip{c}$&\\
+&&$e$&$\mathsf {error}$\\
+&&&\\
+$e$&$::=$&&$\mathsf {errors}$\\
+&&$\nameerror$&$\mathsf {name \ error}$\\
+&&$\typeerror$&$\mathsf {type \ error}$\\
+&&$\dispatcherror$&$\mathsf {dispatch \ error}$\\
+&&$\ambiguityerror$&$\mathsf {ambiguity \ error}$\\
+&&&\\
+$s$&$::=$&&$\mathsf {explicit \ substitutions}$\\
+&&$ \bullet$&$\mathsf {empty \ substitution}$\\
+&&$x \mapsto w, s$&$\mathsf {variable \ substitution}$\\
 %&&$\suma{c}$&\\
 %&&$\negacion{c}$&\\
 %%&&$\mathsf{error}$&\\
@@ -919,6 +912,7 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 %&&$ \bullet$&$\mathsf {empty \ substitution}$\\
 %&&$\subx$&$\mathsf {variable \ substitution}$\\
 %%&&$\subxDT$&$\mathsf {variable \ substitution}$\\
+&&&\\
 &&&\\
 \end{tabular}\\
 \hline
@@ -936,43 +930,47 @@ $c$&$::=$&&$\mathsf {configurations}$\\
 \begin{center}
 \begin{tabular}{|c r|}
 \hline
-&\\
-&\framebox {$c \tto c$}\\
-&\\
-$w[s] \tto w$&$\rulename{MultiValue}  $\\
-&\\
-$\confxW{x} \tto w$&$\rulename{VarOk}  $\\
-&\\
-$\inference {x \neq y} {\confyW{x} \tto x[s]}$&$\rulename{VarNext}  $\\s
-&\\
-$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
-&\\
-$ \conf{\oletPT{T_1}{t_1}{t_2}} \tto \oletPT{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
-&\\
-$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
-&\\
+%&\\
+%&\framebox {$c \tto c$}\\
+%&\\
+%$w[s] \tto w$&$\rulename{MultiValue}  $\\
+%&\\
+%$\confxW{x} \tto w$&$\rulename{VarOk}  $\\
+%&\\
+%$\inference {x \neq y} {\confyW{x} \tto x[s]}$&$\rulename{VarNext}  $\\s
+%&\\
+%$ \conf{\ascrip{t}} \tto \ascrip{t[s]}$&$\rulename{AscSub}$\\
+%&\\
+%$ \conf{\oletP{T_1}{t_1}{t_2}} \tto \oletP{T_1}{t_1[s]}{t_2[s]}$&$\rulename{LetSub} $\\
+%&\\
+%$\conf{\appD} \tto t_1 [s] \ t_2 [s]$&$\rulename{AppSub} $\\
+%&\\
 %$\conf{\suma{t_1}} \tto \suma{t_1 [s]}$&$\rulename{SumSub} $\\
 %&\\
 %$\conf{\negacion{t}} \tto \negacion{t [s]}$&$\rulename{NegationSub} $\\
 %&\\
-$ \inference {\filtrar(w, S) = \{v\}} {\ascrip{w} \tto \{v\}} $&$\rulename{Asc} $\\
+%$ \inference {\filtrar(w, S) = \{v\}} {\ascrip{w} \tto \{v\}} $&$\rulename{Asc} $\\
+%&\\
+%$\inference {\filtrar(w, T_1) = \{v\}}{\oletP{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+%&\\
+%${\oletP{T_1}{w}{t_2[s]} \tto \confextW{t_2}}$&$\rulename{Let} $\\
+$\cdots$&\\
+${\absDT)[s]\ w \tto (t_2 [x \mapsto w, s]}) :: T_2 $&$\rulename{App}$\\
 &\\
-$\inference {\filtrar(w, T_1) = \{v\}}{\oletPT{T_1}{w}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
+%&\\
+$\inference{\{(v_1, v_2)\} = \buscar(\{\overline{v}\}, w_2)}{\{\overline{v}\} \ w_2 \tto v_1 \ v_2}$&$\rulename{AppMultValue}$\\
+%$\inference{\filtrar(w, \intt) = \{n\}}{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
 &\\
-$\inference{((\absDT)[s], v_2) = \buscar(w_1, w_2)}{w_1 \ w_2 \tto \conf{[x \mapsto v_2]{t_2}}}$&$\rulename{App}$\\
-&\\
-$\inference{\filtrar(w, \intt) = \{n\}}{\suma{w} \tto \{n + 1\}}$&$\rulename{Sum}$\\
-&\\
-$\inference{\filtrar(w, \boolt) = \{b\}}{\negacion{w} \tto \{ \neg \ b \} }$&$\rulename{Negation}$\\
-&\\
-$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
- &\\
-$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
-&\\
-$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
-&\\
-$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
-&\\
+%$\inference{\filtrar(w, \boolt) = \{b\}}{\negacion{w} \tto \{ \neg \ b \} }$&$\rulename{Negation}$\\
+%&\\
+%$ \inference {c \tto c'}{\ascrip{c} \tto \ascrip{c'} }$&$\rulename{Asc1} $\\
+ %&\\
+%$ \inference {c_1 \tto c_1'}{\oletP{T_1}{c_1}{c_2} \tto \oletP{T_1}{c_1'}{c_2} }$&$\rulename{Let1} $\\
+%&\\
+%$\inference {c_1 \tto c_1'}{c_1 \ c_2 \tto c_1' \ c_2} $&$\rulename{App1}  $\\
+%&\\
+%$ \inference {c \tto c'}{v \ c \tto v \ c'}$&$\rulename{App2}  $\\
+%&\\
 \hline
 \end{tabular}
 \caption{Reduction rules for \semanticD.}
@@ -1012,10 +1010,12 @@ Given an environment  $s$ and a variable binding $x \mapsto v_1$, the operator $
 \begin{definition}[$\lab$]
 \label{definition:tcs}
 \mbox{}
-The function $\lab$ is defined  as follows:
+The operator $\lab$ is defined  as follows:
 \[ \lab(v) = \begin{cases} 
       \intt & v = n \\
       \boolt & v = b \\
+       (\boolt \to \boolt) &  v = \negacion \\
+       (\intt \to \intt) &  v = \suma \\
       T_1 \to T_2 & v  = (\absDT)[s]\\
    \end{cases}
 \]
@@ -1024,7 +1024,7 @@ The function $\lab$ is defined  as follows:
 \begin{definition}[$\filtrar(\cdot, \cdot)$]
 \label{definition:tcs}
 \mbox{}
-The function $\filtrar$ is defined  as follows:
+The operator $\filtrar$ is defined  as follows:
 \[ \filtrar(w, T) = \{
      v | v \in w |\lab(v) = T \}
 \]
@@ -1034,7 +1034,7 @@ The function $\filtrar$ is defined  as follows:
 \begin{definition}[$\mathsf{flat}$]
 \label{definition:tcs}
 \mbox{}
-The function $\mathsf{flat}$ is defined  as follows:
+The operator $\mathsf{flat}$ is defined  as follows:
 \[ \mathsf{flat}(s) = \begin{cases} 
       \varnothing & s =  \varnothing \\
       x \mapsto (v_1 : T_1) \cdots, x \mapsto (v_n : T_n),\mathsf{flat} (s') & s = x \mapsto \{(\overline{v : T})\}, s'\\
@@ -1047,7 +1047,7 @@ The function $\mathsf{flat}$ is defined  as follows:
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
-The function $\buscar$ is defined  as follows:
+The operator $\buscar$ is defined  as follows:
 \[ \buscar(w_1, w_2) = \begin{cases} 
       (w_1, w_2) & w_1 = v_1 \wedge w_2 = v_2\\
       (w_1, v_2) & w_1 = v_1 \wedge \lab(w_1) = T_1 \to T_2 \ \wedge \  ! \exists v_2 \in w_2 |\lab(v_2) = T_1\\
@@ -1061,7 +1061,7 @@ The function $\buscar$ is defined  as follows:
 \begin{definition}[$\buscar$]
 \label{definition:tcs}
 \mbox{}
-The function $\buscar$ is defined  as follows:
+The operator $\buscar$ is defined  as follows:
 \[ \buscar(w_1, w_2) =  
   \{(v_1, v_2) | v_1 \in w_1 \ \wedge \ v_2 \in w_2 \ \wedge \ \lab(v_1) = T_1 \to T_2 \ \wedge \ \lab(v_2) = T_1\}
 \]
@@ -1121,13 +1121,13 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&\\
 &$\inference {x:\mtD \in \emt}{\env x : \mtD}$&$\rulename{TVar\emt}$\\
 &&\\
-&$\inference {x \not \in dom(\Gamma \cup \emt) \\  & \envE t_2:T_2^{*} & T_2 \in T_2^{*}}{\tyC \absDT: \{T_1 \to T_2\}}$&$\rulename{TAbs}$\\
+&$\inference {x \not \in dom(\Gamma \cup \emt) \\  & \envE t_2:T_2^{*} & T_2 \in T_2^{*}}{\env \absDT: \{T_1 \to T_2\}}$&$\rulename{TAbs}$\\
 &&\\
 &$\inference{\env t : \mtD & T \in  \mtD}{\env \ascrip{t} : \mtCu{T}}$&$\rulename{TAsc}$\\
 &&\\
-&$\inference{x \not \in dom(\Gamma) & \env t_1 : \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enve t_2 : \mtP{T_2}}{\env \oletPT{T_1}{t_1}{t_2} : \mtP{T_2}}$&$\rulename{TLet}$\\
+&$\inference{x \not \in dom(\Gamma) & \env t_1 : T^{*}_1  & \\  \Gamma ; \emt  \oplus (x : T^{*}_1)  \vdash \ t_2 : \mtP{T_2}}{\env \oletP{T_1}{t_1}{t_2} : \mtP{T_2}}$&$\rulename{TLet}$\\
 &&\\
-&$\inference {\env t_1 : T_1^{*} & \env t_2 : T_2^{*}  \\ & !\exists(T_1 \to T_2) \in T_1^{*}| !\exists(T_1) \in T_2^{*}}{\env \appD : \{T_2\}}$&$\rulename{TApp}$\\
+&$\inference {\env t_1 : T_1^{*} & \env t_2 : T_2^{*}  \\ & \buscar (T_1^{*}, T_2^{*}) = \{T_1 \to T_2\}}{\env \appD : \{T_2\}}$&$\rulename{TApp}$\\
 &&\\
 \hline
 \end{tabular}
@@ -1177,11 +1177,11 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&\\
 &$\inference{\tyC \oletPT{T_1}{t_1[s]}{t_2[s] : \mtP{T}}}{\tyC \conf{\oletPT{T_1}{t_1}{t_2}} : \mtP{T}}$&$\rulename{CTLet}$\\
 &&\\
-&$\inference{x \not \in dom(\Gamma) & \tyC c_1 : \mtP{T_1}  & \\ T_1 \in  \mtP{T_1}& \enveC t_2 : \mtP{T_2}}{\tyC \oletPT{T_1}{c_1}{t_2[s]} : \mtP{T_2}}$&$\rulename{CSTLet}$\\
+&$\inference{x \not \in dom(\Gamma) & \tyC c_1 : \mtP{T_1}  & \\ \Gamma ; \emt(s)  \oplus (x : T^{*}_1)  \vdash t_2 : \mtP{T_2}}{\tyC \oletP{T_1}{c_1}{t_2[s]} : \mtP{T_2}}$&$\rulename{CSTLet}$\\
 &&\\
 &$\inference {\tyC t_1[s] \ t_2[s] : \mtP{T}}{\tyC \conf{\appD} : \mtP{T}}$&$\rulename{CTCApp}$\\
 &&\\
-&$\inference {\tyC c_1 : T_1^{*} & \tyC c_2 : T_2^{*}  \\ & !\exists(T_1 \to T_2) \in T_1^{*}| !\exists(T_1) \in T_2^{*}}{\tyC c_1 \ c_2 : \{T_2\}}$&$\rulename{CSTApp}$\\
+&$\inference {\tyC c_1 : T_1^{*} & \tyC c_2 : T_2^{*}  \\ & \buscar (T_1^{*}, T_2^{*}) = \{T_1 \to T_2\}}{\tyC c_1 \ c_2 : \{T_2\}}$&$\rulename{CSTApp}$\\
 &&\\
 \hline
 \end{tabular}
@@ -1202,6 +1202,16 @@ Given a multi-type context $\emt$ and a pair $(x:T)$, the operator $\oplus$ is d
       \emt',x:(\mtD \cup \mtCu{T}) & \emt = \emt',x:\mtD\\
       \emt' \oplus (x:T),y:\mtD & \emt = \emt',y:\mtD\\
    \end{cases}
+\]
+\end{definition}
+
+
+\begin{definition}[$\buscar$]
+\label{definition:tcs}
+\mbox{}
+The operator $\buscar$ is defined  as follows:
+\[ \buscar(T_1^{*}, T_2^{*}) =  
+  \{T_1 \to T_2 | T_1 \to T_2 \in T_1^{*} \ \wedge \ T_1 \in T_2^{*} \ \}
 \]
 \end{definition}
 
