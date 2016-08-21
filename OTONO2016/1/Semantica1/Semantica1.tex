@@ -1165,6 +1165,8 @@ $\emt$&$::=$&&$\mathsf {multi-typing \ contexts}$\\
 &&\\
 &$\tyC  \suma[s] : \{\intt \to \intt\}$&$\rulename{CSTSum}$\\
 &&\\
+&$\inference {\tyC v_i : \{T_i\}}{\tyC \{\overline{v}\} : \{\overline{T}\}}$&$\rulename{CTMulTVal}$\\
+&&\\
 &$\inference {x:T \in \Gamma}{\tyC x[s] : \mtCu{T}}$&$\rulename{CTVar\Gamma}$\\
 &&\\
 &$\inference {x:\mtD \in \emt(s)}{\tyC x[s] : \mtD}$&$\rulename{CTVar\emt}$\\

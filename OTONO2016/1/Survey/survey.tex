@@ -166,9 +166,8 @@
 The list of programming languages that have incorporated overloading is very large. In this list can be included, as known languages like Scala, C++, Java and Haskell. Overloading is described as a kind of polymorphism, where one name is associated with several function implementations, and the choice in each use depends on the context where it is used.
 
 In this brief survey, we present concept related to overloading and relevant works that formalize overloading with different characteristics.
-\section{Background}\label{section:concepts}
-In this section we explain some concepts related to overloading, like polymorphism and the different kind of overloading.
-\subsection{Polymorphism}
+
+
 Cardelli and Wegner~\cite{CardelliWegner} present a classification of the different types of polyphormism which result relevant to understand overloading and its differences with another kind of polyphormism(Figure~\ref{figure:varpolyphormism}).
 
 \begin{figure}[h]
@@ -198,8 +197,8 @@ On the one hand, universally polymorphic functions typically work on an infinite
 On the other hand, ad-hoc polymorphism~\cite{CardelliWegner, wadlerBlott:popl89}, is obtained when a function is defined over several different types and may behave in unrelated ways for each type.  Overloading and coercion polymorphism are classified as the two major subcategories of ad-hoc polymorphism, according to Figure~\ref{figure:varpolyphormism}. In general, we are in present of overloading when the same variable name is used to denote different functions, then the context is essential to decide which function is selected by a particular instance of the name. An example of the overloading function is $+$, since it is applicable to both integer and real arguments. Additionally, a coercion~\cite{CardelliWegner} is a semantic operation which is needed to convert an argument to the type expected by a function, in a situation which would otherwise result in a type error. The function $+$ is also an example of coercion, if it is defined only for real addition, and integer arguments are always coerced to corresponding reals.
 %\subsection{Explicit substitution}
 %\subsection{Local Type Inference}
-\subsection{Static Overloading}
-Programming Languages like Java, C++ and C\# implement static overloading, i.e., that at compile time it is selected the most appropriate  function's definition for a function call, only according to the static type of the arguments. For example, if we have the Java code below, where $\texttt{C}$ is a subclass of $\texttt{B}$, and $\texttt{B}$ is a subclass of $\texttt{A}$, then for the invocation of the method $\texttt{m}$, is select the first definition. As can be observed, the selection of the implementation of the method $\texttt{m}$, it is based in the static type of the argument $\texttt{e}$, not in the dynamic type.                                   \\
+
+Programming Languages like Java, C++ and C\# implement static overloading, i.e., that at compile time it is selected the most appropriate  function's definition for a function call, only according to the static type of the arguments. For example, if we have the Java code below, where $\texttt{C}$ is a subclass of $\texttt{B}$, and $\texttt{B}$ is a subclass of $\texttt{A}$, then for the invocation of the method $\texttt{m}$, is selected the first definition. As can be observed, the selection of the implementation of the method $\texttt{m}$, it is based in the static type of the argument $\texttt{e}$, not in the dynamic type.                                   \\
 \texttt{class O \{\\
 \ \ \ public void m (A e)\{...\}\\
 \ \ \ public void m (B e)\{...\}\\
@@ -209,10 +208,9 @@ Programming Languages like Java, C++ and C\# implement static overloading, i.e.,
 O o = new O();\\
 A e = new B();\\
 o.m(e);}        
-\subsection{Dynamic Overloading}
-Multi-methods is considered a collection of overloaded methods associated to the same message, where the selection occur dynamically, according to run-time types of the reciver and of the arguments~\cite{FJM}. When selection occur dynamically, we are in presence of dynamic overloading. Thus, with this kind of overloading, in the above example of Java code, for the invocation of the method $\texttt{m}$, is select the second definition. Dynamic overloading seems to provide more flexibility and and accuracy selecting the most specialized implementation for a method invocation.
 
-Common Lisp Object System(CLSO)~\cite{Bobrow:1988:CLO:885631.885632} is an object-oriented extension to Common Lisp which implements dynamic overloading. It is worth noting that CLSO do not admit any static checking, therefore is dynamically typed. For instance, the code below in the in most languages with static type checking, results in an static error by ambiguity. However, in CLSO is considered the second implementation for  method $\texttt{m}$ more specific than the first, thus can be executed without ambiguity. In CLSO, the order of the parameters is crucial for the resolution of overloading.\\
+
+Differently, multi-methods is considered a collection of overloaded methods associated to the same message, where the selection occur dynamically, according to run-time types of the reciver and of the arguments~\cite{FJM}. When selection occur dynamically, we are in presence of dynamic overloading or late binding~\cite{castagna1997337}. Thus, with this kind of overloading, in the above example of Java code, for the invocation of the method $\texttt{m}$, is select the second definition. Dynamic overloading seems to provide more flexibility and and accuracy selecting the most specialized implementation for a method invocation.
 
 \texttt{
 class A \{\} \\
@@ -225,7 +223,7 @@ m(new B, new B)\\ }
 %\ref{sub:HindleyMilner_system}
 
 \section{Overloading}\label{section:polymorphism}
-In the preset section we report some different works related to the overloading field. We start with type class, a powerful mechanism which allow overloading, combined with parametric polyphormism. Then we present an interesting work that explain overloading in object-oriented programming languages, with static or dynamic overloading.
+In the present section we report some different works related to the overloading field. We start with type class, a powerful mechanism which allow overloading, combined with parametric polyphormism. Then we present an interesting work that explain overloading in object-oriented programming languages, with static or dynamic overloading.
 \subsection{Type classes}
 Type class in Haskell~\cite{wadlerBlott:popl89} is a sort of interface that defines some behavior supporting overloading and parametric polymorphism. A type class is defined by Nipkow et al.~\cite{Nipkow1993}	, as a set of types, which all happen to provide a certain set of functions. Haskell has a static type system, therefore at compile time, the type of every expression is known and the overloading  is resolved. 
 
@@ -297,7 +295,15 @@ Coherence establishes a single well-defined meaning for each expression. That is
 
 
 \subsubsection{A Second Look at Overloading}
-Odersky et al.~\cite{Odersky1995} propose an extension of the Hindley/Milner system that supports overloading and polymorphic records. They proof that the type system is sound respect to a standard untyped compositional semantics. Additionally, the show  that every typable term in this system has  a principal type. They highlight that for type classes cannot be assigned a meaning independent of its types, so some important properties 
+Odersky et al.~\cite{Odersky1995} propose an extension of the Hindley/Milner system that supports overloading and polymorphic records. They proof that the type system is sound respect to a standard untyped compositional semantics. Additionally, the show  that every typable term in this system has a principal type.
+
+They highlight that for type classes cannot be assigned a meaning independent of its types, thus some important properties of the Hindley/Milner type system are not fulfilled. For example, a good property is  every typeable program remains typeable if all type declaration are removed for it. This is not satisfied for type classes, because in general the program require type declaration for disambiguation. Also, there is no semantic soundness result, as no untyped semantics exists for type classes.
+
+Restriction 
+Overloading is restricted to functions.
+
+\subsubsection{A Calculus for Overloaded Functions with Subtyping}
+
 
 
 
@@ -496,8 +502,23 @@ $\inference{\mathsf{mbody}(m, C, \overline{E}) = (\overline{x}, e_0)}{ \begin{bl
 
 It is important to note that FMJ, and more general Java, only admit overloaded method invocation, unlike type classes. Type classes allow function calls and function arguments overloaded. The reason for this is that in Java, the functions are not first-class citizen. 
 
+\subsection{A Calculus for Overloaded Functions with Subtyping}
+Castagna et al.~\cite{castana1995} present a simple extension of typed $\lambda$-calculus with overloaded functions, subtyping and late binding, called $\lambda$\&-calculus. They represent an overloaded function as a concatenation of branches of code. When the overloaded function is applied, the selection of the branch to execute only depends on the run-type of the argument. The system have common $\lambda$-functions and overloaded functions, therefore they distinguish the usual application of lambda-calculus from the application of an overloaded function. In a later work~\cite{castagna1997} they unify overloading and $\lambda$-abstraction.
+
+System $\lambda$\& use the concept of multi-types like ~\cite{BETTINI2009261, FJM}. Below is defined de syntax of the types, where $A$ denote an atomic type.
+\[T ::= A| T \to T|\{\overline{T \to T}\}\]
+Also is defined the subtyping relation for muti-types and functions type. 	
+Below is presented the syntax of the term. The terms of the  $\lambda$\&-calculus are the same of the lambda calculus plus an operation which concatenates two different branches $ M \bullet M$ and forms an overloaded term. 
+\[M ::= x^T| \lambda x^T. M| M \ M| M \bullet M|\]
+
+
+
 %Bibliography
 \medskip 
 \bibliographystyle{abbrv}
+
+
+Common Lisp Object System(CLSO)~\cite{Bobrow:1988:CLO:885631.885632} is an object-oriented extension to Common Lisp which implements dynamic overloading. It is worth noting that CLSO do not admit any static checking, therefore is dynamically typed. For instance, the code below in the in most languages with static type checking, results in an static error by ambiguity. However, in CLSO is considered the second implementation for  method $\texttt{m}$ more specific than the first, thus can be executed without ambiguity. In CLSO, the order of the parameters is crucial for the resolution of overloading.\\
+
 \bibliography{gsta,pleiad,gp,bib,common}
 \end{document}

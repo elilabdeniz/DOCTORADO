@@ -2,7 +2,7 @@
 (require redex)
 (require pict)
 (require "subst.rkt")
-
+;Agregar regla para los multivalores en el typing de las configuraciones.
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language OL
   (M ::= NV
@@ -35,7 +35,7 @@
        (mlet (X) = C in C)
        (C C)
        ER )
-  (WWW ::= (WW) WW)
+  (WWW ::= (mv WW) WW)
   (WW ::= B N CH O (L ρ))
     (W ::= WW (mv WW WW_1 ...))
     (ER ::= nameerror typeerror dispatcherror ambiguityerror)
@@ -836,6 +836,7 @@
                vρ
                (term ,C)))))
 
+
 (define (progress-holds? C)
   ;(define C  (term (configuration1 ,CI)))
   ;(define I  (term (tipoConf ,CI)))
@@ -845,9 +846,27 @@
           
       #t))
 
+(define (progress-holds1? M)
+  ;(define C  (term (configuration1 ,CI)))
+  ;(define I  (term (tipoConf ,CI)))
+  (if (types1? M)
+      (let ((l (reduces1? M)))
+        (and (equal? (length l) 1) (w? (first l))))
+       
+          
+      #t))
+
+(define (types1? M)
+  (judgment-holds (types () ,(term (configurationM ,M)) : (T))))
 
 
+(define (reduces1? M)
+   (apply-reduction-relation*
+               vρ
+               (term (configurationM ,M))))
 
+(define-metafunction OLρT
+  [(configurationM M) (M ())])
 
 #|
 (apply-reduction-relation* vρ  (term ((mlet (x ) = (λ (a3 (→ bool bool)) (not #t)) in 
@@ -936,6 +955,9 @@
 (redex-check OLρT C (progress-holds? (term C)) #:attempts 10000000)
 
 
-
+(progress-holds1? (term                                     
+(mlet(x ) = (λ (a3 (→ (→  bool bool ) bool)) (a3 #t)) in 
+ (x  (λ (a3 (→  bool bool ))
+               (mlet (z ) = 4 in (mlet (z ) = #t in z)))))))
 
 |#
