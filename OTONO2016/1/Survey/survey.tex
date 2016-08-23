@@ -198,7 +198,8 @@ On the other hand, ad-hoc polymorphism~\cite{CardelliWegner, wadlerBlott:popl89}
 %\subsection{Explicit substitution}
 %\subsection{Local Type Inference}
 
-Programming Languages like Java, C++ and C\# implement static overloading, i.e., that at compile time it is selected the most appropriate  function's definition for a function call, only according to the static type of the arguments. For example, if we have the Java code below, where $\texttt{C}$ is a subclass of $\texttt{B}$, and $\texttt{B}$ is a subclass of $\texttt{A}$, then for the invocation of the method $\texttt{m}$, is selected the first definition. As can be observed, the selection of the implementation of the method $\texttt{m}$, it is based in the static type of the argument $\texttt{e}$, not in the dynamic type.                                   \\
+Programming Languages like Java, C++ and C\# implement static overloading, i.e., that at compile time it is selected the most appropriate  function's definition for a function call, only according to the static type of the arguments. For example, if we have the Java code below, where $\texttt{C}$ is a subclass of $\texttt{B}$, and $\texttt{B}$ is a subclass of $\texttt{A}$, then for the invocation of the method $\texttt{m}$, is selected the first definition. As can be observed, the selection of the implementation of the method $\texttt{m}$, it is based in the static type of the argument $\texttt{e}$, not in the dynamic type.      
+                            
 \texttt{class O \{\\
 \ \ \ public void m (A e)\{...\}\\
 \ \ \ public void m (B e)\{...\}\\
@@ -207,7 +208,7 @@ Programming Languages like Java, C++ and C\# implement static overloading, i.e.,
 ...\\
 O o = new O();\\
 A e = new B();\\
-o.m(e);}        
+o.m(e);}       
 
 
 Differently, multi-methods is considered a collection of overloaded methods associated to the same message, where the selection occur dynamically, according to run-time types of the reciver and of the arguments~\cite{FJM}. When selection occur dynamically, we are in presence of dynamic overloading or late binding~\cite{castagna1997337}. Thus, with this kind of overloading, in the above example of Java code, for the invocation of the method $\texttt{m}$, is select the second definition. Dynamic overloading seems to provide more flexibility and and accuracy selecting the most specialized implementation for a method invocation.
@@ -503,12 +504,31 @@ $\inference{\mathsf{mbody}(m, C, \overline{E}) = (\overline{x}, e_0)}{ \begin{bl
 It is important to note that FMJ, and more general Java, only admit overloaded method invocation, unlike type classes. Type classes allow function calls and function arguments overloaded. The reason for this is that in Java, the functions are not first-class citizen. 
 
 \subsection{A Calculus for Overloaded Functions with Subtyping}
-Castagna et al.~\cite{castana1995} present a simple extension of typed $\lambda$-calculus with overloaded functions, subtyping and late binding, called $\lambda$\&-calculus. They represent an overloaded function as a concatenation of branches of code. When the overloaded function is applied, the selection of the branch to execute only depends on the run-type of the argument. The system have common $\lambda$-functions and overloaded functions, therefore they distinguish the usual application of lambda-calculus from the application of an overloaded function. In a later work~\cite{castagna1997} they unify overloading and $\lambda$-abstraction.
+Castagna et al.~\cite{castana1995} present a simple extension of typed $\lambda$-calculus with overloaded functions, subtyping and late binding, called $\lambda$\&-calculus. They prove Confluence and Strong Normalization for this calculus. The definition of this system have the aim to understand  object-oriented features, for latter add and study others object-oriented features. In fact, as a part of the paper they explain the relation between object-oriented languages and their investigation of overloading. For example, they make an analogy of class-names as types, and methods as overloaded functions.
 
-System $\lambda$\& use the concept of multi-types like ~\cite{BETTINI2009261, FJM}. Below is defined de syntax of the types, where $A$ denote an atomic type.
-\[T ::= A| T \to T|\{\overline{T \to T}\}\]
-Also is defined the subtyping relation for muti-types and functions type. The terms of the  $\lambda$\&-calculus are the same of the   calculus plus an operation which concatenates two different branches $ M \bullet M$ and forms an overloaded term. 
-\[M ::= x^T| \lambda x^T. M| M \ M| M \bullet M|\]
+In this work  an overloaded function represent a concatenation of branches of code. When the overloaded function is applied, the selection of the branch to execute only depends on the run-type of the argument. The system have common lambda abstraction and overloaded functions, therefore they distinguish the usual application of lambda-calculus from the application of an overloaded function. In a later work~\cite{castagna1997} they unify overloading and $\lambda$-abstraction.
+
+System $\lambda$\& use the concept of multi-types like ~\cite{BETTINI2009261, FJM} and the same notion of well formed multi-type. Below is defined de syntax of the types, where $A$ denote an atomic type. Also is defined the subtyping relation ($<:$) for muti-types and functions type. 
+\[T ::= A| T \to T|\{T_1' \to T_1'' \cdots T_2' \to T_2'' \} \]
+The terms of the  $\lambda$\&-calculus are the same of the $\lambda$-calculus with three more. The operation $ M \bullet M$ represent the application of an overloaded function. $M \ \&^ {V}M$ concatenates two different branches, representing an overloaded term, where $V$ is the type of the right branch. Finally, $\epsilon$ denote the overloaded term with zero branch.
+\[M ::= x^T| \lambda x^T. M| M \ M| M \bullet M| M \ \&^ {V}M\ | \epsilon \]
+The type system is formed by six rules where the tree first are the same as the $\lambda$-calculus. The other three are showed below, where the first assigns the empty multi-type to the the empty overloaded function and the second assigns to the no empty overloaded function a multi-type formed for each type of the branches. For the application  of an overloaded function is selected the branch which better match with the static type of the argument.
+\[  \begin{block}
+\ \ \ \  \ \ \ \ \ \ \ \ \ \ \  \vdash \epsilon : \{ \ \} \ \ \ \ \ ( \mathsf{Taut_\epsilon} ) \\ \\
+\inference{ \ \ \ \ \ \ \ \ \vdash M_1 : T_1 <: \{T_i' \to  T_i''\}_{i \leq n - 1}  & \\ \vdash M_2 : T_2 <: T_n' \to  T_n''}{\vdash M_1 \&^{\{T_i' \to  T_i''\}_{i \leq n}}M_2 : \{T_i' \to  T_i'' \}_{i \leq n}}( \mathsf{\{\ \}Intro})\\ \\
+\inference {\vdash M_1 : \{T_i' \to  T_i'' \}_{i \in I} & \vdash M_2 : T & \\ T_j' = \mathsf{min}_{i \in I} \{ T_i'| T <: T_i'\}}{M_1 \bullet M_2 : T_j''} (\{ \}\mathsf{Elim})
+\end{block}\]
+
+The most relevant reduction rule of the system is the related to the reduction of the application of an overloaded function. This rule select the branch which better match with the run-time type of the argument.
+If $N:U$ is closed and in a normal form and $T_j' = \mathsf{min}_{i \in I} \{ T_i'| T <: T_i'\}$ then:
+\[((M_1\&^{\{ T_i' \to T_i''\}_{i \leq n}}M_2) \bullet N) \rhd \begin{cases}
+M_1 \bullet N &  j < n \\
+M_2 \ N &  j = n
+\end{cases}\]
+
+It is worth noting that, although in system $\lambda$-\&, lambda abstraction are first class citizen, an overloaded function is not , therefore it can not be passed as parameter and can not be the body of a lambda abstraction. Also, the branches of an overloaded functions must be a simple lambda abstraction, no an overloaded functions.
+
+
 
 
 
