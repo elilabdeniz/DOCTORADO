@@ -156,23 +156,26 @@
 %\marginparsep = 0pt
 %\paperheight = 800pt
 %\textwidth = 1000pt
+
+
 \setlength{\columnsep}{20pt} %settting space column
-
+\twocolumn[
+\begin{@twocolumnfalse}
 	\maketitle
-	\renewcommand{\abstractname}{Abstract}	
+	\renewcommand{\abstractname}{Abstract}
+	
 	\begin{abstract}
-	\end{abstract}	
+The list of programming languages that have incorporated overloading is very large. In this list can be included, as known languages like Scala, C++, Java and Haskell. Overloading is described as a kind of polymorphism, where one name is associated with several function implementations, and the choice in each use depends on the context where it is used. In this brief survey, we present concept related to overloading and relevant works that formalize overloading with different characteristics.
+	\end{abstract}	\ \\
+\end{@twocolumnfalse}
+]	
+
 \section{Introduction}
-The list of programming languages that have incorporated overloading is very large. In this list can be included, as known languages like Scala, C++, Java and Haskell. Overloading is described as a kind of polymorphism, where one name is associated with several function implementations, and the choice in each use depends on the context where it is used.
-
-In this brief survey, we present concept related to overloading and relevant works that formalize overloading with different characteristics.
-
-
 Cardelli and Wegner~\cite{CardelliWegner} present a classification of the different types of polyphormism which result relevant to understand overloading and its differences with another kind of polyphormism(Figure~\ref{figure:varpolyphormism}).
 
 \begin{figure}[h]
 \begin{center}
-\[ Polyphormism = 
+\[polymorphism  = 
 \begin{cases} 
      universal & 
      \begin{cases} 
@@ -220,12 +223,58 @@ def m(x: A, y: B): Int = 1\\
 def m(x: B, y: A): Int = 2\\
 m(new B, new B)\\ }
 
-\subsection{Hindley/Milner system}
-%\ref{sub:HindleyMilner_system}
 
-\section{Overloading}\label{section:polymorphism}
+
+
+
+\section{Overloading in Functional Programming}\label{section:oinfuntpro}
 In the present section we report some different works related to the overloading field. We start with type class, a powerful mechanism which allow overloading, combined with parametric polyphormism. Then we present an interesting work that explain overloading in object-oriented programming languages, with static or dynamic overloading.
-\subsection{Type classes}
+\subsection{Hindley/Milner type system}
+Damas \& Milner~\cite{Damas1982} defined a type system widely used in calculus with parametric polymorphism and overloading. First, they extend the $\lambda$-calculus with the $\mathsf{let}$ expression, then an expression $e$ have the given syntax: $e ::= x | e \ e | \lambda x.e | \mathsf{let} \ x = e \ \mathsf{in} \ e$. It is important to note that types are absent from the language. Also, define the types $\tau$ and type-schemes $\sigma$ of the system, where $\iota$ is a primitive type and $\alpha$ is a type variable.
+\[ \tau ::= \iota| \alpha| \tau \to \tau   \ \ \ \ \ \ \ \ \sigma ::= \tau|\forall\alpha\sigma
+\]
+They defined two important concept for types: instance an generic instance. Given a substitution $S$, often written $\{\tau_1 / \alpha_1 \cdots \tau_n / \alpha_n\}$ and a type-scheme $\sigma$, $S_\sigma$ is called an instance of $\sigma$. The  type-scheme $S_\sigma$ is obtained  by replacing each free occurrence of $\alpha_i$ in $\sigma$ by $\tau_i$. By contrast a type-scheme $\sigma = \forall \alpha_1\cdots \alpha_n\tau$ has a generic instance $\sigma' = \forall \beta_1\cdots \beta_n\tau'$, if $\tau' = \{\tau_1 / \alpha_1 \cdots \tau_n / \alpha_n\} \tau$, for some $\tau_1\cdots\tau_n$ and $\beta_i$ are not free in $\sigma$. If $\sigma$ have a generic instance $\sigma'$, can be written as $\sigma > \sigma'$, and it follow that if $\sigma > \sigma'$ then $S_\sigma > S_\sigma'$. 
+
+The type inference rules are showed below , where the rules $ [ \mathsf{Taut} ] $, $ [ \mathsf{Comb} ]$,  $ [ \mathsf{Abs} ]$ and $ [ \mathsf{Let} ]$ are quite intuitive. The rule  $ [ \mathsf{Inst} ]$ and $ [ \mathsf{Gen} ]$	can be understood in the example of the Figure \ref{figure:examplederruleshmd}.\\ It is worth noting that this type inference system can infer different type-scheme for the same expression.
+
+ $\inference{x:\sigma \in A}{A \vdash x : \sigma}[[Taut]]$  \ \ \ $\inference{A \vdash e : \sigma  & \sigma > \sigma'}{A \vdash e : \sigma'}[[Inst]]$\\ \\
+ 
+\ \ \ \ \ \ \ \ \ $\inference{A \vdash e: \sigma & \alpha \notin \mathsf{FV}(A)}{A \vdash e:\forall\alpha\sigma}[[Gen]]$\\ \\
+
+ \ \ \ \ \ \ $\inference{A \vdash e : \tau \to \tau' & A \vdash e' : \tau}{A \vdash e \ e' : \tau}[[Comb]]$ \\ \\ 
+ 
+\ \ \ \ \ \ \ \ \ \ \ $\inference{A \cup \{x : \tau'\} \vdash e:\tau}{A \vdash \lambda x.e : \tau' \to \tau}[[Abs]]$\\ \\
+
+\ \ \ \ \ \ \ $\inference{A \vdash e: \sigma & A \cup \{x : \sigma\} \vdash e' : \tau}{A \vdash \mathsf{let} \ x = e \  \mathsf{in} \ e': \tau}[[Let]]$\\
+
+
+\begin{figure*}
+\begin{center}
+$\inference{\inference{\inference{}{i:\forall\alpha(\alpha \to \alpha) \vdash i:\forall\alpha(\alpha \to \alpha)}[[Taut]]}{i:\forall\alpha(\alpha \to \alpha) \vdash i: (\alpha \to \alpha)\to(\alpha \to \alpha) }[[Inst]] & \inference{\inference{}{i:\forall\alpha(\alpha \to \alpha) \vdash i : \forall\alpha(\alpha \to \alpha)}[[Taut]]}{i:\forall\alpha(\alpha \to \alpha)\vdash i: \alpha \to \alpha}[[Inst]]}{i:\forall \alpha (\alpha \to \alpha) \vdash i \ i : \alpha \to \alpha}[[Comb]]$\\
+\ \\ 
+\ \\ 
+
+$\inference{\inference{\inference{\inference{}{x:\alpha \vdash x:\alpha}[[Taut]]}{\vdash \lambda x. x : \alpha \to \alpha}[[Abs]]}{\vdash \lambda x. x : \forall \alpha (\alpha \to \alpha)}[[Gen]] & \inference{\cdots}{i:\forall \alpha (\alpha \to \alpha) \vdash i \ i : \alpha \to \alpha}[[Comb]]}{\vdash \mathsf{let} \ i = \lambda x. x  \  \mathsf{in} \ i \ i: a \to a}[[Let]]$ 
+
+\caption{Example of Hindley/Damas/Milner derivations rules.}
+\label{figure:examplederruleshmd}
+\end{center}
+\end{figure*}
+
+
+Damas \& Milner also present an algorithm called $W$, which given $A$ and $e$, find a type-scheme $\sigma$, such that $A \vdash e:\sigma$, since type inference system does not provide an easy method for finding. $W$ use the unification algorithm of Robinson to provide a  principal type for an expression(Definition \ref{definition:principaltypes}). The principal result of this work is that, if $A \vdash e : \sigma$ for some $\sigma$, then $W$ computes a principal type-scheme for $e$ under $A$. This is a relevant result because any other type-scheme for an expression must be a generic instance of it principal type.
+
+\begin{definition}[principal type]
+\label{definition:principaltypes}
+Given $A$ and $e$, $\sigma_p$ is a principal type-scheme of $e$ under assumptions $A$ iff:
+\begin{enumerate}[(i)]
+\item $A \vdash e : \sigma_p $
+\item Any other $\sigma$ for which $A \vdash e : \sigma$ is a generic instance of $\sigma_p$.
+\end{enumerate}
+\end{definition}
+
+
+\subsection{Type classes in Haskell}
 Type class in Haskell~\cite{wadlerBlott:popl89} is a sort of interface that defines some behavior supporting overloading and parametric polymorphism. A type class is defined by Nipkow et al.~\cite{Nipkow1993}	, as a set of types, which all happen to provide a certain set of functions. Haskell has a static type system, therefore at compile time, the type of every expression is known and the overloading  is resolved. 
 
 The operator ($\texttt{==}$) for equality is widely used in most languages. Commonly overloaded, this polymorphic operator can be defined using type classes and instance declarations. The Haskell code showed below defines a type class that provides an interface for the ($\texttt{==}$) operator in a straightforward way. It is worth noting that this type class could have another functionality, like ($\texttt{/=}$). Once we have this type class, we can define instance for each different types, for instance,  \texttt{Eq Int} and \texttt{Eq Char}, where \texttt{eqInt} and \texttt{eqChar}, are the implementation for the ($\texttt{==}$) operator per each type. The class Eq is used as a constraint for  type variables  that require to support equality inspection.\\
@@ -303,12 +352,12 @@ They highlight that for type classes cannot be assigned a meaning independent of
 Restriction 
 Overloading is restricted to functions.
 
-\subsubsection{A Calculus for Overloaded Functions with Subtyping}
 
 
 
 
-\subsection{Overloading in Object Oriented Paradigm}
+\section{Overloading in Object Oriented Programming}
+\subsection{Featherweight Multi Java}
 Featherweight Multi Java (FMJ)~\cite{BETTINI2009261, FJM} is an extension of Featherweight Java (FJ)~\cite{FJ} with multi-methods. FJ is a basic version of Java, which focuses on the following set of features: class definitions, object creation, method invocation, field access, inheritance, subtyping and method recursion through $\mathsf{this}$. Figure~\ref{figure:syntax_of_FMJ} shows the syntax of FMJ, which is minimal and simple. For more explanation, it can be consulted in~\cite{BETTINI2009261}. Some important aspects to note related to overloading in these work~\cite{BETTINI2009261, FJM} are:
 \begin{itemize}
   \item All the inherited overloaded methods are copied into the subclass.
@@ -529,15 +578,15 @@ M_2 \ N &  j = n
 It is worth noting that, although in system $\lambda$-\&, lambda abstraction are first class citizen, an overloaded function is not , therefore it can not be passed as parameter and can not be the body of a lambda abstraction. Also, the branches of an overloaded functions must be a simple lambda abstraction, no an overloaded functions.
 
 
+\subsection{Common Lisp Object System(CLSO)}
+Common Lisp Object System(CLSO)~\cite{Bobrow:1988:CLO:885631.885632} is an object-oriented extension to Common Lisp which implements dynamic overloading. It is worth noting that CLSO do not admit any static checking, therefore is dynamically typed. For instance, the code below in the in most languages with static type checking, results in an static error by ambiguity. However, in CLSO is considered the second implementation for  method $\texttt{m}$ more specific than the first, thus can be executed without ambiguity. In CLSO, the order of the parameters is crucial for the resolution of overloading.\\
 
-
+\section{Conclusions}
 
 %Bibliography
 \medskip 
 \bibliographystyle{abbrv}
 
-
-Common Lisp Object System(CLSO)~\cite{Bobrow:1988:CLO:885631.885632} is an object-oriented extension to Common Lisp which implements dynamic overloading. It is worth noting that CLSO do not admit any static checking, therefore is dynamically typed. For instance, the code below in the in most languages with static type checking, results in an static error by ambiguity. However, in CLSO is considered the second implementation for  method $\texttt{m}$ more specific than the first, thus can be executed without ambiguity. In CLSO, the order of the parameters is crucial for the resolution of overloading.\\
 
 \bibliography{gsta,pleiad,gp,bib,common}
 \end{document}

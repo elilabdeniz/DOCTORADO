@@ -67,59 +67,6 @@
     (A  ::= ((X (T ...)) ...))
     (T* ::= (T ...)))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-judgment-form OLT
-    #:mode (⊢ I I I I O)
-    #:contract (⊢ A Γ M : T*)
-    [(lookup Γ X T)
-     -------------- var_1
-     (⊢ A Γ X : (T))]
-
-    [(lookup A X T*)
-     -------------- var_2
-     (⊢ A Γ X : T*)]
-  
-    [------------- num
-     (⊢ A Γ N : (num))]
-  
-    [------------- bool
-     (⊢ A Γ B : (bool))]
-  
-    [----------------------- str
-     (⊢ A Γ CH : (str))]
-
-   [----------------------- opB1
-     (⊢ A Γ OB1 : ((→ bool bool)))]
-  
-    [--------------------------- opN1
-     (⊢ A Γ ON1 : ((→ num num)))]
-  
-    [(⊢ A Γ M_1 : T*_1)
-     (⊢ A Γ M_2 : T*_2)
-     (side-condition (novacio? (codominio (minsel T*_1 T*_2 T*_1))))
-     -------------------------------------------------------------- app
-     (⊢ A Γ (M_1 M_2) :  (codominio (minsel T*_1 T*_2 T*_1)))]
-
-    [(⊢ A Γ M : T*)
-    (side-condition (esta? T* T))
-    ----------------------- asc
-    (⊢ A Γ (M :: T) : (T))]
-
-     [(⊢ A Γ M_1 : T*_1)
-     (side-condition (esta? T*_1 T_1))
-     (side-condition (definido? A))
-     (side-condition (noisin? X (sacar Γ)))
-     (⊢ (ext A (X T_1)) Γ M_2 : T*_2)
-     --------------------------------------- let
-     (⊢ A Γ (mlet (X T_1) = M_1 in M_2) : T*_2)]
-  
-    [(unique X)
-     (side-condition (definido? Γ))
-     (⊢ A (extT Γ (X T)) M : T*)
-     (side-condition (noisin? X (sacar Γ)))
-     (side-condition (noisin? X (sacar A)))
-     (side-condition (novacio? T*))
-     ------------------------------------------ λ
-     (⊢ A Γ (λ (X T) M) : (distribuir T T*))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define vρ
     (reduction-relation
@@ -324,91 +271,7 @@
      ;-------------------------------------
      ))
 ;--------------------------------------------------------------------------------------------------------------------
-(define-judgment-form OLρT
-    #:mode (types I I I O)
-    #:contract (types Γ C : T*)
-    [(lookup Γ X T)
-     -------------------------- var_1
-     (types Γ (X ρ) : (T))]
 
-    [(side-condition (construirEnvCond ρ))
-     (lookup (construirEnv ρ) X T*)
-     (side-condition (novacio? T*))
-     -------------------------- var_2
-     (types Γ (X ρ) : T*)]
-  
-    [------------- num
-     (types Γ N : (num))]
-  
-    [------------- bool
-     (types Γ B : (bool))]
-  
-    [----------------------- str
-     (types Γ CH : (str))]
-    
-    [------------- c-num
-     (types Γ (N ρ) : (num))]
-  
-    [------------- c-bool
-     (types Γ (B ρ) : (bool))]
-  
-    [----------------------- c-str
-     (types Γ (CH ρ) : (str))]
-  
-    [----------------------- opB1
-     (types Γ OB1 : ((→ bool bool)))]
-  
-    [--------------------------- opN1
-     (types Γ ON1 : ((→ num num)))]
-
-    [----------------------- c-opB1
-     (types Γ (OB1 ρ) : ((→ bool bool)))]
-  
-    [--------------------------- c-opN1
-     (types Γ (ON1 ρ) : ((→ num num)))]
-  
-    [(types Γ ((M_1 ρ) (M_2 ρ)) : T*)
-     -------------------------------- app
-     (types Γ ((M_1 M_2)  ρ) : T*)]
-
-    [(types Γ C_1 : T*_1)
-     (types Γ C_2 : T*_2)
-     (side-condition (novacio? (codominio (minsel T*_1 T*_2 T*_1))))
-     --------------------------------------------------------------- c-app
-     (types Γ (C_1 C_2) : (codominio (minsel T*_1 T*_2 T*_1)))]
-
-    [(types Γ (M ρ) : T*)
-    (side-condition (esta? T* T))
-    ----------------------- asc
-    (types Γ ((M :: T) ρ) : (T))]
-
-    [(types Γ C : T*)
-    (side-condition (esta? T* T))
-    ----------------------- c-asc
-    (types Γ (C :: T) : (T))]
-
-    [(side-condition (noisin? X (sacar Γ)))
-     (types Γ (mlet (X T_1) = (M_1 ρ) in (M_2 ρ)) : T*)
-    ----------------------------------------------------- let
-    (types Γ ((mlet (X T_1) = M_1 in M_2) ρ) : T*)]
-
-    [(types Γ C_1 : T*_1)
-     (side-condition (esta? T*_1 T_1))
-     (side-condition (construirEnvCond ρ))
-     (side-condition (definido? ρ))
-     (⊢ (ext (construirEnv ρ) (X T_1)) Γ M_2 : T*_2)     
-    ------------------------------------------------------ c-let
-    (types Γ (mlet (X T_1) = C_1 in (M_2 ρ)) : T*_2)]
-  
-    [(unique X)
-     (side-condition (construirEnvCond ρ))
-     (side-condition (definido? Γ))
-     (⊢ (construirEnv ρ) (extT Γ (X T)) M : T*)
-     (side-condition (noisin? X (sacar Γ)))
-     (side-condition (noisin? X (sacar (construirEnv ρ))))
-     (side-condition (novacio? T*))
-     ------------------------------------------ λ
-     (types Γ ((λ (X T) M) ρ) : (distribuir T T*))])
 ;--------------------------------------------------------------------------------------------------------------------
 (define value? (redex-match OLρI  W))
 
@@ -478,7 +341,7 @@
     [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
     [(predicado1 any any_x) #t])
 
-(define-metafunction OLρT
+#|(define-metafunction OLρT
   [(construirEnvCond ((X ((T W) ...)) any_0 ...)) ,(and (term (construirEnvAuxCond ((T W) ...)))
                                                       (term (construirEnvCond (any_0 ...))) (term (noisin? X (sacar (any_0 ...)))))]
   [(construirEnvCond ()) #t])
@@ -507,7 +370,7 @@
 (define-metafunction OLρT
   [(construirEnvAux  ((T W) any_0 ...)) (concat  T
                                                       (construirEnvAux (any_0 ...)))]
-  [(construirEnvAux ()) ()])
+  [(construirEnvAux ()) ()])|#
 
 
 #|(define-metafunction OLρT
@@ -686,7 +549,7 @@
     [(igtag T_1 T_2) #f]
   )
 ;--------------------------------------------------------------------------------------------------------------------
-(define (types? C)
+#|(define (types? C)
   (judgment-holds (types () ,C : (T))))
 
 (define (ObtTypes C)
@@ -708,7 +571,7 @@
                  (or (w? C)
           (reduces? (term (,C ,T_1))))
           #t))
-      #t))
+      #t)) |#
 
 
 #|
@@ -797,3 +660,118 @@
  	 	"SemanticaALanE.pdf"	 
  	 )
 |#
+
+
+;--------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+   (term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 3))) in 
+(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a_4 ) (add1 1)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z y)(x t)))))))))) () ))
+    (term #f)(term 4))
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-->>
+   vρ
+  (term ((mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in x))) () ))
+  (term #f)
+  (term ((λ (a_3) (not #t)) ()))
+  (term 2))
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+
+   (term ((mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      ((λ (a_3 ) x) 5))) () ))
+   (term #f)
+   (term 2)
+  )
+;-------------------------------------------------------------------------------------------------------------------
+  (test-->>
+   vρ (term ((mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (add1 x))) () ))
+(term 3)
+  )
+
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-->>
+   vρ
+
+   (term ((mlet (z ) = (λ (u_1 )  (add1 u_1)) in 
+(mlet (z ) = (λ (a_1 )  (not a_1))  in  
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () ))
+   (term dispatcherror)
+  )
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+
+   (term
+                                     (
+(mlet (z) =  (λ (u_1 )  ((λ (a_5 )  a_5) u_1)) in 
+(mlet (z ) = (λ (a_1 )  ((λ (a_5 )  a_5) a_1))  in  
+(mlet (x ) = (λ (a_3 )  (not #t)) in 
+(mlet (x ) = (λ (a_4 )  (add1 1)) in  (z x))))) () ))
+
+   (term ((λ (a_3) (not #t))
+   ((z
+     (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+      ((λ (u_1) ((λ (a_5) a_5) u_1)) ()))))))
+   (term ((λ (a_4) (add1 1))
+   ((x
+     (((λ (a_3) (not #t))
+       ((z
+         (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+          ((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))))
+    (z
+     (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+      ((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))))
+;-------------------------------------------------------------------------------------------------------------------
+
+
+(test-->>
+   vρ
+
+   (term
+((mlet(x ) = (λ (a_3 ) (not #t)) in 
+(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
+ (y x))) () ))
+   (term ((λ (a_3) (not #t)) ())))
+
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+   (term ((mlet (x ) = (λ (a3 ) (not #t)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (not x)))) () ))
+   (term #t))
+
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+    (term ((mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (add1 x))) () ))
+   (term 3))
+
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+   (term ((mlet (x ) = (λ (a_3 ) (not a_3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x x)))) () ))
+   (term #t)
+   (term dispatcherror))
+
+;-------------------------------------------------------------------------------------------------------------------

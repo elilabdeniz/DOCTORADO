@@ -93,10 +93,12 @@
 \newcommand{\dispatcherror}{\mathsf{DispatchError}}
 \newcommand{\ambiguityerror}{\mathsf{AmbiguityError}}
 
-\newcommand{\semanticA}{Flexible Language}
-\newcommand{\semanticB}{Tag Driven Language}
-\newcommand{\semanticC}{Strict Language}
-\newcommand{\semanticD}{Overloading Language}
+\newcommand{\semanticA}{$\lambda\backslash$}
+\newcommand{\semanticB}{${\lambda}{\backslash}_S$}
+\newcommand{\semanticBb}{${\lambda}{\backslash}_S$}
+\newcommand{\semanticC}{${\lambda}{\backslash}_\omega$}
+\newcommand{\semanticCc}{${\lambda}{\backslash}_1$}
+\newcommand{\semanticD}{${\lambda}{\backslash}_T$}
 
 \newcommand{\mtD}{T^{*}}
 \newcommand{\mtP}[1]{#1^{*}}
@@ -293,7 +295,7 @@ $\inference {x \neq y} {\confy{x} \tto x[s]}$&$\rulename{VarNext}  $\\
 %&\\
 ${\oletP{T_1}{v}{t_2[s]} \tto \confext{t_2}}$&$\rulename{Let} $\\
 &\\
-$\conf{\absST{x}{t_2}} \ v \tto \confext{t_2}$&$\rulename{App}$\\
+${(\absST{x}{t_2})[s] \ v \tto t_2 [x \mapsto v, s]}$&$\rulename{App}$\\
 &\\
 $\suma{n} \tto n + 1$&$\rulename{Sum}$\\
 &\\
@@ -733,7 +735,7 @@ $\inference {\filtrar(w, \boolt)  = \{b\} }{\negacion{w}\tto {\neg \ b}}$&$\rule
 &\\
 \hline
 \end{tabular}
-\caption{Reduction rules for \semanticC.}
+\caption{Reduction rules for \semanticCc.}
 \label{tabla:reductionRulesStrictMore}
 \end{center}
 \end{small}
@@ -772,7 +774,7 @@ $\inference {\filtrar(\{\overline{v}\}, \boolt)  = w \ \wedge \|w\| > 1}{\negaci
 &\\
 \hline
 \end{tabular}
-\caption{Error rules for \semanticC.}
+\caption{Error rules for \semanticCc.}
 \label{tabla:errorRulesStrictMore}
 \end{center}
 \end{small}

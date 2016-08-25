@@ -1,7 +1,6 @@
 #lang racket 
 (require redex)
 (require pict)
-(require "subst.rkt")
 ;--------------------------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language OL
@@ -151,8 +150,6 @@
 ;--------------------------------------------------------------------------------------------------------------------
 (define-language REDEX)
 
-
-
 (define-metafunction OLρ
     [(predicado1(_ ... (any_x any_y) _ ...) any_x) #f]
     [(predicado1 any any_x) #t])
@@ -180,9 +177,6 @@
 (define (is-closure1? t)
         (redex-match? OLρ  (L ρ) t))
 
-;(define (is-closure2? t)
-        ;(redex-match? OLρ  ((λ (X) C) ρ) t))
-
 
 (define (is-operator? t)
         (redex-match? OLρ  O t))
@@ -195,6 +189,11 @@
         (redex-match? OLρ  N t))
 
 (define-metafunction OLρ
+    [(concat any ()) (any)]
+    [(concat any (any_w any_sig ...)) (any any_w any_sig ...)])
+
+
+#|(define-metafunction OLρ
     [(unirEnv any ()) any]
     [(unirEnv any ((any_x any_y) any_sig ...)) (unirEnv (unirEnvAux any (any_x any_y))(any_sig ...))]
   )
@@ -215,12 +214,7 @@
     [(unirEnvAux3 (any_w any_sig ...) any_v) (concat any_w (unirEnvAux3 (any_sig ...) any_v))]
   )
 
-(define-metafunction OLρ
-    [(concat any ()) (any)]
-    [(concat any (any_w any_sig ...)) (any any_w any_sig ...)])
-
-;--------------------------------------------------------------------------------------------------------------------
-#|(define-judgment-form REDEX
+(define-judgment-form REDEX
     #:mode (lookup I I O)
     #:contract (lookup ((any any) ...) any any)
     [(lookup (_ ... (any any_0) _ ...) any any_0)])
@@ -248,7 +242,13 @@
     unique ⊆ any × ...
     [(unique any_!_1 ...)])
 
+(render-reduction-relation	 	vρ	 
+ 	 	"SemanticaA.pdf"	 
+ 	 	#:style  'horizontal-side-conditions-same-line)
 
+(render-language	 	OLρ	 
+ 	 	"SemanticaALanE.pdf"	 
+ 	 )
 (apply-reduction-relation* -->vρ  (term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 3))) in 
 (mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
 (mlet (y ) = #t in 
@@ -258,13 +258,11 @@
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z y)(x t)))))))))) () )))
 
+
 (apply-reduction-relation* -->vρ  (term ((mlet (x ) = (λ (a_3 ) (not #t)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in x))) () )))
 
-(apply-reduction-relation* -->vρ  (term ((mlet (x ) = 2 in 
-(mlet (x ) = #f in
-      ((λ (a_3 ) x) 5))) () )))
 
 (apply-reduction-relation*  -->vρ  (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in
@@ -276,21 +274,13 @@
 (mlet (x ) = (λ (a_3 ) (not #t)) in 
 (mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () )))
 
+
 (apply-reduction-relation* -->vρ  (term
                                      (
 (mlet (z) =  (λ (u_1 )  ((λ (a_5 )  a_5) u_1)) in 
 (mlet (z ) = (λ (a_1 )  ((λ (a_5 )  a_5) a_1))  in  
 (mlet (x ) = (λ (a_3 )  (not #t)) in 
 (mlet (x ) = (λ (a_4 )  (add1 1)) in  (z x))))) () )))
-
-(apply-reduction-relation* -->vρ  (term ((mlet (x ) = (λ (a_3 ) (not a_3)) in 
-(mlet (x ) = 2 in 
-(mlet (x ) = #f in (x x)))) () )))
-
-(apply-reduction-relation* -->vρ  (term
-((mlet(x ) = (λ (a_3 ) (not #t)) in 
-(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
- (y x))) () )))
 
  (redex-match? OLρ  (C C) (term
  (((λ (a_5)  #t)
@@ -300,11 +290,106 @@
  (((λ (a_5)  #t)
   ()) (((λ (a_3)  #t) ())()))))
 
-(render-reduction-relation	 	vρ	 
- 	 	"SemanticaA.pdf"	 
- 	 	#:style  'horizontal-side-conditions-same-line)
 
-(render-language	 	OLρ	 
- 	 	"SemanticaALanE.pdf"	 
- 	 )
+(apply-reduction-relation* -->vρ  (term
+((mlet(x ) = (λ (a_3 ) (not #t)) in 
+(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
+ (y x))) () )))
 |#
+
+;--------------------------------------------------------------------------------------------------------------------
+(test-->>
+   -->vρ
+   (term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 3))) in 
+(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a_4 ) (add1 1)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z y)(x t)))))))))) () ))
+    (term #f)(term 4))
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-->>
+   -->vρ
+  (term ((mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in x))) () ))
+  (term #f)
+  (term ((λ (a_3) (not #t)) ()))
+  (term 2))
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   -->vρ
+
+   (term ((mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      ((λ (a_3 ) x) 5))) () ))
+   (term #f)
+   (term 2)
+  )
+;-------------------------------------------------------------------------------------------------------------------
+  (test-->>
+   -->vρ (term ((mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (add1 x))) () ))
+(term 3)
+   (term typeerror)
+  )
+
+;-------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+(test-->>
+   -->vρ
+
+   (term ((mlet (z ) = (λ (u_1 )  (add1 u_1)) in 
+(mlet (z ) = (λ (a_1 )  (not a_1))  in  
+(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a_4 ) (add1 1)) in  (z x))))) () ))
+   (term typeerror)
+  )
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   -->vρ
+
+   (term
+                                     (
+(mlet (z) =  (λ (u_1 )  ((λ (a_5 )  a_5) u_1)) in 
+(mlet (z ) = (λ (a_1 )  ((λ (a_5 )  a_5) a_1))  in  
+(mlet (x ) = (λ (a_3 )  (not #t)) in 
+(mlet (x ) = (λ (a_4 )  (add1 1)) in  (z x))))) () ))
+
+   (term ((λ (a_3) (not #t))
+   ((z
+     (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+      ((λ (u_1) ((λ (a_5) a_5) u_1)) ()))))))
+   (term ((λ (a_4) (add1 1))
+   ((x
+     (((λ (a_3) (not #t))
+       ((z
+         (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+          ((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))))
+    (z
+     (((λ (a_1) ((λ (a_5) a_5) a_1)) ((z (((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))
+      ((λ (u_1) ((λ (a_5) a_5) u_1)) ())))))))
+;-------------------------------------------------------------------------------------------------------------------
+
+
+(test-->>
+   -->vρ
+
+   (term
+((mlet(x ) = (λ (a_3 ) (not #t)) in 
+(mlet (y ) = (λ (a_3 ) (mlet (t ) = (λ (a_5 ) (not #t)) in a_3)) in 
+ (y x))) () ))
+   (term ((λ (a_3) (not #t)) ())))
+
+;-------------------------------------------------------------------------------------------------------------------
+
+
+
