@@ -971,12 +971,12 @@
 ;--------------------------------------------------------------------------------------------------------------------
 (test-->>
    vρ
-   (term ((mlet (z ) = (λ (u_1 (→ bool (→  bool bool ) )) (λ (u_2 (→  bool bool )) (add1 3))) in 
-(mlet (z ) = (λ (a_1 (→ num (→  num num ) )) (λ (a_2 (→  num num )) (not #t)))  in 
+   (term ((mlet (z ) = (λ (u1 (→ bool (→  bool bool ) )) (λ (u2 (→  bool bool )) (add1 3))) in 
+(mlet (z ) = (λ (a1 (→ num (→  num num ) )) (λ (a2 (→  num num )) (not #t)))  in 
 (mlet (y ) = #t in 
 (mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
-(mlet (x ) = (λ (a_4 (→  num num )) (add1 1)) in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 1)) in 
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z y)(x t)))))))))) () ))
     (term ambiguityerror))
@@ -984,17 +984,17 @@
 
 (test-->>
    vρ
-  (term ((mlet (x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
+  (term ((mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in x))) () ))
-  (term (mv #f 2 ((λ (a_3 (→  bool bool )) (not #t)) ()) )))
+  (term (mv #f 2 ((λ (a3 (→  bool bool )) (not #t)) ()) )))
 ;-------------------------------------------------------------------------------------------------------------------
 (test-->>
    vρ
 
    (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in
-      ((λ (a_3 (→  num num )) x) 5))) () ))
+      ((λ (a3 (→  num num )) x) 5))) () ))
    (term (mv 2))
   )
 ;-------------------------------------------------------------------------------------------------------------------
@@ -1010,10 +1010,10 @@
 (test-->>
    vρ
 
-   (term ((mlet (z ) = (λ (u_1 (→  num num ))  (add1 u_1)) in 
-(mlet (z ) = (λ (a_1 (→  bool bool ))  (not a_1))  in  
-(mlet (x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
-(mlet (x ) = (λ (a_4 (→  num num )) (add1 1)) in  (z x))))) () ))
+   (term ((mlet (z ) = (λ (u1 (→  num num ))  (add1 u1)) in 
+(mlet (z ) = (λ (a1 (→  bool bool ))  (not a1))  in  
+(mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 1)) in  (z x))))) () ))
    (term dispatcherror)
   )
 ;-------------------------------------------------------------------------------------------------------------------
@@ -1022,33 +1022,33 @@
 
    (term
                                      (
-(mlet (z) =  (λ (u_1 (→ (→  bool bool ) (→  bool bool )))  ((λ (a_5 (→ (→  bool bool ) (→  bool bool )))  a_5) u_1)) in 
-(mlet (z ) = (λ (a_1 (→ (→  str str ) (→  str str )))  ((λ (a_5 (→ (→  str str ) str))  a_5) a_1))  in  
-(mlet (x ) = (λ (a_3  (→  bool bool ) )  (not #t)) in 
-(mlet (x ) = (λ (a_4 (→  num num ) )  (add1 1)) in  (z x))))) () ))
+(mlet (z) =  (λ (u1 (→ (→  bool bool ) (→  bool bool )))  ((λ (a5 (→ (→  bool bool ) (→  bool bool )))  a5) u1)) in 
+(mlet (z ) = (λ (a1 (→ (→  str str ) (→  str str )))  ((λ (a5 (→ (→  str str ) str))  a5) a1))  in  
+(mlet (x ) = (λ (a3  (→  bool bool ) )  (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num ) )  (add1 1)) in  (z x))))) () ))
 
    (term (mv
- ((λ (a_3 (→ bool bool))
+ ((λ (a3 (→ bool bool))
     (not #t))
   ((z
     (mv
-     ((λ (a_1
+     ((λ (a1
           (→
            (→ str str)
            (→ str str)))
-        ((λ (a_5
+        ((λ (a5
              (→
               (→ str str)
               str))
-           a_5)
-         a_1))
+           a5)
+         a1))
       ((z
         (mv
-         ((λ (u_1
+         ((λ (u1
               (→
                (→ bool bool)
                (→ bool bool)))
-            ((λ (a_5
+            ((λ (a5
                  (→
                   (→
                    bool
@@ -1056,19 +1056,19 @@
                   (→
                    bool
                    bool)))
-               a_5)
-             u_1))
+               a5)
+             u1))
           ())))))
-     ((λ (u_1
+     ((λ (u1
           (→
            (→ bool bool)
            (→ bool bool)))
-        ((λ (a_5
+        ((λ (a5
              (→
               (→ bool bool)
               (→ bool bool)))
-           a_5)
-         u_1))
+           a5)
+         u1))
       ()))))))))
 ;-------------------------------------------------------------------------------------------------------------------
 
@@ -1077,10 +1077,10 @@
    vρ
 
    (term
-((mlet(x ) = (λ (a_3 (→  bool bool )) (not #t)) in 
-(mlet (y ) = (λ (a_3 (→ (→  bool bool ) (→  bool bool ))) (mlet (t ) = (λ (a_5 (→  bool bool )) (not #t)) in a_3)) in 
+((mlet(x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (y ) = (λ (a3 (→ (→  bool bool ) (→  bool bool ))) (mlet (t ) = (λ (a5 (→  bool bool )) (not #t)) in a3)) in 
  (y x))) () ))
-   (term (mv ((λ (a_3 (→  bool bool )) (not #t)) ()))))
+   (term (mv ((λ (a3 (→  bool bool )) (not #t)) ()))))
 
 ;-------------------------------------------------------------------------------------------------------------------
 (test-->>
@@ -1101,7 +1101,7 @@
 ;-------------------------------------------------------------------------------------------------------------------
 (test-->>
    vρ
-   (term ((mlet (x ) = (λ (a_3 (→  bool bool )) (not a_3)) in 
+   (term ((mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in (x x)))) () ))
    (term (mv #t)))
@@ -1109,21 +1109,21 @@
 ;-------------------------------------------------------------------------------------------------------------------
 (test-->>
    vρ
-(term ((mlet (z ) = (λ (u_1 ) (λ (u_2) (add1 u_2))) in 
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not a_2 )))  in 
+(term ((mlet (z ) = (λ (u1 (→ num (→  num num ))) (λ (u2 (→  num num )) (add1 u2))) in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not a2 )))  in 
 (mlet (y ) = #t in 
 (mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 ) (not a_3)) in 
-(mlet (x ) = (λ (a_4 ) (add1 a_4)) in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 a4)) in 
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))))) () ))
-(term ambiguityerror)
+(term (mv #f))
    )
 ;-------------------------------------------------------------------------------------------------------------------
 
 (test-->>
    vρ
-   (term ((mlet (x ) = (λ (a_3 ) (not a_3)) in 
+   (term ((mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
 (mlet (x ) = 2 in 
 (mlet (x ) = #f in (x (x :: bool))))) () ))
    (term (mv #t)))
@@ -1132,10 +1132,10 @@
 (test-->>
    vρ
    (term (
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not #t)))  in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not #t)))  in 
 (mlet (y ) = #t in 
 (mlet (y ) = 1 in 
-(mlet (x ) = (λ (a_3 ) (not #t)) in 
+(mlet (x ) = (λ (a3  (→  bool bool )) (not #t)) in 
 
 (mlet (t ) = 2 in 
 (mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))) () ))
@@ -1156,19 +1156,220 @@
    vρ
    (term ((mlet (x ) = 2 in 
 (mlet (x ) = #f in
-      ((λ (a_3 ) a_3) x))) () ))
-   (term (mv #f 2)))
+      ((λ (a3 (→  bool bool )) a3) x))) () ))
+   (term (mv #f)))
 
 ;-------------------------------------------------------------------------------------------------------------------
 (test-->>
    vρ
    (term ((mlet (r ) = #t in
 (mlet (r ) = 1 in                                             
-(mlet (z ) = (λ (a_1 ) (λ (a_2 ) (not a_2)))  in 
-(mlet (x ) = (λ (a_3 ) (not a_3)) in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not a2)))  in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
 (mlet (y ) = (r :: bool) in 
 (mlet (t ) = y in 
  ((z y)(x (t :: bool))))))))) () ))
    (term (mv #t))
    )
 ;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+   (term ((mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x x)))) () ))
+   (term (mv #t)))
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-->>
+   vρ
+(term ((mlet (z ) = (λ (u1 (→ num (→  num num ))) (λ (u2 (→  num num )) (add1 u2))) in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not a2 )))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 a4)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z y )(x t )))))))))) () ))
+(term ambiguityerror)
+   )
+
+;-------------------------------------------------------------------------------------------------------------------
+(test-->>
+   vρ
+(term ((mlet(x ) = (λ (a3 (→ (→  bool bool ) bool)) (a3 #t)) in 
+ (x  (λ (a3 (→  bool bool ))
+               (mlet (z ) = 4 in (mlet (z ) = #t in z))))) ()))
+(term (mv #t)))
+
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal
+   (judgment-holds (⊢ () () (λ (u1 (→ num (→ num num)) ) (λ (u2 (→ num num)) ((add1 3) :: num))) : T*) T*)
+   (list (term ((→ num (→ num num))))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z) = (λ (u1 (→ num (→ num num)) ) (λ (u2 (→ num num)) ((add1 3) :: num))) in 
+(mlet (z ) = (λ (a1 (→ bool (→ bool bool))) (λ (a2 (→ bool bool)) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→ bool bool)) (not #t)) in 
+(mlet (x ) = (λ (a4 (→ str str)) "abcd") in 
+(mlet (t ) = "abc" in 
+(mlet (t ) = #f in ((z y)(x t)))))))))) : T*) T*)
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z ) = (λ (u1 (→ bool (→  bool bool ) )) (λ (u2 (→  bool bool )) (add1 3))) in 
+(mlet (z ) = (λ (a1 (→ num (→  num num ) )) (λ (a2 (→  num num )) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 1)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z y)(x t)))))))))): T*) T*)
+
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in x))) : T*) T*)
+
+            (list (term (bool num (→ bool bool)))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      ((λ (a3 (→  num num )) x) 5))) : T*) T*)
+
+            (list (term (num))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (add1 x))) : T*) T*)
+
+            (list (term (num))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z ) = (λ (u1 (→  num num ))  (add1 u1)) in 
+(mlet (z ) = (λ (a1 (→  bool bool ))  (not a1))  in  
+(mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 1)) in  (z x))))): T*) T*)
+
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z) =  (λ (u1 (→ (→  bool bool ) (→  bool bool )))  ((λ (a5 (→ (→  bool bool ) (→  bool bool )))  a5) u1)) in 
+(mlet (z ) = (λ (a1 (→ (→  str str ) (→  str str )))  ((λ (a5 (→ (→  str str ) str))  a5) a1))  in  
+(mlet (x ) = (λ (a3  (→  bool bool ) )  (not #t)) in 
+(mlet (x ) = (λ (a4 (→  num num ) )  (add1 1)) in  (z x))))) : T*) T*)
+
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet(x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (y ) = (λ (a3 (→ (→  bool bool ) (→  bool bool ))) (mlet (t ) = (λ (a5 (→  bool bool )) (not #t)) in a3)) in 
+ (y x))): T*) T*)
+
+            (list (term ((→ bool bool)))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = (λ (a3 (→  bool bool )) (not #t)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (not x)))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (add1 x))) : T*) T*)
+
+            (list (term (num))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x x)))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z ) = (λ (u1 (→ num (→  num num ))) (λ (u2 (→  num num )) (add1 u2))) in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not a2 )))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 a4)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x (x :: bool))))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not #t)))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3  (→  bool bool )) (not #t)) in 
+
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z (y :: bool))(x (t :: bool))))))))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      (mlet (x ) = 3 in
+            (mlet (x ) = 4 in 
+      (add1 x))))) : T*) T*)
+
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      ((λ (a3 (→  bool bool )) a3) x))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = 2 in 
+(mlet (x ) = #f in
+      ((λ (a3 (→  bool bool )) a3) x))): T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+(test-equal (judgment-holds (⊢ () () (mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = 2 in 
+(mlet (x ) = #f in (x x)))) : T*) T*)
+
+            (list (term (bool))))
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-equal (judgment-holds (⊢ () () (mlet (z ) = (λ (u1 (→ num (→  num num ))) (λ (u2 (→  num num )) (add1 u2))) in 
+(mlet (z ) = (λ (a1 (→ bool (→  bool bool ))) (λ (a2 (→  bool bool )) (not a2 )))  in 
+(mlet (y ) = #t in 
+(mlet (y ) = 1 in 
+(mlet (x ) = (λ (a3 (→  bool bool )) (not a3)) in 
+(mlet (x ) = (λ (a4 (→  num num )) (add1 a4)) in 
+(mlet (t ) = 2 in 
+(mlet (t ) = #f in ((z y )(x t )))))))))) : T*) T*)
+
+            (list ))
+;-------------------------------------------------------------------------------------------------------------------
+
+(test-equal (judgment-holds (⊢ () ()
+(mlet(x ) = (λ (a3 (→ (→  bool bool ) bool)) (a3 #t)) in 
+ (x  (λ (a3 (→  bool bool ))
+               (mlet (z ) = 4 in (mlet (z ) = #t in z)))))
+ : T*) T*)
+    (list (term (bool))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
